@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import './globals.css'; // Importamos los estilos de la página
 
 export default function Home() {
   const router = useRouter();
@@ -26,8 +25,8 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      <img id="logo_ppal" src='/logo_horizontal.png'/>
       <h1 className="home-title">Bienvenido a PortaCloud</h1>
-      <p className="home-description">Si ya tienes cuenta, puedes iniciar sesión, o si no, registrarte.</p>
       <div className="home-buttons">
         <button onClick={handleLoginClick} className="home-button">
           Iniciar sesión

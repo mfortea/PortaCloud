@@ -16,7 +16,12 @@ body {
   overflow-x: hidden;
 }
 
+#logo_ppal {
+  width: 50%;
+}
+
 body {
+  font-size: 20px;
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
@@ -62,7 +67,8 @@ a {
   gap: 20px;
 }
 
-.home-button {
+button {
+  margin: 20px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
@@ -73,6 +79,39 @@ a {
   transition: background-color 0.3s ease;
 }
 
+input {
+  margin: 10px;
+  border-radius: 5px;
+  border-style: none;
+  background-color: #dbdbdb;
+  height: 25px;
+  text-align: center;
+  transition: all 0.5s;
+}
+
+input:hover{
+  background-color: #f0f0f0;
+  transition: all 0.5s;
+}
+
 .home-button:hover {
   background-color: #0056b3;
+}
+
+footer.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+footer.footer p {
+  margin: 0;
+}
+
+button:hover {
+  transition: all 0.5s;
+  background-color: #3195ff;
 }

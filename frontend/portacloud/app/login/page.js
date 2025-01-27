@@ -1,20 +1,21 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import "./login.css";
 
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password }),
     });
@@ -22,23 +23,28 @@ export default function Login() {
     if (res.ok) {
       const data = await res.json();
       // Guardar el JWT recibido
-      localStorage.setItem('token', data.token);
-      router.push('/dashboard'); // Redirige al dashboard
+      localStorage.setItem("token", data.token);
+      router.push("/dashboard"); // Redirige al dashboard
     } else {
-      alert('Inicio de sesión fallido');
+      alert("Inicio de sesión fallido");
     }
   };
 
+  const handleIndex = () => {
+    router.push('/');
+  };
+
   return (
-    <div>
-      <h1>Iniciar sesión</h1>
+    <div className="home-container">
+      <img id="logo_ppal" onClick={handleIndex} src="/logo_horizontal.png" />
+      <h1 className="home-title">Iniciar Sesión</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username">Nombre de usuario</label>
           <input
             id="username"
             type="text"
-            placeholder="Nombre de usuario"
+            placeholder="Introduce tu usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -49,7 +55,7 @@ export default function Login() {
           <input
             id="password"
             type="password"
-            placeholder="Contraseña"
+            placeholder="Introduce tu contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
