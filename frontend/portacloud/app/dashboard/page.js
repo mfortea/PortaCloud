@@ -1,19 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [clipboardContent, setClipboardContent] = useState(""); 
-  const [isSafari, setIsSafari] = useState(false);
+  const [clipboardContent, setClipboardContent] = useState(null);
+  const [isFetching, setIsFetching] = useState(false); 
   const router = useRouter();
-
-  // Detectar si el navegador es Safari
-  useEffect(() => {
-    const ua = navigator.userAgent;
-    setIsSafari(/Safari/.test(ua) && !/Chrome/.test(ua));
-  }, []);
 
   // Obtener el token y los datos del usuario
   useEffect(() => {
@@ -41,66 +35,79 @@ export default function Dashboard() {
       });
   }, [router]);
 
-  // Función para leer el contenido del portapapeles
-  const fetchClipboardContent = async () => {
+  // Leer contenido del portapapeles
+  const fetchClipboard = async () => {
+    if (isFetching) return;
+    setIsFetching(true);
+
     try {
-      const text = await navigator.clipboard.readText(); 
-      setClipboardContent(text); 
-    } catch (err) {
-      console.error("No se pudo acceder al portapapeles:", err);
-      setClipboardContent("No se pudo obtener el contenido del portapapeles.");
+      const clipboardData = await navigator.clipboard.read();
+      for (const item of clipboardData) {
+        if (item.types.includes("image/png")) {
+          const blob = await item.getType("image/png");
+          const url = URL.createObjectURL(blob);
+          if (clipboardContent?.content !== url) {
+            setClipboardContent({ type: "image", content: url });
+          }
+        } else if (item.types.includes("text/plain")) {
+          const text = await item.getType("text/plain").then((r) => r.text());
+          if (clipboardContent?.content !== text) {
+            setClipboardContent({ type: "text", content: text });
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error leyendo el portapapeles:", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
+  // Intervalo para actualizar el contenido del portapapeles cada 2 segundos
+  useEffect(() => {
+    const interval = setInterval(fetchClipboard, 2000);
+    return () => clearInterval(interval);
+  }, [clipboardContent]);
+
+  // Función para cerrar sesión
   const handleLogout = () => {
     localStorage.removeItem("token");
-    router.push("/login"); 
+    router.push("/login");
+  };
+
+  // Función para refrescar manualmente el portapapeles
+  const handleRefresh = () => {
+    fetchClipboard();
   };
 
   if (!user) return <p>Cargando...</p>;
 
+  // Volver al inicio
   const handleIndex = () => {
     router.push("/");
   };
 
   return (
     <div className="home-container">
-      <img
-        id="logo_ppal"
-        onClick={handleIndex}
-        src="/logo_horizontal.png"
-        alt="Portacloud Logo"
-      />
+      <img id="logo_ppal" onClick={handleIndex} src="/logo_horizontal.png" />
       <h1>Bienvenido, {user.username}!</h1>
       <h2>Tu portapapeles:</h2>
-      {}
-      {isSafari && (
-        <button
-          onClick={fetchClipboardContent}
-          style={{
-            marginBottom: "10px",
-            padding: "8px",
-            backgroundColor: "#007BFF",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-          }}
-        >
-          Refrescar portapapeles
-        </button>
-      )}
-      <div
-        className="clipboard-section"
-        style={{
-          border: "1px solid #ddd",
-          padding: "15px",
-          borderRadius: "5px",
-          minHeight: "100px",
-          backgroundColor: "#f9f9f9",
-        }}
-      >
-        {clipboardContent ? clipboardContent : "No hay contenido en el portapapeles."}
+      <div className="clipboard-display">
+        {clipboardContent ? (
+          clipboardContent.type === "image" ? (
+            <img
+              src={clipboardContent.content}
+              alt="Imagen del portapapeles"
+              className="clipboard-image"
+            />
+          ) : (
+            <p>{clipboardContent.content}</p>
+          )
+        ) : (
+          <p>No hay contenido en el portapapeles</p>
+        )}
       </div>
+      <button onClick={handleRefresh}>Refrescar portapapeles</button>
       <button onClick={handleLogout}>Cerrar sesión</button>
     </div>
   );
