@@ -18,7 +18,7 @@ export default function Dashboard() {
     }
 
     // Si hay token, intentar obtener la información del perfil
-    fetch("http://localhost:5000/api/auth/profile", {
+    fetch("http://localhost:5050/api/auth/profile", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
