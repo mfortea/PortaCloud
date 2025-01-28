@@ -16,8 +16,9 @@ export default function Dashboard() {
       router.push("/login");
       return;
     }
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP; 
 
-    fetch("http://localhost:5050/api/auth/profile", {
+    fetch(`${serverUrl}/api/auth/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

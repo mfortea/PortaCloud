@@ -8,8 +8,9 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const res = await fetch('http://localhost:5050/api/auth/register', {
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP; 
+    
+    const res = await fetch(`${serverUrl}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
