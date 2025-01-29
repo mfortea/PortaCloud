@@ -2,12 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import io from "socket.io-client";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [clipboardContent, setClipboardContent] = useState(null);
-  const [isFetching, setIsFetching] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
+  const [connectedDevices, setConnectedDevices] = useState([]);
   const router = useRouter();
+  let socket;
+  const [refreshing, setRefreshing] = useState(false);
+  const [autoRefreshClipboard, setAutoRefreshClipboard] = useState(true); // Controla si la actualización automática del portapapeles está habilitada
+
+  // Detectar si el navegador es Safari (iOS/macOS)
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isSafariBrowser =
+      userAgent.includes("safari") && !userAgent.includes("chrome");
+    setIsSafari(isSafariBrowser);
+  }, []);
 
   // Obtener el token y los datos del usuario
   useEffect(() => {
@@ -16,96 +29,178 @@ export default function Dashboard() {
       router.push("/login");
       return;
     }
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     fetch(`${serverUrl}/api/auth/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.username) {
           setUser(data);
+          initSocket(serverUrl, token);
+          fetchDevices(token);
         } else {
           router.push("/login");
         }
       })
-      .catch(() => {
-        router.push("/login");
-      });
+      .catch(() => router.push("/login"));
   }, [router]);
 
-  // Leer contenido del portapapeles
-  const fetchClipboard = async () => {
-    if (isFetching) return;
-    setIsFetching(true);
+  // Iniciar conexión de WebSocket para escuchar dispositivos conectados
+  const initSocket = (serverUrl, token) => {
+    socket = io(serverUrl, { auth: { token } });
 
+    socket.on("updateDevices", (devices) => {
+      setConnectedDevices(devices);
+    });
+
+    socket.on("newConnection", (message) => {
+      console.log(message);
+    });
+
+    socket.on("disconnectClient", (message) => {
+      console.log(message);
+    });
+  };
+
+  // Obtener dispositivos conectados
+  const fetchDevices = async (token) => {
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     try {
-      const clipboardData = await navigator.clipboard.read();
-      for (const item of clipboardData) {
-        if (item.types.includes("image/png")) {
-          const blob = await item.getType("image/png");
-          const url = URL.createObjectURL(blob);
-          if (clipboardContent?.content !== url) {
-            setClipboardContent({ type: "image", content: url });
-          }
-        } else if (item.types.includes("text/plain")) {
-          const text = await item.getType("text/plain").then((r) => r.text());
-          if (clipboardContent?.content !== text) {
+      const response = await fetch(`${serverUrl}/api/auth/devices`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const devices = await response.json();
+      setConnectedDevices(devices);
+    } catch (error) {
+      console.error("Error al obtener los dispositivos:", error);
+    }
+  };
+
+  // Función para leer el contenido del portapapeles
+  const fetchClipboard = async () => {
+    try {
+      if (!navigator.clipboard) {
+        console.warn("El acceso al portapapeles no está soportado en este navegador.");
+        return;
+      }
+
+      if (!document.hasFocus()) {
+        console.warn("Intento de leer el portapapeles sin foco en la pestaña.");
+        return;
+      }
+
+      if (isSafari) {
+        const text = await navigator.clipboard.readText();
+        setClipboardContent({ type: "text", content: text });
+      } else {
+        const clipboardData = await navigator.clipboard.read();
+        for (const item of clipboardData) {
+          if (item.types.includes("image/png")) {
+            const blob = await item.getType("image/png");
+            const url = URL.createObjectURL(blob);
+            setClipboardContent({ type: "image", content: url, blob });
+          } else if (item.types.includes("text/plain")) {
+            const text = await item.getType("text/plain").then((r) => r.text());
             setClipboardContent({ type: "text", content: text });
           }
         }
       }
     } catch (error) {
       console.error("Error leyendo el portapapeles:", error);
-    } finally {
-      setIsFetching(false);
     }
   };
 
-  // Intervalo para actualizar el contenido del portapapeles cada 2 segundos
+  // Configurar actualización automática cada 1 segundo para portapapeles si autoRefreshClipboard está activado
   useEffect(() => {
-    const interval = setInterval(fetchClipboard, 1000);
+    if (autoRefreshClipboard) {
+      const interval = setInterval(() => {
+        fetchClipboard();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [autoRefreshClipboard]);
+
+  // Configurar actualización automática cada 5 segundos para dispositivos conectados
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchDevices(localStorage.getItem("token"));
+    }, 5000);
     return () => clearInterval(interval);
-  }, [clipboardContent]);
+  }, []);
+
+  // Función para descargar la imagen
+  const descargarImagen = () => {
+    if (clipboardContent?.type === "image" && clipboardContent.blob) {
+      const link = document.createElement("a");
+      const now = new Date();
+      const fileName = `portacloud_${now
+        .toLocaleString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+        .replace(/[\s/:]/g, "_")}.png`;
+
+      link.href = URL.createObjectURL(clipboardContent.blob);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   // Función para cerrar sesión
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/login");
+    const token = localStorage.getItem("token");
+    const deviceId = localStorage.getItem("deviceId");
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+
+    fetch(`${serverUrl}/api/auth/logout`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ deviceId }),
+    }).finally(() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("deviceId");
+      router.push("/login");
+    });
   };
 
-  // Función para refrescar manualmente el portapapeles
-  const handleRefresh = () => {
-    fetchClipboard();
+  // Refrescar manualmente los dispositivos conectados
+  const recargarDispositivos = () => {
+    setRefreshing(true);
+    fetchDevices(localStorage.getItem("token"));
+    setTimeout(() => setRefreshing(false), 1000); 
   };
 
-  if (!user)
-    return (
-      <div className="home-container">
-        <i className="fa-solid fa-spinner cargando"></i>
-      </div>
-    );
+  // Controlar la actualización automática
+  const toggleAutoRefreshClipboard = () => {
+    setAutoRefreshClipboard((prevState) => !prevState);
+  };
 
   return (
     <div className="home-container">
-      <h3>
-        <i className="fa-solid fa-user"></i>&nbsp;Usuario: {user.username}
-      </h3>
+      <h3><i className="fa-solid fa-user"></i>&nbsp;Usuario: {user?.username}</h3>
       <br />
-      <br />
-      <h2>
-        <i className="fa-solid fa-clipboard"></i>&nbsp;Tu portapapeles
-      </h2>
+      <h2><i className="fa-solid fa-clipboard"></i>&nbsp;Tu portapapeles</h2>
       <div className="clipboard-display">
         {clipboardContent ? (
           clipboardContent.type === "image" ? (
-            <img
-              src={clipboardContent.content}
-              alt="Imagen del portapapeles"
-              className="clipboard-image"
-            />
+            <>
+              <img
+                src={clipboardContent.content}
+                alt="Imagen del portapapeles"
+                className="clipboard-image"
+              />
+              <br />
+              <button onClick={descargarImagen}>
+                <i className="fa fa-download" aria-hidden="true"></i> Descargar imagen
+              </button>
+            </>
           ) : (
             <p>{clipboardContent.content}</p>
           )
@@ -113,21 +208,51 @@ export default function Dashboard() {
           <p>No hay contenido en el portapapeles</p>
         )}
       </div>
+
       <br></br>
-      <button onClick={handleRefresh}>
-        <i className="fa fa-refresh" aria-hidden="true"></i> Refrescar
-        portapapeles
+      {/* Botón para actualizar manualmente el portapapeles en todos los navegadores */}
+      <button onClick={fetchClipboard}>
+        <i className="fa fa-refresh" aria-hidden="true"></i> Refrescar portapapeles
       </button>
+
+      {/* Mostrar botón extra solo en Safari (iOS/macOS) */}
+      {isSafari && (
+        <button onClick={fetchClipboard}>
+          <i className="fa fa-clipboard" aria-hidden="true"></i> Leer portapapeles
+        </button>
+      )}
+
       <button onClick={handleLogout}>
         <i className="fa fa-sign-out" aria-hidden="true"></i> Cerrar sesión
       </button>
-      <hr></hr>
+
+      <hr />
       <br />
-      <br />
-      <h2>
-        <i className="fa-solid fa-tower-broadcast"></i> &nbsp;Dispositivos
-        conectados
-      </h2>
+      <h2><i className="fa-solid fa-tower-broadcast"></i> &nbsp;Dispositivos conectados</h2>
+
+      {/* Botón para refrescar dispositivos manualmente */}
+      <button onClick={recargarDispositivos} disabled={refreshing}>
+        {refreshing ? (
+          <i className="fa fa-spinner fa-spin" aria-hidden="true"></i>
+        ) : (
+          <i className="fa fa-refresh" aria-hidden="true"></i>
+        )}
+        &nbsp;Actualizar dispositivos
+      </button>
+
+      <div className="device-list">
+        {connectedDevices.map((device, index) => (
+          <div key={index} className="device-card">
+            <p><strong>Sistema Operativo:</strong> {device.os}</p>
+            <p><strong>Navegador:</strong> {device.browser}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Botón para alternar la actualización automática del portapapeles */}
+      <button onClick={toggleAutoRefreshClipboard}>
+        {autoRefreshClipboard ? "Desactivar actualización automática del portapapeles" : "Activar actualización automática del portapapeles"}
+      </button>
     </div>
   );
 }

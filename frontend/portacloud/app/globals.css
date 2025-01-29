@@ -143,10 +143,10 @@ footer.footer {
   background-color: #333;
   color: #fff;
   padding: 20px 0;
-  position: fixed;
-  bottom: 0;
+  position: relative; 
   width: 100%;
   text-align: center;
+  margin-top: 20px; 
 }
 
 footer.footer p {
@@ -210,6 +210,14 @@ button:hover {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.device-card {
+  padding: 20px;
+  background-color: #d1d1d1;
+  border-radius: 8px;
+  margin: 20px;
+  text-align: justify;
 }
 
 /* ========== MODO OSCURO ===========*/

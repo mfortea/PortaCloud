@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import "./login.css";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -11,34 +10,26 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
     const res = await fetch(`${serverUrl}/api/auth/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     });
 
     if (res.ok) {
       const data = await res.json();
-      // Guardar el JWT recibido
       localStorage.setItem("token", data.token);
-      router.push("/dashboard"); // Redirige al dashboard
+      localStorage.setItem("deviceId", data.deviceId);
+      router.push("/dashboard");
     } else {
       alert("Inicio de sesión fallido");
     }
   };
 
-  const handleIndex = () => {
-    router.push("/");
-  };
-
   return (
     <div className="home-container">
-      {" "}
       <h1 className="home-title">Iniciar Sesión</h1>
       <form onSubmit={handleSubmit}>
         <div>
