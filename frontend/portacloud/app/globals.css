@@ -246,5 +246,9 @@ button:hover {
     color: #aaaaaa;
   }
 
+  .device-card {
+    background-color: #444444;
+  }
+
 
 }

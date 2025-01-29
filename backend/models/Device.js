@@ -6,7 +6,7 @@ const deviceSchema = new mongoose.Schema({
   os: { type: String, required: true },
   browser: { type: String, required: true },
   lastActive: { type: Date, default: Date.now },
-  clipboardContent: { type: String, default: "Contenido de prueba del portapapeles" }, 
+  clipboardContent: { type: String, default: "Sin contenido" }, 
 });
 
 module.exports = mongoose.model("Device", deviceSchema);

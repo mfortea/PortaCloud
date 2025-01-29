@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Device = require("../models/Device");
 const { v4: uuidv4 } = require("uuid");
-const UAParser = require('ua-parser-js');  // Usamos ua-parser-js para una detección más precisa
+const UAParser = require('ua-parser-js'); 
 
 const router = express.Router();
 
@@ -68,9 +68,9 @@ router.post("/login", async (req, res) => {
   const os = result.os.name || "Desconocido";
   const browser = result.browser.name || "Desconocido";
 
-  console.log("User-Agent recibido:", req.headers["user-agent"]); // Log para depuración
-  console.log("Sistema Operativo:", os); // Log para depuración
-  console.log("Navegador:", browser); // Log para depuración
+  console.log("User-Agent recibido:", req.headers["user-agent"]);
+  console.log("Sistema Operativo:", os); 
+  console.log("Navegador:", browser); 
 
   // Crear nuevo dispositivo
   const deviceId = uuidv4();  // ID único para el dispositivo
@@ -123,6 +123,7 @@ router.post("/logout", async (req, res) => {
   });
 });
 
+
 // Obtener dispositivos conectados de un usuario
 router.get("/devices", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -144,7 +145,7 @@ router.post("/updateClipboard", async (req, res) => {
     const device = await Device.findOne({ deviceId });
     if (!device) return res.status(404).json({ message: "Dispositivo no encontrado" });
 
-    device.clipboardContent = clipboardContent; // Actualizamos el contenido del portapapeles
+    device.clipboardContent = clipboardContent; 
     await device.save();
 
     res.json({ message: "Contenido del portapapeles actualizado" });
@@ -152,5 +153,6 @@ router.post("/updateClipboard", async (req, res) => {
     res.status(500).json({ message: "Error al actualizar el contenido del portapapeles", error });
   }
 });
+
 
 module.exports = router;
