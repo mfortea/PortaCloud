@@ -25,14 +25,13 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <img id="logo_ppal" src='/logo_horizontal.png'/>
       <h1 className="home-title">Bienvenido a PortaCloud</h1>
       <div className="home-buttons">
         <button onClick={handleLoginClick} className="home-button">
-          Iniciar sesión
+        <i className="fa fa-sign-in" aria-hidden="true"></i>  Iniciar sesión
         </button>
         <button onClick={handleRegisterClick} className="home-button">
-          Registrarse
+        <i className="fa fa-user-plus" aria-hidden="true"></i> Registrarse
         </button>
       </div>
     </div>

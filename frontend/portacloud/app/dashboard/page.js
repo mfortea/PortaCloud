@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [clipboardContent, setClipboardContent] = useState(null);
-  const [isFetching, setIsFetching] = useState(false); 
+  const [isFetching, setIsFetching] = useState(false);
   const router = useRouter();
 
   // Obtener el token y los datos del usuario
@@ -16,7 +16,7 @@ export default function Dashboard() {
       router.push("/login");
       return;
     }
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP; 
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
     fetch(`${serverUrl}/api/auth/profile`, {
       headers: {
@@ -66,7 +66,7 @@ export default function Dashboard() {
 
   // Intervalo para actualizar el contenido del portapapeles cada 2 segundos
   useEffect(() => {
-    const interval = setInterval(fetchClipboard, 2000);
+    const interval = setInterval(fetchClipboard, 1000);
     return () => clearInterval(interval);
   }, [clipboardContent]);
 
@@ -81,18 +81,23 @@ export default function Dashboard() {
     fetchClipboard();
   };
 
-  if (!user) return <p>Cargando...</p>;
-
-  // Volver al inicio
-  const handleIndex = () => {
-    router.push("/");
-  };
+  if (!user)
+    return (
+      <div className="home-container">
+        <i className="fa-solid fa-spinner cargando"></i>
+      </div>
+    );
 
   return (
     <div className="home-container">
-      <img id="logo_ppal" onClick={handleIndex} src="/logo_horizontal.png" />
-      <h1>Bienvenido, {user.username}!</h1>
-      <h2>Tu portapapeles:</h2>
+      <h3>
+        <i className="fa-solid fa-user"></i>&nbsp;Usuario: {user.username}
+      </h3>
+      <br />
+      <br />
+      <h2>
+        <i className="fa-solid fa-clipboard"></i>&nbsp;Tu portapapeles
+      </h2>
       <div className="clipboard-display">
         {clipboardContent ? (
           clipboardContent.type === "image" ? (
@@ -108,8 +113,21 @@ export default function Dashboard() {
           <p>No hay contenido en el portapapeles</p>
         )}
       </div>
-      <button onClick={handleRefresh}>Refrescar portapapeles</button>
-      <button onClick={handleLogout}>Cerrar sesión</button>
+      <br></br>
+      <button onClick={handleRefresh}>
+        <i className="fa fa-refresh" aria-hidden="true"></i> Refrescar
+        portapapeles
+      </button>
+      <button onClick={handleLogout}>
+        <i className="fa fa-sign-out" aria-hidden="true"></i> Cerrar sesión
+      </button>
+      <hr></hr>
+      <br />
+      <br />
+      <h2>
+        <i className="fa-solid fa-tower-broadcast"></i> &nbsp;Dispositivos
+        conectados
+      </h2>
     </div>
   );
 }

@@ -12,8 +12,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP; 
-    
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+
     const res = await fetch(`${serverUrl}/api/auth/login`, {
       method: "POST",
       headers: {
@@ -33,12 +33,12 @@ export default function Login() {
   };
 
   const handleIndex = () => {
-    router.push('/');
+    router.push("/");
   };
 
   return (
     <div className="home-container">
-      <img id="logo_ppal" onClick={handleIndex} src="/logo_horizontal.png" />
+      {" "}
       <h1 className="home-title">Iniciar Sesión</h1>
       <form onSubmit={handleSubmit}>
         <div>
