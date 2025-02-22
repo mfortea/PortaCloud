@@ -17,6 +17,8 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "socket.io": "^4.8.1",
     "ua-parser-js": "^2.0.0",
     "user-agent": "^1.0.4",

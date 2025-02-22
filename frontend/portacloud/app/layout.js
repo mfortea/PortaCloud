@@ -1,10 +1,10 @@
-// app/layout.js
-
+// layout.js
 import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "../components/Footer";
 import AppNavbar from "../components/Navbar";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { AuthProvider } from "../context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +21,7 @@ export const metadata = {
   description: "Aplicación de ejemplo en Next.js",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children, user }) {
   return (
     <html lang="es">
       <head>
@@ -32,13 +32,13 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AppNavbar />
-        <div className="content" style={{ marginLeft: "0", marginTop: "70px" }}>
-          <div className="d-lg-block" style={{ marginLeft: "250px" }}>
+        <AuthProvider> {/* Envuelve la aplicación con AuthProvider */}
+          <AppNavbar />
+          <div className="content">
             <main>{children}</main>
             <Footer />
           </div>
-        </div>
+        </AuthProvider>
       </body>
     </html>
   );

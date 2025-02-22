@@ -10,11 +10,20 @@
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+html, body {
+  margin: 0; /* Elimina márgenes predeterminados */
+  padding: 0;
+  height: 100%; /* Asegúrate de que el body ocupe toda la altura */
 }
+
+.card_login {
+
+}
+
+.img-fluid {
+  margin: 10px !important;
+}
+
 
 /*========== ESTILOS DEL LOGO ========== */
 
@@ -24,14 +33,34 @@ body {
   align-items: center;
 }
 
-#logo_ppal {
+.logo_ppal {
   cursor: pointer;
-  width: 70px;
+  width: 40px !important;
   transition: all 0.5s;
   margin-right: 10px;
 }
 
-#logo_ppal:hover {
+
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: 0; 
+}
+
+.footer {
+  margin-top: auto;
+}
+
+@media (min-width: 992px) {
+  .content {
+    margin-left: 250px; 
+  }
+}
+
+.logo_ppal:hover {
   filter: saturate(3);
   transition: all 0.5s;
 }
@@ -39,7 +68,7 @@ body {
 .logo_letras {
   text-align: center;
   font-family: Helvetica, sans-serif;
-  font-size: 40px;
+  font-size: 25px;
   color: #2c2c2c;
 }
 
@@ -161,7 +190,7 @@ button:hover {
 .clipboard-display {
   margin: 40px;
   box-sizing: border-box;  
-  background-color: #f0f0f0;  
+  background-color: #f8f9fa;
   border-radius: 40px;
   animation: animacionPortapapeles 4s infinite linear;
 }
@@ -191,19 +220,17 @@ button:hover {
   width: 400px;
 }
 
-.cargando {
-  font-size: 80px;
-  animation: cargando-animacion 1.5s infinite linear;
-  color: #007BFF;
-}
-
-
 .clipboard-box {
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f8f9fa;
   text-align: center;
   font-family: monospace;
+  transition: all 0.5s;
+}
+.clipboard-box:hover {
+background-color: #a4d0ff;
+transition: all 0.5s;
 }
 
 .device-card {
@@ -226,19 +253,61 @@ button:hover {
   margin-left: 5px; 
 }
 
+.boton_aux {
+  border-radius: 100px !important;
+  
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+  width: 100vw; /* Ocupa todo el ancho de la pantalla */
+  position: fixed; /* Fija el spinner en la pantalla */
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente */
+  z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+}
+
+.cargando {
+  font-size: 80px;
+  animation: cargando-animacion 1.5s infinite linear;
+  color: #007BFF;
+}
 
 @keyframes cargando-animacion {
   0% {
     transform: rotate(0deg);
   }
-
   50% {
     transform: rotate(180deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
+}
+
+.alert-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.alert-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.alert-exit {
+  opacity: 1;
+}
+
+.alert-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
 }
 
 .device-card {
@@ -247,6 +316,34 @@ button:hover {
   border-radius: 8px;
   margin: 20px;
   text-align: justify;
+}
+
+/*ESTILOS MENU*/
+
+.bg-light {
+  -webkit-box-shadow: 22px 7px 37px -32px rgba(158,158,158,1);
+  -moz-box-shadow: 22px 7px 37px -32px rgba(158,158,158,1);
+  box-shadow: 22px 7px 37px -32px rgba(158,158,158,1);
+}
+
+.nav-link {
+  color: #0a0a0a !important;
+  font-size: 22px !important;
+  padding: 15px !important;
+}
+
+.nav-link:hover {
+  color: #007BFF !important;
+}
+
+.usuario {
+  color: rgb(78, 78, 78) !important;
+  cursor: unset !important;
+}
+
+.usuario:hover{
+  color: rgb(78, 78, 78) !important;
+  cursor: unset !important;
 }
 
 /* ========== MODO OSCURO ===========*/

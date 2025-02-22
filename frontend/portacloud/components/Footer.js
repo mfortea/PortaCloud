@@ -1,13 +1,22 @@
-// components/Footer.js
+"use client";
+
+import { useEffect, useState } from 'react';
+
 export default function Footer() {
-    return (
-      <footer className="footer bg-dark text-white py-4">
-        <div className="container">
-          <p className="mb-0 text-center">
-            © {new Date().getFullYear()} PortaCloud
-          </p>
-        </div>
-      </footer>
-    );
-  }
-  
+  const [currentYear, setCurrentYear] = useState(null);
+
+  // Calcula el año solo en el cliente
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
+  return (
+    <footer className="footer bg-light text-black py-4 mt-auto">
+      <div className="container">
+        <p className="mb-0 text-center">
+          © {currentYear || ''} PortaCloud
+        </p>
+      </div>
+    </footer>
+  );
+}

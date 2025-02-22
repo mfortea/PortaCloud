@@ -5,6 +5,7 @@ const User = require("../models/User");
 const Device = require("../models/Device");
 const { v4: uuidv4 } = require("uuid");
 const UAParser = require('ua-parser-js'); 
+const passport = require('passport');
 
 const router = express.Router();
 
@@ -72,7 +73,7 @@ router.post("/login", async (req, res) => {
   console.log("Sistema Operativo:", os); 
   console.log("Navegador:", browser); 
 
-  // Crear nuevo dispositivo
+  // Crear nuevo dispositivo (añadir a la base de datos)
   const deviceId = uuidv4();  // ID único para el dispositivo
   const newDevice = await Device.create({
     userId: user._id,
@@ -82,14 +83,16 @@ router.post("/login", async (req, res) => {
     lastActive: new Date(),
   });
 
-  // Emitir evento de dispositivo conectado a todos los clientes
+  // Emitir eventos a todos los clientes conectados
   if (io) {
-    io.emit("updateDevices", await Device.find({ userId: user._id }));
-    io.emit("newConnection", { message: "Nuevo cliente conectado", userId: user._id });
+    io.emit("updateDevices", await Device.find({ userId: user._id })); // Actualiza dispositivos
+    io.emit("newConnection", { message: "Nuevo cliente conectado", userId: user._id }); // Evento de nueva conexión
   }
 
+  // Responder con el token y el deviceId
   res.json({ token, deviceId });
 });
+
 
 // Obtener perfil del usuario
 router.get("/profile", async (req, res) => {

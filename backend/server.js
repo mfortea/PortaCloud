@@ -5,10 +5,13 @@ const cors = require("cors");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const authRoutes = require("./routes/auth");
+const savedRoutes = require("./routes/saved");
+const passport = require('./config/passportConfig');
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
+app.use(passport.initialize())
 
 // Middlewares
 app.use(express.json());
@@ -19,6 +22,7 @@ mongoose.connect(process.env.MONGO_URI);
 
 // Rutas
 app.use("/api/auth", authRoutes);
+app.use("/api/saved", savedRoutes);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
