@@ -1,8 +1,10 @@
 // app/layout.js
 
 import { Geist, Geist_Mono } from "next/font/google";
-import Footer from "../components/Footer"; // Importa el footer
+import Footer from "../components/Footer";
+import AppNavbar from "../components/Navbar";
 import "./globals.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +21,6 @@ export const metadata = {
   description: "Aplicación de ejemplo en Next.js",
 };
 
-
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
@@ -31,16 +32,13 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <br></br>
-        <br></br>
-        <div className="logo_div">
-          <img id="logo_ppal" src="/logo.png" />{" "}
-          <span className="logo_letras">
-            <span className="negrita">PORTA</span>CLOUD
-          </span>
+        <AppNavbar />
+        <div className="content" style={{ marginLeft: "0", marginTop: "70px" }}>
+          <div className="d-lg-block" style={{ marginLeft: "250px" }}>
+            <main>{children}</main>
+            <Footer />
+          </div>
         </div>
-        <main>{children}</main>
-        <Footer /> {}
       </body>
     </html>
   );

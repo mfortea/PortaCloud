@@ -100,12 +100,12 @@ a {
 }
 
 button {
-  margin: 20px;
-  padding: 10px 20px;
+  margin: 20px !important;
+  padding: 10px 20px !important;
   font-size: 16px;
   cursor: pointer;
   border: none;
-  border-radius: 5px;
+  border-radius: 5px !important;
   background-color: #007BFF;
   color: white;
   transition: background-color 0.3s ease;
@@ -163,7 +163,6 @@ button:hover {
   box-sizing: border-box;  
   background-color: #f0f0f0;  
   border-radius: 40px;
-  display: inline-block;  
   animation: animacionPortapapeles 4s infinite linear;
 }
 
@@ -198,6 +197,36 @@ button:hover {
   color: #007BFF;
 }
 
+
+.clipboard-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  text-align: center;
+  font-family: monospace;
+}
+
+.device-card {
+  padding: 20px;
+  background-color: #d1d1d1;
+  border-radius: 8px;
+  margin: 40px;
+  text-align: justify;
+}
+
+.device-card .d-flex {
+  gap: 5px;
+  justify-content: center;
+}
+
+.device-card .d-flex img {
+  margin: 0;
+}
+.device-card .d-flex img + img {
+  margin-left: 5px; 
+}
+
+
 @keyframes cargando-animacion {
   0% {
     transform: rotate(0deg);
@@ -213,7 +242,7 @@ button:hover {
 }
 
 .device-card {
-  padding: 20px;
+  padding: 30px;
   background-color: #d1d1d1;
   border-radius: 8px;
   margin: 20px;
