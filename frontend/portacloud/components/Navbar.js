@@ -36,7 +36,7 @@ export default function AppNavbar() {
   return (
     <>
       {/* Menú para móviles */}
-      <Navbar bg="light" expand="lg" className="p-3 border-bottom d-lg-none">
+      <Navbar expand="lg" className="p-3 border-bottom d-lg-none">
         <Container fluid>
           <Navbar.Brand href="/dashboard">
             <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
@@ -52,46 +52,7 @@ export default function AppNavbar() {
           >
             <Offcanvas.Header closeButton></Offcanvas.Header>
             <Offcanvas.Body>
-              <Nav className="flex-column">
-                <Nav.Link className="fw-bold usuario">
-                  <i className="fa-solid fa-user"></i>&nbsp;
-                  {user ? user.username : "Cargando..."}
-                </Nav.Link>
-                <Nav.Link href="/dashboard">
-                  <i className="fa-solid fa-house"></i> Inicio
-                </Nav.Link>
-                <Nav.Link href="/guardados">
-                  <i className="fa-solid fa-star"></i> Guardados
-                </Nav.Link>
-                <Nav.Link href="/ajustes">
-                  <i className="fa-solid fa-gear"></i> Ajustes
-                </Nav.Link>
-                <Nav.Link onClick={handleLogout} className="text-danger">
-                  <i className="fa-solid fa-right-from-bracket"></i> Cerrar
-                  sesión
-                </Nav.Link>
-              </Nav>
-            </Offcanvas.Body>
-          </Navbar.Offcanvas>
-        </Container>
-      </Navbar>
-
-      {/* Menú para escritorio */}
-      <div
-        className="d-none d-lg-flex flex-column vh-100 p-3 bg-light position-fixed"
-        style={{ width: "250px" }}
-      >
-        <Navbar.Brand href="/dashboard" className="mb-4 p-2">
-          <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
-          <span className="logo_letras">
-            <span className="negrita">PORTA</span>CLOUD
-          </span>
-        </Navbar.Brand>
-        <Nav className="flex-column">
-          <Nav.Link className="fw-bold usuario">
-            <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
-            {user ? user.username : "Cargando..."}
-          </Nav.Link>
+            <Nav className="flex-column">
           <Nav.Link href="/dashboard">
             <i className="fa-solid fa-house"></i> Inicio
           </Nav.Link>
@@ -101,9 +62,55 @@ export default function AppNavbar() {
           <Nav.Link href="/ajustes">
             <i className="fa-solid fa-gear"></i> Ajustes
           </Nav.Link>
+          <br></br>
+          <br></br>
+          <div className="div_usuario">
+          <p className="fw-bold usuario">
+            <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
+            {user ? user.username : "Cargando..."}
+          </p>
           <Nav.Link onClick={handleLogout} className="text-danger">
             <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
           </Nav.Link>
+          </div>
+        </Nav>
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
+        </Container>
+      </Navbar>
+
+      {/* Menú para escritorio */}
+      <div
+        className="d-none d-lg-flex flex-column vh-100 p-3 position-fixed"
+        style={{ width: "250px" }}
+      >
+        <Navbar.Brand href="/dashboard" className="mb-4 p-2">
+          <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
+          <span className="logo_letras">
+            <span className="negrita">PORTA</span>CLOUD
+          </span>
+        </Navbar.Brand>
+        <Nav className="flex-column">
+          <Nav.Link href="/dashboard">
+            <i className="fa-solid fa-house"></i> Inicio
+          </Nav.Link>
+          <Nav.Link href="/guardados">
+            <i className="fa-solid fa-star"></i> Guardados
+          </Nav.Link>
+          <Nav.Link href="/ajustes">
+            <i className="fa-solid fa-gear"></i> Ajustes
+          </Nav.Link>
+          <br></br>
+          <br></br>
+          <div className="div_usuario">
+          <p className="fw-bold usuario">
+            <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
+            {user ? user.username : "Cargando..."}
+          </p>
+          <Nav.Link onClick={handleLogout} className="text-danger">
+            <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+          </Nav.Link>
+          </div>
         </Nav>
       </div>
     </>

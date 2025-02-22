@@ -11,7 +11,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="footer bg-light text-black py-4 mt-auto">
+    <footer className="footer py-4 mt-auto">
       <div className="container">
         <p className="mb-0 text-center">
           © {currentYear || ''} PortaCloud

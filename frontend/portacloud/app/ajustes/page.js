@@ -174,7 +174,7 @@ export default function Ajustes() {
 
   return (
     <div className="container py-5 text-center">
-      <h1 className="text-center mb-4">Ajustes</h1>
+      <h1 className="text-center mb-4"><i className="fa fa-gear"></i> Ajustes</h1>
 
       {notificacion.mensaje && (
         <div className={`alert alert-${notificacion.tipo}`} role="alert">
