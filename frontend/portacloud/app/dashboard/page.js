@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import io from "socket.io-client";
 import { useAuth } from "../../context/AuthContext";
-import { CSSTransition } from "react-transition-group";
+import { toast } from "react-toastify";
 
 
 export default function Dashboard() {
@@ -261,15 +261,22 @@ export default function Dashboard() {
   const copiarContenido = async (content) => {
     try {
       await navigator.clipboard.writeText(content);
-      setShowAlert(true);
-      setNotification({
-        message: "Contenido copiado al portapapeles.",
-        type: "success",
+      toast.success("Contenido copiado al portapapeles.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
     } catch (error) {
-      setNotification({
-        message: "Error al copiar el contenido.",
-        type: "danger",
+      toast.error("Error al copiar el contenido.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
     }
   };
@@ -299,27 +306,35 @@ export default function Dashboard() {
       });
   
       if (response.ok) {
-        setNotification({
-          message: "Contenido guardado con éxito.",
-          type: "success",
+        toast.success("Contenido guardado con éxito.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
         });
-        setShowAlert(true); // Muestra la alerta
       } else {
-        setNotification({
-          message: "Error al guardar el contenido.",
-          type: "danger",
+        toast.error("Error al guardar el contenido.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
         });
-        setShowAlert(true); // Muestra la alerta
       }
     } catch (error) {
-      setNotification({
-        message: "Error al guardar el contenido.",
-        type: "danger",
+      toast.error("Error al guardar el contenido.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
-      setShowAlert(true); // Muestra la alerta
     } finally {
       setSaving(false);
-      setTimeout(() => setShowAlert(false), 3000); // Oculta la alerta después de 3 segundos
     }
   };
 

@@ -3,25 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
-import { CSSTransition } from "react-transition-group";
+import { toast } from "react-toastify"; // Importa toast desde react-toastify
 
 export default function Guardados() {
   const router = useRouter();
   const { user } = useAuth();
   const [savedItems, setSavedItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState({ message: "", type: "" });
-  const [showAlert, setShowAlert] = useState(false);
-
-  useEffect(() => {
-    if (showAlert) {
-      const timer = setTimeout(() => {
-        setShowAlert(false);
-        setNotification({ message: "", type: "" }); // Clear the notification
-      }, 3000); // Hide the alert after 3 seconds
-      return () => clearTimeout(timer);
-    }
-  }, [showAlert]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -76,25 +64,51 @@ export default function Guardados() {
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
 
-    await fetch(`${serverUrl}/api/saved/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setSavedItems(savedItems.filter((item) => item._id !== id));
+    try {
+      await fetch(`${serverUrl}/api/saved/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSavedItems(savedItems.filter((item) => item._id !== id));
+      toast.success("Contenido borrado con éxito.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      toast.error("Error al borrar el contenido.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const copiarContenido = async (content) => {
     try {
       await navigator.clipboard.writeText(content);
-      setShowAlert(true);
-      setNotification({
-        message: "Contenido copiado al portapapeles.",
-        type: "success",
+      toast.success("Contenido copiado al portapapeles.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
     } catch (error) {
-      setNotification({
-        message: "Error al copiar el contenido.",
-        type: "danger",
+      toast.error("Error al copiar el contenido.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
     }
   };
@@ -104,19 +118,6 @@ export default function Guardados() {
       <h1 className="text-center mb-4">
         <i className="fa fa-star"></i> Mis guardados
       </h1>
-
-      {notification.message && (
-        <CSSTransition
-          in={showAlert}
-          timeout={300}
-          classNames="alert"
-          unmountOnExit
-        >
-          <div className={`alert alert-${notification.type}`} role="alert">
-            {notification.message}
-          </div>
-        </CSSTransition>
-      )}
 
       {savedItems.length === 0 ? (
         <h3 className="text-center">No hay elementos guardados aún.</h3>
