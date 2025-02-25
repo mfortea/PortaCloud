@@ -63,7 +63,7 @@ export default function Login() {
         <div className="hero-content">
           <img src="/logo.png" alt="Logo" className="logo" />
           <h1>Bienvenido a PortaCloud</h1>
-          <p>Tu portapapeles universal siempre disponible.</p>
+          <p>Gestor de Portapapeles Multiplataforma con Sincronización en la Nube</p>
         </div>
       </div>
 

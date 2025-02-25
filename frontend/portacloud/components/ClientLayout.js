@@ -16,8 +16,6 @@ export default function ClientLayout({ children }) {
 
       <div className="content">
         <main>{children}</main>
-
-        {user && <Footer />}
       </div>
 
       <ToastContainer

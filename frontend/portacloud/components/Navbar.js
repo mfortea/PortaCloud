@@ -50,7 +50,12 @@ export default function AppNavbar() {
             aria-labelledby="offcanvasNavbarLabel"
             placement="start"
           >
-            <Offcanvas.Header closeButton></Offcanvas.Header>
+            <Offcanvas.Header closeButton>
+            <img src="/logo.png" alt="Logo" className="mt-4 logo_ppal" />{" "}
+            <span className="mt-4 logo_letras">
+              <span className="negrita">PORTA</span>CLOUD
+            </span>
+            </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="flex-column">
                 <Nav.Link href="/dashboard">

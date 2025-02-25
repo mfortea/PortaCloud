@@ -91,6 +91,14 @@ a {
 
 /* ========== ESTILOS DE BOTONES ========== */
 button {
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  transition: all 0.5s;
+}
+
+.boton_aux {
   margin: 20px !important;
   padding: 10px 20px !important;
   font-size: 16px;
@@ -99,20 +107,6 @@ button {
   border-radius: 5px !important;
   color: white;
   transition: background-color 0.3s ease;
-}
-
-button:hover {
-  transition: all 0.5s;
-  background-color: #3195ff;
-}
-
-button:active {
-  background-color: #00458f !important;
-  transition: unset;
-  transition: all 0.1s;
-}
-
-.boton_aux {
   border-radius: 100px !important;
 }
 
@@ -240,17 +234,12 @@ input:hover {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  /* Ocupa toda la altura de la pantalla */
   width: 100vw;
-  /* Ocupa todo el ancho de la pantalla */
   position: fixed;
-  /* Fija el spinner en la pantalla */
   top: 0;
   left: 0;
   background-color: rgba(255, 255, 255, 0.8);
-  /* Fondo semi-transparente */
   z-index: 1000;
-  /* Asegúrate de que esté por encima de otros elementos */
 }
 
 .cargando {
@@ -338,13 +327,20 @@ input:hover {
 }
 
 .navbar {
-  background-color: rgb(241, 241, 241) !important;
+  position: sticky !important;
+  top: 0;
+  width: 100%;
+  background: rgba(241, 241, 241, 0.8) !important; /* Fondo translúcido */
   color: black !important;
+  backdrop-filter: blur(10px); /* Suaviza el fondo para un mejor efecto */
+  -webkit-backdrop-filter: blur(10px); /* Compatibilidad con Safari */
+  z-index: 1000;
+  transition: background-color 0.3s ease-in-out; /* Suaviza el cambio de color */
 }
+
 
 /* Estilos para la Navbar superior en modo escritorio */
 .navbar.d-none.d-lg-block {
-  background-color: rgb(241, 241, 241) !important;
   border-bottom: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -394,10 +390,24 @@ input:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background: linear-gradient(135deg, #1e4683, #003288);
+  background-size: 400% 400%;
   color: white;
   padding: 2rem;
   text-align: center;
+  animation: gradientAnimation 6s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .hero-content {
@@ -424,7 +434,6 @@ input:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
 }
 
 .login-card {
@@ -437,7 +446,6 @@ input:hover {
 }
 
 .login-card h2 {
-  margin-bottom: 1.5rem;
   text-align: center;
 }
 
@@ -460,7 +468,7 @@ input:hover {
 .login-button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #6a11cb;
+  background-color: #006eff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -527,12 +535,6 @@ input:hover {
   .clipboard-box:hover {
     background-color: #2c5377 !important;
     color: white;
-  }
-
-  .navbar {
-    background-color: #272727 !important;
-    color: white !important;
-    border-style: none;
   }
 
   .flex-column {

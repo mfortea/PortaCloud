@@ -166,12 +166,11 @@ export default function Dashboard() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push("/login"); // Redirige al login si no hay token
+      router.push("/login"); 
     } else if (!user) {
-      // Si hay token pero el usuario no está cargado, espera
       setLoading(true);
     } else {
-      setLoading(false); // El usuario está autenticado, detén la carga
+      setLoading(false); 
     }
   }, [user, router]);
 
@@ -458,11 +457,11 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <hr />
-      <h2 className="text-center mt-4 mb-4">
+      <br></br><br></br>
+      <h1 className="text-center mt-4 mb-4">
         <i className="fa-solid fa-tower-broadcast"></i> &nbsp;Dispositivos
         conectados
-      </h2>
+      </h1>
 
       <div className="text-center mb-4">
         <button
