@@ -20,62 +20,41 @@ export default function Dashboard() {
   const [notification, setNotification] = useState({ message: "", type: "" });
   const [showAlert, setShowAlert] = useState(false);
 
-  const actualizarPortapapeles = async () => {
-    try {
-      if (!navigator.clipboard) {
-        console.warn(
-          "El acceso al portapapeles no está soportado en este navegador."
-        );
-        return;
-      }
+const [clipboardAnimation, setClipboardAnimation] = useState(false);
 
-      if (!document.hasFocus()) {
-        console.warn("Intento de leer el portapapeles sin foco en la pestaña.");
-        return;
-      }
+const actualizarPortapapeles = async () => {
+  try {
+    if (!navigator.clipboard || !document.hasFocus()) return;
 
-      let newClipboardContent = null;
+    let newClipboardContent = null;
 
-      if (isSafari) {
-        const text = await navigator.clipboard.readText();
-        newClipboardContent = { type: "text", content: text };
-        setClipboardContent(newClipboardContent);
-      } else {
-        const clipboardData = await navigator.clipboard.read();
-        for (const item of clipboardData) {
-          if (item.types.includes("image/png")) {
-            const blob = await item.getType("image/png");
-            const url = URL.createObjectURL(blob);
-            newClipboardContent = { type: "image", content: url, blob };
-            setClipboardContent(newClipboardContent);
-          } else if (item.types.includes("text/plain")) {
-            const text = await item.getType("text/plain").then((r) => r.text());
-            newClipboardContent = { type: "text", content: text };
-            setClipboardContent(newClipboardContent);
-          }
+    if (isSafari) {
+      const text = await navigator.clipboard.readText();
+      newClipboardContent = { type: "text", content: text };
+    } else {
+      const clipboardData = await navigator.clipboard.read();
+      for (const item of clipboardData) {
+        if (item.types.includes("image/png")) {
+          const blob = await item.getType("image/png");
+          const url = URL.createObjectURL(blob);
+          newClipboardContent = { type: "image", content: url, blob };
+        } else if (item.types.includes("text/plain")) {
+          const text = await item.getType("text/plain").then((r) => r.text());
+          newClipboardContent = { type: "text", content: text };
         }
       }
-
-      if (newClipboardContent) {
-        const token = localStorage.getItem("token");
-        const deviceId = localStorage.getItem("deviceId");
-        const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-        await fetch(`${serverUrl}/api/auth/updateClipboard`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            deviceId,
-            clipboardContent: newClipboardContent.content,
-          }),
-        });
-      }
-    } catch (error) {
-      console.error("Error leyendo el portapapeles:", error);
     }
-  };
+
+    if (newClipboardContent && newClipboardContent.content !== clipboardContent?.content) {
+      setClipboardAnimation(true); // Activa la animación
+      setTimeout(() => setClipboardAnimation(false), 1000); // Se desactiva tras 1s
+      setClipboardContent(newClipboardContent);
+    }
+  } catch (error) {
+    console.error("Error leyendo el portapapeles:", error);
+  }
+};
+
 
   const actualizarDispositivos = async (token) => {
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
