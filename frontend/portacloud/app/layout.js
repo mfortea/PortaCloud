@@ -1,12 +1,9 @@
 // layout.js
 import { Geist, Geist_Mono } from "next/font/google";
-import Footer from "../components/Footer";
-import AppNavbar from "../components/Navbar";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthProvider } from "../context/AuthContext";
-import { ToastContainer } from "react-toastify"; // Importa ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Importa los estilos de Toastify
+import ClientLayout from "../components/ClientLayout"; 
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,10 +17,10 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "PortaCloud",
-  description: "Aplicación de ejemplo en Next.js",
+  description: "",
 };
 
-export default function RootLayout({ children, user }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <head>
@@ -34,23 +31,8 @@ export default function RootLayout({ children, user }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AuthProvider> 
-          <AppNavbar />
-          <div className="content">
-            <main>{children}</main>
-            <Footer />
-          </div>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000} 
-            hideProgressBar={false} 
-            newestOnTop={false} 
-            closeOnClick 
-            rtl={false} 
-            pauseOnFocusLoss 
-            draggable 
-            pauseOnHover 
-          />
+        <AuthProvider>
+          <ClientLayout>{children}</ClientLayout>
         </AuthProvider>
       </body>
     </html>

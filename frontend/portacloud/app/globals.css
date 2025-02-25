@@ -14,10 +14,8 @@
 /* ========== ESTILOS GENERALES ========== */
 html, body {
   margin: 0;
-  /* Elimina márgenes predeterminados */
   padding: 0;
   height: 100%;
-  /* Asegúrate de que el body ocupe toda la altura */
 }
 
 body {
@@ -90,12 +88,6 @@ a {
   margin-top: auto;
 }
 
-@media (min-width: 992px) {
-  .content {
-    margin-left: 250px;
-  }
-}
-
 
 /* ========== ESTILOS DE BOTONES ========== */
 button {
@@ -105,7 +97,6 @@ button {
   cursor: pointer;
   border: none;
   border-radius: 5px !important;
-  background-color: #007BFF;
   color: white;
   transition: background-color 0.3s ease;
 }
@@ -351,9 +342,147 @@ input:hover {
   color: black !important;
 }
 
-.flex-column {
+/* Estilos para la Navbar superior en modo escritorio */
+.navbar.d-none.d-lg-block {
   background-color: rgb(241, 241, 241) !important;
-  color: black !important;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.d-none.d-lg-block .nav-link {
+  font-size: 18px !important;
+  padding: 10px 15px !important;
+  color: #0a0a0a !important;
+}
+
+.navbar.d-none.d-lg-block .nav-link:hover {
+  color: #007BFF !important;
+}
+
+.navbar.d-none.d-lg-block .div_usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar.d-none.d-lg-block .usuario {
+  font-size: 18px !important;
+  color: rgb(99, 99, 99) !important;
+  margin-bottom: 0 !important;
+}
+
+.navbar.d-none.d-lg-block .text-danger {
+  color: #dc3545 !important;
+}
+
+.navbar.d-none.d-lg-block .text-danger:hover {
+  color: #c82333 !important;
+}
+
+/* ========== ESTILOS DEL LOGIN ========== */
+/* Estilos generales para la landing page */
+.login-landing-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Sección del héroe (fondo y contenido principal) */
+.hero-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-content .logo {
+  width: 100px;
+  margin-bottom: 1rem;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+}
+
+/* Sección del formulario de login */
+.login-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.login-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.login-card h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #6a11cb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #2575fc;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.register-link a {
+  color: #277eff;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
 }
 
 /* ========== ESTILOS DEL MODO OSCURO ========== */

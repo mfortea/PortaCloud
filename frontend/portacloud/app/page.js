@@ -12,28 +12,12 @@ export default function Home() {
     if (token) {
       // Si el token está presente, redirigir al dashboard
       router.push('/dashboard');
+    } else {
+      // Si no hay token, redirigir al login
+      router.push('/login');
     }
   }, [router]);
 
-  const handleLoginClick = () => {
-    router.push('/login');
-  };
-
-  const handleRegisterClick = () => {
-    router.push('/register');
-  };
-
-  return (
-    <div className="home-container">
-      <h1 className="home-title">Bienvenido a PortaCloud</h1>
-      <div className="home-buttons">
-        <button onClick={handleLoginClick} className="home-button">
-        <i className="fa fa-sign-in" aria-hidden="true"></i>  Iniciar sesión
-        </button>
-        <button onClick={handleRegisterClick} className="home-button">
-        <i className="fa fa-user-plus" aria-hidden="true"></i> Registrarse
-        </button>
-      </div>
-    </div>
-  );
+  // No es necesario renderizar nada en la página de inicio
+  return null;
 }

@@ -9,4 +9,7 @@ const deviceSchema = new mongoose.Schema({
   clipboardContent: { type: String, default: "Sin contenido" },
 });
 
+// Middleware para eliminar dispositivos inactivos después de x tiempo
+deviceSchema.index({ lastActive: 1 }, { expireAfterSeconds: 180 }); 
+
 module.exports = mongoose.model("Device", deviceSchema);

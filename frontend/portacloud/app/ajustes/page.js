@@ -1,4 +1,3 @@
-// pages/ajustes.js
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -7,7 +6,7 @@ import { useState, useEffect } from "react";
 
 export default function Ajustes() {
   const router = useRouter();
-  const { user, logout } = useAuth(); // Usa el contexto
+  const { user, logout } = useAuth();
   const [notificacion, setNotificacion] = useState({ mensaje: "", tipo: "" });
   const [nuevoNombre, setNuevoNombre] = useState("");
   const [nuevaContraseña, setNuevaContraseña] = useState("");
@@ -15,22 +14,19 @@ export default function Ajustes() {
   const [confirmarContraseñaBorrado, setConfirmarContraseñaBorrado] =
     useState("");
 
-  // Estados de visibilidad de modales
   const [showModalNombre, setShowModalNombre] = useState(false);
   const [showModalContraseña, setShowModalContraseña] = useState(false);
   const [showModalEliminarCuenta, setShowModalEliminarCuenta] = useState(false);
-
-  const [loading, setLoading] = useState(true); // Estado para manejar la carga
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push("/login"); // Redirige al login si no hay token
+      router.push("/login");
     } else if (!user) {
-      // Si hay token pero el usuario no está cargado, espera
       setLoading(true);
     } else {
-      setLoading(false); // El usuario está autenticado, detén la carga
+      setLoading(false);
     }
   }, [user, router]);
 
@@ -42,14 +38,11 @@ export default function Ajustes() {
     );
   }
 
-
-
   const mostrarNotificacion = (mensaje, tipo) => {
     setNotificacion({ mensaje, tipo });
     setTimeout(() => setNotificacion({ mensaje: "", tipo: "" }), 3000);
   };
 
-  // Función para cambiar el nombre de usuario
   const cambiarNombreUsuario = async () => {
     const token = localStorage.getItem("token");
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
@@ -82,7 +75,6 @@ export default function Ajustes() {
     }
   };
 
-  // Función para cambiar la contraseña
   const cambiarContraseña = async () => {
     const token = localStorage.getItem("token");
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
@@ -120,7 +112,6 @@ export default function Ajustes() {
     }
   };
 
-  // Función para eliminar cuenta
   const eliminarCuenta = async () => {
     const token = localStorage.getItem("token");
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
@@ -153,7 +144,6 @@ export default function Ajustes() {
     }
   };
 
-  // Función para cerrar sesión
   const handleLogout = () => {
     const token = localStorage.getItem("token");
     const deviceId = localStorage.getItem("deviceId");
@@ -167,14 +157,16 @@ export default function Ajustes() {
       },
       body: JSON.stringify({ deviceId }),
     }).finally(() => {
-      logout(); // Llama a la función de logout del contexto
+      logout();
       router.push("/login");
     });
   };
 
   return (
-    <div className="container py-5 text-center">
-      <h1 className="text-center mb-4"><i className="fa fa-gear"></i> Ajustes</h1>
+    <div className="container py-5">
+      <h1 className="text-center mb-4">
+        <i className="fa fa-gear"></i> Ajustes
+      </h1>
 
       {notificacion.mensaje && (
         <div className={`alert alert-${notificacion.tipo}`} role="alert">
@@ -182,30 +174,33 @@ export default function Ajustes() {
         </div>
       )}
 
-      <button
-        className="btn btn-primary"
-        onClick={() => setShowModalNombre(true)}
-      >
-        <i className="fa fa-user"></i> Cambiar nombre de usuario
-      </button>
+      {/* Contenedor de botones */}
+      <div className="d-flex flex-column align-items-center">
+        <button
+          className="btn btn-primary w-100"
+          onClick={() => setShowModalNombre(true)}
+        >
+          <i className="fa fa-user"></i> Cambiar nombre de usuario
+        </button>
 
-      <button
-        className="btn btn-primary"
-        onClick={() => setShowModalContraseña(true)}
-      >
-        <i className="fa fa-lock"></i> Cambiar contraseña
-      </button>
+        <button
+          className="btn btn-primary w-100"
+          onClick={() => setShowModalContraseña(true)}
+        >
+          <i className="fa fa-lock"></i> Cambiar contraseña
+        </button>
 
-      <button
-        className="btn btn-danger"
-        onClick={() => setShowModalEliminarCuenta(true)}
-      >
-        <i className="fa fa-remove"></i> Eliminar cuenta
-      </button>
+        <button
+          className="btn btn-danger w-100"
+          onClick={() => setShowModalEliminarCuenta(true)}
+        >
+          <i className="fa fa-remove"></i> Eliminar cuenta
+        </button>
 
-      <button className="btn btn-primary" onClick={handleLogout}>
-        <i className="fa fa-right-from-bracket"></i> Cerrar sesión
-      </button>
+        <button className="btn btn-primary w-100" onClick={handleLogout}>
+          <i className="fa fa-right-from-bracket"></i> Cerrar sesión
+        </button>
+      </div>
 
       {/* Modal Cambiar Nombre */}
       {showModalNombre && (

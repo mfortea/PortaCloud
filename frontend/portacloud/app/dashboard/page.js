@@ -7,7 +7,6 @@ import io from "socket.io-client";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 
-
 export default function Dashboard() {
   const router = useRouter();
   const { user } = useAuth(); // Usa el contexto
@@ -84,12 +83,45 @@ export default function Dashboard() {
       const response = await fetch(`${serverUrl}/api/auth/devices`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const devices = await response.json();
+      let devices = await response.json();
+
+      // Excluir el dispositivo actual
+      const currentDeviceId = localStorage.getItem("deviceId");
+      devices = devices.filter((device) => device.deviceId !== currentDeviceId);
+
       setConnectedDevices(devices);
     } catch (error) {
       console.error("Error al obtener los dispositivos:", error);
     }
   };
+
+  useEffect(() => {
+    let inactivityTimer;
+
+    const resetInactivityTimer = () => {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("deviceId");
+        router.push("/login"); // Redirige al login tras la inactividad
+      }, 10 * 60 * 1000); // 10 minutos de inactividad
+    };
+
+    // Detectar eventos de usuario
+    window.addEventListener("mousemove", resetInactivityTimer);
+    window.addEventListener("keydown", resetInactivityTimer);
+    window.addEventListener("click", resetInactivityTimer);
+
+    resetInactivityTimer();
+
+    return () => {
+      clearTimeout(inactivityTimer);
+      window.removeEventListener("mousemove", resetInactivityTimer);
+      window.removeEventListener("keydown", resetInactivityTimer);
+      window.removeEventListener("click", resetInactivityTimer);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (showAlert) {
@@ -283,13 +315,13 @@ export default function Dashboard() {
 
   const guardarContenido = async (content, type) => {
     if (!content) return;
-  
+
     setSaving(true);
     const os = navigator.platform;
     const browser = navigator.userAgent;
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
-  
+
     try {
       const response = await fetch(`${serverUrl}/api/saved`, {
         method: "POST",
@@ -304,7 +336,7 @@ export default function Dashboard() {
           type,
         }),
       });
-  
+
       if (response.ok) {
         toast.success("Contenido guardado con éxito.", {
           position: "top-right",
@@ -347,7 +379,7 @@ export default function Dashboard() {
       <h1 className="text-center mb-4">
         <i className="fa-solid fa-clipboard"></i>&nbsp; Mi portapapeles
       </h1>
-      
+
       {notification.message && (
         <div>
           {showAlert && (
@@ -406,9 +438,9 @@ export default function Dashboard() {
           className="btn boton_aux btn-warning me-2"
           onClick={() =>
             guardarContenido(clipboardContent.content, clipboardContent.type)
-          } // Pasa los parámetros
+          }
           title="Guardar contenido actual"
-          disabled={saving || !clipboardContent} // Deshabilita si no hay contenido
+          disabled={saving || !clipboardContent}
         >
           {saving ? (
             <i className="fa fa-spinner fa-spin" aria-hidden="true"></i>
@@ -434,7 +466,8 @@ export default function Dashboard() {
 
       <div className="text-center mb-4">
         <button
-          className="btn btn-warning"
+          className="btn boton_aux btn-primary"
+          title="Refrescar lista de dispositivos"
           onClick={recargarDispositivos}
           disabled={refreshing}
         >
@@ -443,67 +476,76 @@ export default function Dashboard() {
           ) : (
             <i className="fa fa-refresh" aria-hidden="true"></i>
           )}
-          &nbsp;Actualizar dispositivos
         </button>
       </div>
 
       <div className="row">
-        {connectedDevices.map((device, index) => (
-          <div key={index} className="col-12 col-md-4 mb-3">
-            <div className="card shadow-sm">
-              <div className="card-body text-center">
-                <div className="d-flex justify-content-center mb-2">
-                  <img
-                    src={getDeviceLogo("os", device.os)}
-                    alt={device.os}
-                    className="img-fluid"
-                    style={{ width: 40, height: 40 }}
-                  />
-                  <img
-                    src={getDeviceLogo("browser", device.browser)}
-                    alt={device.browser}
-                    className="img-fluid"
-                    style={{ width: 40, height: 40 }}
-                  />
-                </div>
+        {connectedDevices.length > 0 ? (
+          connectedDevices.map((device, index) => (
+            <div key={index} className="col-12 col-md-4 mb-3">
+              <div className="card shadow-sm">
+                <div className="card-body text-center">
+                  <div className="d-flex justify-content-center mb-2">
+                    <img
+                      src={getDeviceLogo("os", device.os)}
+                      alt={device.os}
+                      className="img-fluid"
+                      style={{ width: 40, height: 40 }}
+                    />
+                    <img
+                      src={getDeviceLogo("browser", device.browser)}
+                      alt={device.browser}
+                      className="img-fluid"
+                      style={{ width: 40, height: 40 }}
+                    />
+                  </div>
 
-                <p>
-                  <strong>Portapapeles</strong>
-                </p>
-
-                <div
-                  className="clipboard-box p-3 mt-3"
-                  onClick={() => copiarContenido(device.clipboardContent)}
-                  title="Copiar contenido"
-                  style={{ cursor: "pointer" }}
-                >
                   <p>
-                    {device.clipboardContent ||
-                      "No hay contenido en el portapapeles"}
+                    <strong>Portapapeles</strong>
                   </p>
-                </div>
 
-                <button
-                  className="btn btn-warning mt-3"
-                  onClick={() =>
-                    guardarContenido(device.clipboardContent, "text")
-                  }
-                  disabled={saving || !device.clipboardContent}
-                >
-                  {saving ? (
-                    <i
-                      className="fa boton_aux fa-spinner fa-spin"
-                      aria-hidden="true"
-                    ></i>
-                  ) : (
-                    <i className="fa boton_aux fa-star" aria-hidden="true"></i>
-                  )}
-                </button>
+                  <div
+                    className="clipboard-box p-3 mt-3"
+                    onClick={() => copiarContenido(device.clipboardContent)}
+                    title="Copiar contenido"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <p>
+                      {device.clipboardContent ||
+                        "No hay contenido en el portapapeles"}
+                    </p>
+                  </div>
+
+                  <button
+                    className="btn boton_aux btn-warning mt-3"
+                    onClick={() =>
+                      guardarContenido(device.clipboardContent, "text")
+                    }
+                    disabled={saving || !device.clipboardContent}
+                  >
+                    {saving ? (
+                      <i
+                        className="fa boton_aux fa-spinner fa-spin"
+                        aria-hidden="true"
+                      ></i>
+                    ) : (
+                      <i
+                        className="fa boton_aux fa-star"
+                        aria-hidden="true"
+                      ></i>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className="text-center">
+            <h3>No hay dispositivos cercanos</h3>
           </div>
-        ))}
+        )}
       </div>
+
       <div className="text-center mt-4">
         <button
           className="btn btn-secondary"

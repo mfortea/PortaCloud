@@ -1,13 +1,13 @@
 // components/Navbar.js
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Navbar, Nav, Offcanvas, Container } from "react-bootstrap";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../context/AuthContext"; // Importa el contexto
+import { useAuth } from "../context/AuthContext";
 
 export default function AppNavbar() {
-  const { user, logout } = useAuth(); // Usa el contexto
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -23,7 +23,7 @@ export default function AppNavbar() {
       },
       body: JSON.stringify({ deviceId }),
     }).finally(() => {
-      logout(); // Llama a la función de logout del contexto
+      logout();
       router.push("/login");
     });
   };
@@ -35,7 +35,7 @@ export default function AppNavbar() {
 
   return (
     <>
-      {/* Menú para móviles */}
+      {/* Navbar para móviles (menú desplegable) */}
       <Navbar expand="lg" className="p-3 border-bottom d-lg-none">
         <Container fluid>
           <Navbar.Brand href="/dashboard">
@@ -52,67 +52,66 @@ export default function AppNavbar() {
           >
             <Offcanvas.Header closeButton></Offcanvas.Header>
             <Offcanvas.Body>
-            <Nav className="flex-column">
-          <Nav.Link href="/dashboard">
-            <i className="fa-solid fa-house"></i> Inicio
-          </Nav.Link>
-          <Nav.Link href="/guardados">
-            <i className="fa-solid fa-star"></i> Guardados
-          </Nav.Link>
-          <Nav.Link href="/ajustes">
-            <i className="fa-solid fa-gear"></i> Ajustes
-          </Nav.Link>
-          <br></br>
-          <br></br>
-          <div className="div_usuario">
-          <p className="fw-bold usuario">
-            <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
-            {user ? user.username : "Cargando..."}
-          </p>
-          <Nav.Link onClick={handleLogout} className="text-danger">
-            <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-          </Nav.Link>
-          </div>
-        </Nav>
+              <Nav className="flex-column">
+                <Nav.Link href="/dashboard">
+                  <i className="fa-solid fa-house"></i> Inicio
+                </Nav.Link>
+                <Nav.Link href="/guardados">
+                  <i className="fa-solid fa-star"></i> Guardados
+                </Nav.Link>
+                <Nav.Link href="/ajustes">
+                  <i className="fa-solid fa-gear"></i> Ajustes
+                </Nav.Link>
+                <br></br>
+                <br></br>
+                <div className="div_usuario">
+                  <p className="fw-bold usuario">
+                    <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
+                    {user ? user.username : "Cargando..."}
+                  </p>
+                  <Nav.Link onClick={handleLogout} className="text-danger">
+                    <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                  </Nav.Link>
+                </div>
+              </Nav>
             </Offcanvas.Body>
           </Navbar.Offcanvas>
         </Container>
       </Navbar>
 
-      {/* Menú para escritorio */}
-      <div
-        className="d-none d-lg-flex flex-column vh-100 p-3 position-fixed"
-        style={{ width: "250px" }}
-      >
-        <Navbar.Brand href="/dashboard" className="mb-4 p-2">
-          <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
-          <span className="logo_letras">
-            <span className="negrita">PORTA</span>CLOUD
-          </span>
-        </Navbar.Brand>
-        <Nav className="flex-column">
-          <Nav.Link href="/dashboard">
-            <i className="fa-solid fa-house"></i> Inicio
-          </Nav.Link>
-          <Nav.Link href="/guardados">
-            <i className="fa-solid fa-star"></i> Guardados
-          </Nav.Link>
-          <Nav.Link href="/ajustes">
-            <i className="fa-solid fa-gear"></i> Ajustes
-          </Nav.Link>
-          <br></br>
-          <br></br>
-          <div className="div_usuario">
-          <p className="fw-bold usuario">
-            <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
-            {user ? user.username : "Cargando..."}
-          </p>
-          <Nav.Link onClick={handleLogout} className="text-danger">
-            <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-          </Nav.Link>
-          </div>
-        </Nav>
-      </div>
+      {/* Navbar para escritorio (barra superior) */}
+      <Navbar expand="lg" className="p-3 border-bottom d-none d-lg-block">
+        <Container fluid>
+          <Navbar.Brand href="/dashboard">
+            <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
+            <span className="logo_letras">
+              <span className="negrita">PORTA</span>CLOUD
+            </span>
+          </Navbar.Brand>
+          <Nav className="me-auto">
+            <Nav.Link href="/dashboard">
+              <i className="fa-solid fa-house"></i> Inicio
+            </Nav.Link>
+            <Nav.Link href="/guardados">
+              <i className="fa-solid fa-star"></i> Guardados
+            </Nav.Link>
+            <Nav.Link href="/ajustes">
+              <i className="fa-solid fa-gear"></i> Ajustes
+            </Nav.Link>
+          </Nav>
+          <Nav>
+            <div className="div_usuario">
+              <p className="fw-bold usuario">
+                <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
+                {user ? user.username : "Cargando..."}
+              </p>
+              <Nav.Link onClick={handleLogout} className="text-danger">
+                <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+              </Nav.Link>
+            </div>
+          </Nav>
+        </Container>
+      </Navbar>
     </>
   );
 }
