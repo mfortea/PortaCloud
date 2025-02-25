@@ -177,27 +177,27 @@ export default function Ajustes() {
       {/* Contenedor de botones */}
       <div className="d-flex flex-column align-items-center">
         <button
-          className="btn btn-primary w-100"
+          className="btn botones_ajustes btn-primary"
           onClick={() => setShowModalNombre(true)}
         >
           <i className="fa fa-user"></i> Cambiar nombre de usuario
         </button>
 
         <button
-          className="btn btn-primary w-100"
+          className="btn botones_ajustes btn-primary"
           onClick={() => setShowModalContraseña(true)}
         >
           <i className="fa fa-lock"></i> Cambiar contraseña
         </button>
 
         <button
-          className="btn btn-danger w-100"
+          className="btn botones_ajustes btn-danger"
           onClick={() => setShowModalEliminarCuenta(true)}
         >
           <i className="fa fa-remove"></i> Eliminar cuenta
         </button>
 
-        <button className="btn btn-primary w-100" onClick={handleLogout}>
+        <button className="btn botones_ajustes btn-primary" onClick={handleLogout}>
           <i className="fa fa-right-from-bracket"></i> Cerrar sesión
         </button>
       </div>

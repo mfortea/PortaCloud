@@ -12,7 +12,8 @@
 }
 
 /* ========== ESTILOS GENERALES ========== */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -108,17 +109,32 @@ a {
     transform: scale(0.7);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 1;
     box-shadow: 0 0 50px rgba(0, 123, 255, 1);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
   }
 }
 
+/* ========== ESTILOS DE AJUSTES ========== */
+
+.botones_ajustes {
+  height: 60px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .botones_ajustes {
+    width: 350px !important;
+  }
+}
 
 
 /* ========== ESTILOS DE BOTONES ========== */
@@ -131,9 +147,9 @@ button:hover {
 }
 
 .boton_aux {
-  margin: 20px !important;
-  padding: 10px 20px !important;
-  font-size: 16px;
+  margin: 10px !important;
+  width: 60px;
+  height: 60px;
   cursor: pointer;
   border: none;
   border-radius: 5px !important;
@@ -362,12 +378,16 @@ input:hover {
   position: sticky !important;
   top: 0;
   width: 100%;
-  background: rgba(241, 241, 241, 0.8) !important; /* Fondo translúcido */
+  background: rgba(241, 241, 241, 0.8) !important;
+  /* Fondo translúcido */
   color: black !important;
-  backdrop-filter: blur(10px); /* Suaviza el fondo para un mejor efecto */
-  -webkit-backdrop-filter: blur(10px); /* Compatibilidad con Safari */
+  backdrop-filter: blur(10px);
+  /* Suaviza el fondo para un mejor efecto */
+  -webkit-backdrop-filter: blur(10px);
+  /* Compatibilidad con Safari */
   z-index: 1000;
-  transition: background-color 0.3s ease-in-out; /* Suaviza el cambio de color */
+  transition: background-color 0.3s ease-in-out;
+  /* Suaviza el cambio de color */
 }
 
 
@@ -434,9 +454,11 @@ input:hover {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -587,7 +609,7 @@ input:hover {
   .usuario {
     color: #cfcfcf !important;
   }
-  
+
   .div_usuario {
     background-color: #525252;
   }
@@ -599,13 +621,13 @@ input:hover {
   .nav-link:hover {
     color: rgb(132, 165, 255) !important;
   }
-  
+
   input {
     background-color: #696969 !important;
     border-style: none !important;
     color: rgb(255, 255, 255) !important;
   }
-  
+
   input:hover {
     background-color: #555555 !important;
   }

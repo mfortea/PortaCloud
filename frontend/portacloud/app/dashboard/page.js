@@ -385,7 +385,7 @@ const actualizarPortapapeles = async () => {
       </div>
 
       {isSafari && (
-        <button className="btn btn-info ms-2" onClick={actualizarPortapapeles}>
+        <button className="btn btn-info" onClick={actualizarPortapapeles}>
           <i className="fa fa-clipboard" aria-hidden="true"></i> Leer
           portapapeles
         </button>
@@ -405,7 +405,7 @@ const actualizarPortapapeles = async () => {
         </button>
 
         <button
-          className="btn boton_aux btn-success me-2"
+          className="btn boton_aux btn-success"
           title="Descargar el contenido a un fichero"
           onClick={descargarContenido}
         >
@@ -413,7 +413,7 @@ const actualizarPortapapeles = async () => {
         </button>
 
         <button
-          className="btn boton_aux btn-warning me-2"
+          className="btn boton_aux btn-warning"
           onClick={() =>
             guardarContenido(clipboardContent.content, clipboardContent.type)
           }
@@ -503,12 +503,12 @@ const actualizarPortapapeles = async () => {
                   >
                     {saving ? (
                       <i
-                        className="fa boton_aux fa-spinner fa-spin"
+                        className="fa fa-spinner fa-spin"
                         aria-hidden="true"
                       ></i>
                     ) : (
                       <i
-                        className="fa boton_aux fa-star"
+                        className="fa fa-star"
                         aria-hidden="true"
                       ></i>
                     )}
