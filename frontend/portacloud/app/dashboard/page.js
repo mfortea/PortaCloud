@@ -256,13 +256,15 @@
         macos: "/macos.png",
         windows: "/windows.png",
         linux: "/linux.png",
+        android: "/android.png",
+        ios: "/ios.png",
         chrome: "/chrome.png",
         firefox: "/firefox.png",
         safari: "/safari.png",
         edge: "/edge.png",
         default: "/default.png",
       };
-
+    
       if (deviceType === "os") {
         switch (deviceName.toLowerCase()) {
           case "macos":
@@ -271,6 +273,10 @@
             return logos.windows;
           case "linux":
             return logos.linux;
+          case "android":
+            return logos.android;
+          case "ios":
+            return logos.ios;
           default:
             return logos.default;
         }
