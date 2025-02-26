@@ -128,6 +128,7 @@ a {
   height: 60px;
   margin-bottom: 20px;
   width: 100%;
+  font-size: 20px !important;
 }
 
 @media (min-width: 992px) {
@@ -497,6 +498,7 @@ input:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
+  margin: 50px;
 }
 
 .login-card h2 {
