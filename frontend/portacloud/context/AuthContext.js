@@ -31,11 +31,11 @@ export const AuthProvider = ({ children }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.username) {
-            setUser(data); // Actualiza el estado del usuario
+            setUser(data); 
           }
         })
         .catch(() => {
-          logout(); // Si hay un error, cierra la sesión
+          logout(); 
         });
     }
   }, []);

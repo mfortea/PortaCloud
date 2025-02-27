@@ -33,7 +33,7 @@ export default function Ajustes() {
   if (loading) {
     return (
       <div className="loading-spinner">
-        <i className="fa fa-spinner cargando" aria-hidden="true"></i>
+        <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
       </div>
     );
   }

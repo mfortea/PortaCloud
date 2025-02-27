@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import io from "socket.io-client";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 
@@ -19,8 +18,9 @@ export default function Dashboard() {
   const [saving, setSaving] = useState(false);
   const [notification, setNotification] = useState({ message: "", type: "" });
   const [showAlert, setShowAlert] = useState(false);
-
   const [clipboardAnimation, setClipboardAnimation] = useState(false);
+  const platform = require('platform');
+
 
 
 
@@ -164,6 +164,38 @@ export default function Dashboard() {
     };
   }, []);
 
+  const infoDispositivo = (userAgent = navigator.userAgent.toLowerCase(), platform = navigator.platform.toLowerCase()) => {
+    const os = {
+      isWindows: userAgent.includes("windows"),
+      isMac: platform.includes("mac"),
+      isLinux: userAgent.includes("linux"),
+      isAndroid: userAgent.includes("android"),
+      isIOS: /iphone|ipad|ipod/.test(userAgent),
+    };
+  
+    const browser = {
+      isChrome: userAgent.includes("chrome") && !userAgent.includes("edge"),
+      isFirefox: userAgent.includes("firefox"),
+      isSafari: userAgent.includes("safari") && !userAgent.includes("chrome"),
+      isEdge: userAgent.includes("edge"),
+    };
+  
+    const osName = os.isWindows ? "windows" :
+                   os.isMac ? "macos" :
+                   os.isLinux ? "linux" :
+                   os.isAndroid ? "android" :
+                   os.isIOS ? "ios" :
+                   "unknown";
+  
+    const browserName = browser.isChrome ? "chrome" :
+                        browser.isFirefox ? "firefox" :
+                        browser.isSafari ? "safari" :
+                        browser.isEdge ? "edge" :
+                        "unknown";
+  
+    return { os: osName, browser: browserName };
+  };
+
   useEffect(() => {
     let inactivityTimer;
 
@@ -246,7 +278,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="loading-spinner">
-        <i className="fa fa-spinner cargando" aria-hidden="true"></i>
+        <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
       </div>
     );
   }
@@ -288,7 +320,7 @@ export default function Dashboard() {
           return logos.firefox;
         case "safari":
           return logos.safari;
-        case "Mobile Safari":
+        case "mobile safari":
           return logos.safari;
         case "edge":
           return logos.edge;
@@ -375,11 +407,11 @@ export default function Dashboard() {
 
   const guardarContenido = async (content, type, os, browser) => {
     if (!content) return;
-
+  
     setSaving(true);
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
-
+  
     try {
       const response = await fetch(`${serverUrl}/api/saved`, {
         method: "POST",
@@ -394,7 +426,7 @@ export default function Dashboard() {
           type,
         }),
       });
-
+  
       if (response.ok) {
         toast.success("Contenido guardado con éxito.", {
           position: "top-right",
@@ -481,7 +513,7 @@ export default function Dashboard() {
           disabled={refreshing}
         >
           {refreshing ? (
-            <i className="fa fa-spinner fa-spin" aria-hidden="true"></i>
+            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
           ) : (
             <i className="fa fa-refresh" aria-hidden="true"></i>
           )}
@@ -498,13 +530,13 @@ export default function Dashboard() {
         <button
           className="btn boton_aux btn-warning"
           onClick={() =>
-            guardarContenido(clipboardContent.content, clipboardContent.type)
+            guardarContenido(clipboardContent.content, clipboardContent.type, navigator.userAgent, navigator.platform)
           }
           title="Guardar contenido actual"
           disabled={saving || !clipboardContent}
         >
           {saving ? (
-            <i className="fa fa-spinner fa-spin" aria-hidden="true"></i>
+            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
           ) : (
             <i className="fa fa-star" aria-hidden="true"></i>
           )}
@@ -533,7 +565,7 @@ export default function Dashboard() {
           disabled={refreshing}
         >
           {refreshing ? (
-            <i className="fa fa-spinner fa-spin" aria-hidden="true"></i>
+            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
           ) : (
             <i className="fa fa-refresh" aria-hidden="true"></i>
           )}
@@ -586,7 +618,7 @@ export default function Dashboard() {
                   >
                     {saving ? (
                       <i
-                        className="fa fa-spinner fa-spin"
+                        className="fa fa-circle-notch fa-spin"
                         aria-hidden="true"
                       ></i>
                     ) : (

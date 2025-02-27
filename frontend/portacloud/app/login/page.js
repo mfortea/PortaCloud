@@ -9,11 +9,13 @@ import "react-toastify/dist/ReactToastify.css";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Estado para manejar el spinner
   const router = useRouter();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Activar el estado de carga
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
     try {
@@ -29,7 +31,6 @@ export default function Login() {
         localStorage.setItem("deviceId", data.deviceId);
         login(data); 
         router.push("/"); 
-        
       } else {
         // Notificación de error
         toast.error("Usuario o contraseña no válidos", {
@@ -51,6 +52,8 @@ export default function Login() {
         pauseOnHover: true,
         draggable: true,
       });
+    } finally {
+      setIsLoading(false); // Desactivar el estado de carga
     }
   };
 
@@ -95,8 +98,12 @@ export default function Login() {
                 required
               />
             </div>
-            <button type="submit" className="login-button">
-              Iniciar sesión
+            <button type="submit" className="login-button" disabled={isLoading}>
+              {isLoading ? (
+                <div className="text-center text-white fa cargando fa-circle-notch"></div>
+              ) : (
+                "Iniciar sesión"
+              )}
             </button>
           </form>
 
@@ -105,6 +112,27 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {/* Estilos para el spinner */}
+      <style jsx>{`
+        .spinner {
+          border: 4px solid rgba(0, 0, 0, 0.1);
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          border-left-color: #09f;
+          animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }
