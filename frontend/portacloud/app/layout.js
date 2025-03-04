@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -17,15 +18,31 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "PortaCloud",
-  description: "Gestor de Portapapeles Multiplataforma con Sincronización en la Nube",
+  description: "Tu plataforma en la nube",
 };
 
 export default function RootLayout({ children }) {
+  useEffect(() => {
+    const metaThemeColor = document.querySelector("meta[name='theme-color']");
+    
+    const updateThemeColor = () => {
+      const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      metaThemeColor.setAttribute("content", isDarkMode ? "#262626" : "#F5F5F5");
+    };
+
+    updateThemeColor(); // Aplicar en la carga inicial
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", updateThemeColor);
+
+    return () => {
+      window.matchMedia("(prefers-color-scheme: dark)").removeEventListener("change", updateThemeColor);
+    };
+  }, []);
+
   return (
     <html lang="es">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0095FF" />
+        <meta name="theme-color" content="#F5F5F5" />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
