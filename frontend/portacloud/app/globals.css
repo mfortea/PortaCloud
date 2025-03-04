@@ -459,19 +459,17 @@ input:hover {
 
 /* Sección del héroe (fondo y contenido principal) */
 .hero-section {
-  flex: 1;
+  flex: 1 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(248,249,250);
-  background: linear-gradient(180deg, #f8f9fa 0%, rgba(117,144,190,1) 43%, rgba(0,50,136,1) 100%);
+  background: #f8f9fa;
+  background: linear-gradient(180deg, #f8f9fa, #7590be 43%, #003288);
   background-size: 400% 400%;
-  color: white;
+  color: #0e0e0e;
   padding: 2rem;
   text-align: center;
-  -webkit-box-shadow: 1px 31px 60px -42px rgba(0, 0, 0, 0.83);
-  -moz-box-shadow: 1px 31px 60px -42px rgba(0, 0, 0, 0.83);
-  box-shadow: 1px 31px 60px -42px rgba(0, 0, 0, 0.83);
+  box-shadow: 1px 31px 60px -42px rgb(0 0 0 / 34%);
 }
 
 @keyframes gradientAnimation {
@@ -719,7 +717,8 @@ input:hover {
   }
 
   .hero-section {
-    background: linear-gradient(180deg, rgba(34,34,34,1) 0%, rgba(0,50,136,1) 100%);
-}
+    background: linear-gradient(180deg, #222, #000f28);
+    color: white !important;
+  }
 
 }
