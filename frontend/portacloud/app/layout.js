@@ -1,10 +1,9 @@
-// layout.js
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthProvider } from "../context/AuthContext";
 import Footer from "../components/Footer";
-import ClientLayout from "../components/ClientLayout"; 
+import ClientLayout from "../components/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,13 +17,15 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "PortaCloud",
-  description: "",
+  description: "Gestor de Portapapeles Multiplataforma con Sincronización en la Nube",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -35,7 +36,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <ClientLayout>{children}</ClientLayout>
         </AuthProvider>
-        <Footer/>
+        <Footer />
       </body>
     </html>
   );

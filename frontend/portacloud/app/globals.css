@@ -371,8 +371,11 @@ input:hover {
   border-style: none;
   border-radius: 10px;
   border-width: 2px;
-  background-color: #dadada;
+  background-color: #e9e9e900;
   padding: 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background-color 0.3s ease-in-out;
 }
 
 .navbar {
@@ -380,15 +383,32 @@ input:hover {
   top: 0;
   width: 100%;
   background: rgba(241, 241, 241, 0.8) !important;
-  /* Fondo translúcido */
   color: black !important;
   backdrop-filter: blur(10px);
-  /* Suaviza el fondo para un mejor efecto */
   -webkit-backdrop-filter: blur(10px);
-  /* Compatibilidad con Safari */
   z-index: 1000;
   transition: background-color 0.3s ease-in-out;
-  /* Suaviza el cambio de color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.offcanvas {
+  position: fixed;
+  bottom: 0;
+  z-index: var(--bs-offcanvas-zindex);
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  color: var(--bs-offcanvas-color);
+  visibility: hidden;
+  background-clip: padding-box;
+  outline: 0;
+  transition: var(--bs-offcanvas-transition);
+  background-color: #ffffffbd !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: background-color 0.3s ease-in-out;
 }
 
 
@@ -449,6 +469,9 @@ input:hover {
   padding: 2rem;
   text-align: center;
   animation: gradientAnimation 6s ease infinite;
+  -webkit-box-shadow: 1px 31px 60px -42px rgba(0, 0, 0, 0.83);
+  -moz-box-shadow: 1px 31px 60px -42px rgba(0, 0, 0, 0.83);
+  box-shadow: 1px 31px 60px -42px rgba(0, 0, 0, 0.83);
 }
 
 @keyframes gradientAnimation {
@@ -625,14 +648,74 @@ input:hover {
   }
 
   input {
-    background-color: #696969 !important;
     border-style: none !important;
-    color: rgb(255, 255, 255) !important;
+    color: rgb(0, 0, 0) !important;
+    background-color: #ffffffbf !important;
   }
 
   input:hover {
-    background-color: #555555 !important;
+    background-color: #c3d3e7 !important;
   }
 
+  input:active {
+    background-color: #ffffff !important;
+  }
+
+  .login-section {
+    background-color: #222222 !important;
+  }
+
+  .login-card {
+    background-color: #343434 !important;
+  }
+
+  .navbar {
+    background: rgb(42 42 42 / 80%) !important;
+    border-style: none !important;
+  }
+
+  .navbar.d-none.d-lg-block {
+    border-style: none !important;
+  }
+
+  .navbar.d-none.d-lg-block .nav-link {
+    color: #ffffff !important;
+  }
+
+  .navbar.d-none.d-lg-block .usuario {
+    color: rgb(199 199 199) !important;
+  }
+
+  .offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl {
+    --bs-offcanvas-bg: unset;
+    background: rgb(28 28 28 / 79%) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .navbar-toggler {
+    background-color: #545454 !important;
+  }
+
+  .border-bottom {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    border-bottom: black !important;
+  }
+
+  .flex-column {
+    background-color: unset !important;
+    color: white !important;
+    border-style: none;
+  }
+
+  .loading-spinner {
+    background-color: rgb(16 16 16 / 80%);
+  }
+
+  .div_usuario {
+    background-color: #48484836 !important;
+  }
 
 }

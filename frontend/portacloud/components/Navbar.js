@@ -36,7 +36,7 @@ export default function AppNavbar() {
   return (
     <>
       {/* Navbar para móviles (menú desplegable) */}
-      <Navbar expand="lg" className="p-3 border-bottom d-lg-none">
+      <Navbar expand="lg" className="p-3 d-lg-none">
         <Container fluid>
           <Navbar.Brand href="/dashboard">
             <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
@@ -85,7 +85,7 @@ export default function AppNavbar() {
       </Navbar>
 
       {/* Navbar para escritorio (barra superior) */}
-      <Navbar expand="lg" className="p-3 border-bottom d-none d-lg-block">
+      <Navbar expand="lg" className="p-3 d-none d-lg-block">
         <Container fluid>
           <Navbar.Brand href="/dashboard">
             <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
