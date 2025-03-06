@@ -714,6 +714,12 @@ input:hover {
   text-decoration: underline;
 }
 
+/* ========== ESTILO 404 ========== */
+.logo_404 {
+  width: 150px;
+  filter: hue-rotate(150deg);
+}
+
 /* ========== ESTILOS DEL MODO OSCURO ========== */
 @media (prefers-color-scheme: dark) {
 
