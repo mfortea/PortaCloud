@@ -203,27 +203,60 @@ input:hover {
 }
 
 /* ========== ESTILOS DEL PORTAPAPELES ========== */
+
 .clipboard-display {
   margin: 40px;
   box-sizing: border-box;
   background-color: #f8f9fa;
-  border-radius: 40px;
-  animation: animacionPortapapeles 4s infinite linear;
+  border-radius: 30px;
+  padding: 20px;
+  position: relative;
+  background: rgba(0, 123, 255, 0.1);
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  animation: brillo 3s infinite alternate;
 }
 
-@keyframes animacionPortapapeles {
+.clipboard-display::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 3px;
+  background: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.6), rgba(0, 123, 255, 0.6));
+  background-size: 200% 200%;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  animation: rotate-gradient 2s infinite alternate;
+  z-index: 1;
+}
+
+@keyframes rotate-gradient {
   0% {
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.7);
+    background-position: 0% 50%;
   }
-
-  50% {
-    box-shadow: 0 0 35px rgba(0, 123, 255, 0.7);
-  }
-
   100% {
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.7);
+    background-position: 100% 50%;
+  }
+  
+}
+
+@keyframes brillo {
+  0% {
+    box-shadow: 0 0 10px rgba(19, 133, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(0, 123, 255, 0.9);
   }
 }
+
 
 .clipboard-display p {
   font-family: monospace;
@@ -371,7 +404,7 @@ input:hover {
   border-style: none;
   border-radius: 10px;
   border-width: 2px;
-  background-color: #e9e9e900;
+  background-color: #e9e9e9fa;
   padding: 10px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -579,7 +612,8 @@ input:hover {
   }
 
   .clipboard-display {
-    background-color: #424242 !important;
+    background-color: #3e4b5e !important;
+    color: white;
   }
 
   input {
