@@ -187,10 +187,10 @@ export default function Guardados() {
                   <p><strong>Sistema Operativo:</strong> {item.os}</p>
                   <p><strong>Navegador:</strong> {item.browser}</p>
                   <p>Guardado el {new Date(item.createdAt).toLocaleString()}</p>
-                  <button className="btn btn-success m-2" onClick={() => descargarContenido(item)}>
+                  <button className="btn boton_aux btn-success m-2" onClick={() => descargarContenido(item)}>
                     <i className="fa fa-download"></i>
                   </button>
-                  <button className="btn btn-danger" onClick={() => borrarContenido(item._id)}>
+                  <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
                     <i className="fa fa-remove"></i>
                   </button>
                 </div>
