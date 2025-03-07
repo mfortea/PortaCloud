@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [showAlert, setShowAlert] = useState(false);
   const [clipboardAnimation, setClipboardAnimation] = useState(false);
   const platform = require('platform');
+  const [showSafariModal, setShowSafariModal] = useState(false);
 
   const actualizarPortapapeles = async () => {
     try {
@@ -169,27 +170,27 @@ export default function Dashboard() {
       isAndroid: userAgent.includes("android"),
       isIOS: /iphone|ipad|ipod/.test(userAgent),
     };
-  
+
     const browser = {
       isChrome: userAgent.includes("chrome") && !userAgent.includes("edge"),
       isFirefox: userAgent.includes("firefox"),
       isSafari: userAgent.includes("safari") && !userAgent.includes("chrome"),
       isEdge: userAgent.includes("edge"),
     };
-  
+
     const osName = os.isWindows ? "windows" :
-                   os.isMac ? "macos" :
-                   os.isLinux ? "linux" :
-                   os.isAndroid ? "android" :
-                   os.isIOS ? "ios" :
-                   "unknown";
-  
+      os.isMac ? "macos" :
+        os.isLinux ? "linux" :
+          os.isAndroid ? "android" :
+            os.isIOS ? "ios" :
+              "unknown";
+
     const browserName = browser.isChrome ? "chrome" :
-                        browser.isFirefox ? "firefox" :
-                        browser.isSafari ? "safari" :
-                        browser.isEdge ? "edge" :
-                        "unknown";
-  
+      browser.isFirefox ? "firefox" :
+        browser.isSafari ? "safari" :
+          browser.isEdge ? "edge" :
+            "unknown";
+
     return { os: osName, browser: browserName };
   };
 
@@ -220,6 +221,17 @@ export default function Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isSafariBrowser =
+      userAgent.includes("safari") && !userAgent.includes("chrome");
+    setIsSafari(isSafariBrowser);
+    
+    if (isSafariBrowser && !localStorage.getItem("safariModalShown")) {
+      setShowSafariModal(true);
+      localStorage.setItem("safariModalShown", "true");
+    }
+  }, []);
 
   useEffect(() => {
     if (showAlert) {
@@ -404,11 +416,11 @@ export default function Dashboard() {
 
   const guardarContenido = async (content, type, os, browser) => {
     if (!content) return;
-  
+
     setSaving(true);
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
-  
+
     try {
       const response = await fetch(`${serverUrl}/api/saved`, {
         method: "POST",
@@ -423,7 +435,7 @@ export default function Dashboard() {
           type,
         }),
       });
-  
+
       if (response.ok) {
         toast.success("Contenido guardado con éxito.", {
           position: "top-right",
@@ -463,10 +475,38 @@ export default function Dashboard() {
   }
 
   return (
+
+
     <div className="container py-5">
       <h1 className="text-center mb-4">
         <i className="fa-solid fa-clipboard"></i>&nbsp; Mi portapapeles
       </h1>
+
+      {/* Modal para usuarios de Safari */}
+      {showSafariModal && (
+        <div className="modal show" style={{ display: "block" }}>
+          <div className="modal-dialog">
+            <div className="modal-content text-center">
+              <div className="modal-header">
+                <h5 className="modal-title"><i class="fa-solid fa-triangle-exclamation"></i> Aviso para usuarios de Safari</h5>
+                <button type="button" className="btn-close" onClick={() => setShowSafariModal(false)}></button>
+              </div>
+              <div className="modal-body">
+              <img className="mb-3" src="/safari.png" style={{ width: 80}}></img>
+                <h2>La funcionalidad de portapapeles automático y de imágenes no está disponible en Safari.</h2>
+                <br></br>
+                <p>Safari no soporta la copia automática del contenido del portapapeles ni otro formato que no sea texto plano</p>
+                <p>Por favor, utiliza el botón "Leer portapapeles en Safari" para pegar manualmente.</p>
+                <img className="w-50 mb-3" src="/boton-safari.png"></img>
+                <p>Para poder utilizar todas las funciones de PortaCloud, por favor use el navegador Google Chrome o Microsoft Edge</p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn  botones_ajustes btn-primary" onClick={() => setShowSafariModal(false)}>Entendido</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {notification.message && (
         <div>
