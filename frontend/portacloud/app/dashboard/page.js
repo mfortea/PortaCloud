@@ -21,9 +21,6 @@ export default function Dashboard() {
   const [clipboardAnimation, setClipboardAnimation] = useState(false);
   const platform = require('platform');
 
-
-
-
   const actualizarPortapapeles = async () => {
     try {
       if (!navigator.clipboard || !document.hasFocus()) return;

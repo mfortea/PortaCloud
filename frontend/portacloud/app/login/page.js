@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
@@ -56,6 +56,16 @@ export default function Login() {
       setIsLoading(false); // Desactivar el estado de carga
     }
   };
+
+    useEffect(() => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isFirefox = userAgent.includes("firefox");
+  
+      if (isFirefox) {
+        router.push("/no-soportado");
+        return;
+      }
+    });
 
   return (
     <div className="login-landing-page">

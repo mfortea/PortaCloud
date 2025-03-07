@@ -714,10 +714,15 @@ input:hover {
   text-decoration: underline;
 }
 
-/* ========== ESTILO 404 ========== */
+/* ========== ESTILO 404/ NO SOPORTADO========== */
 .logo_404 {
   width: 150px;
   filter: hue-rotate(150deg);
+}
+
+.no_soportado{
+color: rgb(200, 2, 2);
+font-size: 40px;
 }
 
 /* ========== ESTILOS DEL MODO OSCURO ========== */
