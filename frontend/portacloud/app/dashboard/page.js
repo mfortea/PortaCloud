@@ -501,7 +501,7 @@ export default function Dashboard() {
                 <p>Para poder utilizar todas las funciones de PortaCloud, por favor use el navegador Google Chrome o Microsoft Edge</p>
               </div>
               <div className="modal-footer">
-                <button className="btn  botones_ajustes btn-primary" onClick={() => setShowSafariModal(false)}>Entendido</button>
+                <button className="btn w-100 botones_ajustes btn-primary" onClick={() => setShowSafariModal(false)}>Entendido</button>
               </div>
             </div>
           </div>
