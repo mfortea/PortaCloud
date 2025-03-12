@@ -468,6 +468,15 @@ display: flex; justify-content: center; align-items: center;
   color: black !important;
 }
 
+.enlace_github {
+  color: black !important;
+  text-decoration: none;
+}
+
+.enlace_github:hover {
+  color: rgb(0, 162, 255) !important;
+}
+
 
 /* ========== ESTILOS DEL MENÚ ========== */
 
@@ -957,6 +966,15 @@ font-size: 40px;
     background-color: rgb(0, 47, 75);
     padding: 15px;
     display: flex; justify-content: center; align-items: center;
+    }
+    
+    .enlace_github {
+      color: rgb(255, 255, 255) !important;
+      text-decoration: none;
+    }
+    
+    .enlace_github:hover {
+      color: rgb(0, 162, 255) !important;
     }
     
 }

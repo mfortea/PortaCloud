@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { UAParser } from 'ua-parser-js';
+import { IoMdClipboard } from "react-icons/io";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -285,7 +286,6 @@ export default function Dashboard() {
       android: "/android.png",
       ios: "/ios.png",
       chrome: "/chrome.png",
-      firefox: "/firefox.png",
       safari: "/safari.png",
       edge: "/edge.png",
       equipo: "/equipo.png",
@@ -313,13 +313,15 @@ export default function Dashboard() {
       switch (deviceName.toLowerCase()) {
         case "chrome":
           return logos.chrome;
-        case "firefox":
-          return logos.firefox;
+        case "mobile chrome":
+          return logos.chrome;
         case "safari":
           return logos.safari;
         case "mobile safari":
           return logos.safari;
         case "edge":
+          return logos.edge;
+        case "mobile edge":
           return logos.edge;
         default:
           return logos.default;

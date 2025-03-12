@@ -65,6 +65,9 @@ export default function AppNavbar() {
                   <i className="fa-solid fa-star"></i> Guardados
                 </Nav.Link>
                 <Nav.Link href="/ajustes">
+                  <i className="fa-solid fa-circle-question"></i> Ayuda
+                </Nav.Link>
+                <Nav.Link href="/ajustes">
                   <i className="fa-solid fa-gear"></i> Ajustes
                 </Nav.Link>
                 <br></br>
@@ -100,6 +103,9 @@ export default function AppNavbar() {
             <Nav.Link href="/guardados">
               <i className="fa-solid fa-star"></i> Guardados
             </Nav.Link>
+            <Nav.Link href="/ajustes">
+                  <i className="fa-solid fa-circle-question"></i> Ayuda
+                </Nav.Link>
             <Nav.Link href="/ajustes">
               <i className="fa-solid fa-gear"></i> Ajustes
             </Nav.Link>
