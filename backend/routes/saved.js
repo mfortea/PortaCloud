@@ -1,57 +1,43 @@
 const express = require('express');
 const passport = require('passport');
 const SavedItem = require('../models/SavedItem');
+const getDeviceInfo = require('../utils/deviceInfo'); 
 const router = express.Router();
 
-// Funciones para mapear valores a nombres legibles
-const getReadableOS = (os) => {
-  if (os.includes("Win")) return "Windows";
-  if (os.includes("Mac")) return "MacOS";
-  if (os.includes("Linux")) return "Linux";
-  if (os.includes("Android")) return "Android";
-  if (os.includes("iPhone") || os.includes("iPad")) return "iOS";
-  return "Desconocido";
-};
-
-const getReadableBrowser = (browser) => {
-  if (browser.includes("Chrome")) return "Google Chrome";
-  if (browser.includes("Firefox")) return "Mozilla Firefox";
-  if (browser.includes("Safari") && !browser.includes("Chrome")) return "Safari";
-  if (browser.includes("Edge")) return "Microsoft Edge";
-  if (browser.includes("Opera")) return "Opera";
-  return "Desconocido";
-};
-
-// Proteger las rutas usando Passport
+// Ruta para guardar un nuevo elemento
 router.post('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  console.log('Token recibido:', req.headers['authorization']);
-  
   try {
-    const { os, browser, content, type } = req.body;
-    console.log('Datos recibidos:', os, browser, content, type); 
+    const { content, type } = req.body;
+    const userAgent = req.headers['user-agent'];
 
-    // Convertir os y browser a nombres legibles
-    const readableOS = getReadableOS(os);
-    const readableBrowser = getReadableBrowser(browser);
+    const { os, browser, deviceType } = getDeviceInfo(userAgent);
 
+    // Creamos un nuevo elemento guardado
     const newItem = new SavedItem({
       userId: req.user._id,
-      os: readableOS,       // Guardar el nombre legible del sistema operativo
-      browser: readableBrowser, // Guardar el nombre legible del navegador
+      os,
+      browser,
+      deviceType,
       content,
       type,
       createdAt: new Date(),
     });
+
+    // Guardamos el elemento en la base de datos
     await newItem.save();
+
+    // Respondemos con el elemento guardado
     res.status(201).json(newItem);
   } catch (err) {
-    console.error('Error al guardar el elemento:', err.message); 
+    console.error('Error al guardar el elemento:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
+// Ruta para obtener todos los elementos guardados por el usuario
 router.get('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
+    // Buscamos todos los elementos guardados por el usuario y los ordenamos por fecha de creación
     const items = await SavedItem.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.json(items);
   } catch (err) {
@@ -59,8 +45,10 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
   }
 });
 
+// Ruta para eliminar un elemento guardado por su ID
 router.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
+    // Eliminamos el elemento por su ID
     await SavedItem.findByIdAndDelete(req.params.id);
     res.json({ message: 'Elemento eliminado' });
   } catch (err) {

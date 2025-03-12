@@ -15,6 +15,12 @@ const savedItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  deviceType: {
+    type: String,
+    required: true,
+    enum: ["equipo", "tablet", "smartphone"],
+    default: "equipo"
+  },
   content: {
     type: String,
     required: true,

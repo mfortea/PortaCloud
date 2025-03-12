@@ -6,10 +6,12 @@ const Device = require("../models/Device");
 const { v4: uuidv4 } = require("uuid");
 const UAParser = require('ua-parser-js');
 const passport = require('passport');
+const getDeviceInfo = require('../utils/deviceInfo')
 
 const router = express.Router();
 
 let io;
+
 
 router.use((req, res, next) => {
   if (io) {
@@ -57,10 +59,7 @@ router.post("/login", async (req, res) => {
 
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-  const parser = new UAParser();
-  const result = parser.setUA(req.headers["user-agent"]).getResult();
-  const os = result.os.name || "Desconocido";
-  const browser = result.browser.name || "Desconocido";
+  const { os, browser, deviceType } = getDeviceInfo(req.headers["user-agent"]);
 
   const deviceId = uuidv4();
   const newDevice = await Device.create({
@@ -68,6 +67,7 @@ router.post("/login", async (req, res) => {
     deviceId,
     os,
     browser,
+    deviceType, // Añadimos el tipo de dispositivo
     lastActive: new Date(),
   });
 
@@ -78,6 +78,7 @@ router.post("/login", async (req, res) => {
 
   res.json({ token, deviceId });
 });
+
 
 router.get("/profile", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -115,13 +116,12 @@ router.get("/devices", async (req, res) => {
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) return res.status(403).json({ message: "Token inválido" });
 
-    const devices = await Device.find({ userId: decoded.userId }).select("deviceId os browser clipboardContent");
+    const devices = await Device.find({ userId: decoded.userId }).select("deviceId os browser deviceType clipboardContent");
     console.log("Dispositivos obtenidos:", devices); // Depuración
 
     res.json(devices);
   });
 });
-
 router.post("/updateClipboard", async (req, res) => {
   const { deviceId, clipboardContent } = req.body;
 

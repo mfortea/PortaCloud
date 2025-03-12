@@ -176,6 +176,19 @@ export default function Guardados() {
           {filteredItems.map((item) => (
             <div key={item._id} className="col-md-4 mb-4">
               <div className="card shadow-sm">
+              <div className="mb-3 tipo_dispositivo">
+                    <p>
+                      <strong>
+                        {item.deviceType === "equipo"
+                          ? "Dispositivo de Escritorio"
+                          : item.deviceType === "smartphone"
+                            ? "Dispositivo Móvil"
+                            : item.deviceType === "tablet"
+                              ? "Tablet"
+                              : "Tipo de dispositivo desconocido"}
+                      </strong>
+                    </p>
+                  </div>
                 <div className="card-body text-center">
                 <div className="clipboard-box p-3 m-3" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer" }}>
                     {item.type === "image" ? (

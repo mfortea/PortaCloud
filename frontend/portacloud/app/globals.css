@@ -398,6 +398,12 @@ input:hover {
   margin: 10px !important;
 }
 
+.tipo_dispositivo{
+background-color: rgb(202, 236, 255);
+padding: 15px;
+display: flex; justify-content: center; align-items: center;
+}
+
 /* ========== ESTILOS DEL SPINNER DE CARGA ========== */
 .loading-spinner {
   display: flex;
@@ -937,10 +943,20 @@ font-size: 40px;
     border: none;
   }
   
+  .login-landing-page {
+    background-color: #161616 !important;
+    color: white !important;
+  }
   
   .modal-header,
   .modal-footer {
     border: none;
   }
 
+  .tipo_dispositivo{
+    background-color: rgb(0, 47, 75);
+    padding: 15px;
+    display: flex; justify-content: center; align-items: center;
+    }
+    
 }

@@ -226,7 +226,7 @@ export default function Dashboard() {
     const isSafariBrowser =
       userAgent.includes("safari") && !userAgent.includes("chrome");
     setIsSafari(isSafariBrowser);
-    
+
     if (isSafariBrowser && !localStorage.getItem("safariModalShown")) {
       setShowSafariModal(true);
       localStorage.setItem("safariModalShown", "true");
@@ -303,6 +303,9 @@ export default function Dashboard() {
       firefox: "/firefox.png",
       safari: "/safari.png",
       edge: "/edge.png",
+      equipo: "/equipo.png",
+      tablet: "/tablet.png",
+      smartphone: "/smartphone.png",
       default: "/default.png",
     };
 
@@ -339,7 +342,6 @@ export default function Dashboard() {
     }
     return logos.default;
   };
-
   const recargarDispositivos = () => {
     setRefreshing(true);
     actualizarDispositivos(localStorage.getItem("token"));
@@ -414,7 +416,7 @@ export default function Dashboard() {
     }
   };
 
-  const guardarContenido = async (content, type, os, browser) => {
+  const guardarContenido = async (content, type, os, browser, deviceType) => {
     if (!content) return;
 
     setSaving(true);
@@ -431,6 +433,7 @@ export default function Dashboard() {
         body: JSON.stringify({
           os,
           browser,
+          deviceType,
           content,
           type,
         }),
@@ -492,7 +495,7 @@ export default function Dashboard() {
                 <button type="button" className="btn-close" onClick={() => setShowSafariModal(false)}></button>
               </div>
               <div className="modal-body">
-              <img className="mb-3" src="/safari.png" style={{ width: 80}}></img>
+                <img className="mb-3" src="/safari.png" style={{ width: 80 }}></img>
                 <h2>La funcionalidad de portapapeles automático y de imágenes no está disponible en Safari.</h2>
                 <br></br>
                 <p>Safari no soporta la copia automática del contenido del portapapeles ni otro formato que no sea texto plano</p>
@@ -567,7 +570,7 @@ export default function Dashboard() {
         <button
           className="btn boton_aux btn-warning"
           onClick={() =>
-            guardarContenido(clipboardContent.content, clipboardContent.type, navigator.userAgent, navigator.platform)
+            guardarContenido(clipboardContent.content, clipboardContent.type, navigator.userAgent, navigator.platform, navigator.deviceType )
           }
           title="Guardar contenido actual"
           disabled={saving || !clipboardContent}
@@ -614,6 +617,20 @@ export default function Dashboard() {
           connectedDevices.map((device, index) => (
             <div key={index} className="col-12 col-md-4 mb-3">
               <div className="card shadow-sm">
+              <div className="mb-3 tipo_dispositivo">
+                    <p>
+                      <strong>
+                        {device.deviceType === "equipo"
+                          ? "Dispositivo de Escritorio"
+                          : device.deviceType === "smartphone"
+                            ? "Dispositivo Móvil"
+                            : device.deviceType === "tablet"
+                              ? "Tablet"
+                              : "Tipo de dispositivo desconocido"}
+                      </strong>
+                    </p>
+                  </div>
+
                 <div className="card-body text-center">
                   <div className="d-flex justify-content-center mb-2">
                     <img
@@ -649,7 +666,7 @@ export default function Dashboard() {
                   <button
                     className="btn boton_aux btn-warning mt-3"
                     onClick={() =>
-                      guardarContenido(device.clipboardContent, "text", device.os, device.browser)
+                      guardarContenido(device.clipboardContent, "text", device.os, device.browser, device.deviceType)
                     }
                     disabled={saving || !device.clipboardContent}
                   >
