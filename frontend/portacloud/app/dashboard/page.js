@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import { UAParser } from 'ua-parser-js';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -124,6 +125,21 @@ export default function Dashboard() {
     document.body.removeChild(link);
   };
 
+  const infoDispositivo = () => {
+    const parser = new UAParser();
+    const result = parser.setUA(navigator.userAgent).getResult();
+
+    const os = result.os.name || "Desconocido";
+    const browser = result.browser.name || "Desconocido";
+
+    let deviceType = result.device.type || "equipo";
+    if (deviceType === "mobile") {
+      deviceType = "smartphone";
+    }
+
+    return { os, browser, deviceType };
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const deviceId = localStorage.getItem("deviceId");
@@ -162,37 +178,6 @@ export default function Dashboard() {
     };
   }, []);
 
-  const infoDispositivo = (userAgent = navigator.userAgent.toLowerCase(), platform = navigator.platform.toLowerCase()) => {
-    const os = {
-      isWindows: userAgent.includes("windows"),
-      isMac: platform.includes("mac"),
-      isLinux: userAgent.includes("linux"),
-      isAndroid: userAgent.includes("android"),
-      isIOS: /iphone|ipad|ipod/.test(userAgent),
-    };
-
-    const browser = {
-      isChrome: userAgent.includes("chrome") && !userAgent.includes("edge"),
-      isFirefox: userAgent.includes("firefox"),
-      isSafari: userAgent.includes("safari") && !userAgent.includes("chrome"),
-      isEdge: userAgent.includes("edge"),
-    };
-
-    const osName = os.isWindows ? "windows" :
-      os.isMac ? "macos" :
-        os.isLinux ? "linux" :
-          os.isAndroid ? "android" :
-            os.isIOS ? "ios" :
-              "unknown";
-
-    const browserName = browser.isChrome ? "chrome" :
-      browser.isFirefox ? "firefox" :
-        browser.isSafari ? "safari" :
-          browser.isEdge ? "edge" :
-            "unknown";
-
-    return { os: osName, browser: browserName };
-  };
 
   useEffect(() => {
     let inactivityTimer;
@@ -569,9 +554,10 @@ export default function Dashboard() {
 
         <button
           className="btn boton_aux btn-warning"
-          onClick={() =>
-            guardarContenido(clipboardContent.content, clipboardContent.type, navigator.userAgent, navigator.platform, navigator.deviceType )
-          }
+          onClick={() => {
+            const { os, browser, deviceType } = infoDispositivo();
+            guardarContenido(clipboardContent.content, clipboardContent.type, os, browser, deviceType);
+          }}
           title="Guardar contenido actual"
           disabled={saving || !clipboardContent}
         >
@@ -617,19 +603,19 @@ export default function Dashboard() {
           connectedDevices.map((device, index) => (
             <div key={index} className="col-12 col-md-4 mb-3">
               <div className="card shadow-sm">
-              <div className="mb-3 tipo_dispositivo">
-                    <p>
-                      <strong>
-                        {device.deviceType === "equipo"
-                          ? "Dispositivo de Escritorio"
-                          : device.deviceType === "smartphone"
-                            ? "Dispositivo Móvil"
-                            : device.deviceType === "tablet"
-                              ? "Tablet"
-                              : "Tipo de dispositivo desconocido"}
-                      </strong>
-                    </p>
-                  </div>
+                <div className="mb-3 tipo_dispositivo">
+                  <p>
+                    <strong>
+                      {device.deviceType === "equipo"
+                        ? "Dispositivo de Escritorio"
+                        : device.deviceType === "smartphone"
+                          ? "Dispositivo Móvil"
+                          : device.deviceType === "tablet"
+                            ? "Tablet"
+                            : "Tipo de dispositivo desconocido"}
+                    </strong>
+                  </p>
+                </div>
 
                 <div className="card-body text-center">
                   <div className="d-flex justify-content-center mb-2">

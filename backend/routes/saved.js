@@ -1,16 +1,14 @@
 const express = require('express');
 const passport = require('passport');
 const SavedItem = require('../models/SavedItem');
-const getDeviceInfo = require('../utils/deviceInfo'); 
+const getDeviceInfo = require('../utils/deviceInfo');
 const router = express.Router();
 
 // Ruta para guardar un nuevo elemento
 router.post('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { content, type } = req.body;
-    const userAgent = req.headers['user-agent'];
 
-    const { os, browser, deviceType } = getDeviceInfo(userAgent);
+    const { os, browser, deviceType, content, type } = req.body;
 
     // Creamos un nuevo elemento guardado
     const newItem = new SavedItem({
