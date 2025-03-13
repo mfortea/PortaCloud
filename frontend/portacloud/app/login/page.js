@@ -17,20 +17,29 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true); // Activar el estado de carga
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
+  
     try {
       const res = await fetch(`${serverUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-
+  
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem("token", data.token);
         localStorage.setItem("deviceId", data.deviceId);
-        login(data); 
-        router.push("/"); 
+  
+        // Asegúrate de pasar el userId al hacer login
+        login({
+          username: data.username,
+          role: data.role,
+          token: data.token,
+          deviceId: data.deviceId,
+          userId: data.userId, // Añadir esta línea
+        });
+  
+        router.push("/");
       } else {
         // Notificación de error
         toast.error("Usuario o contraseña no válidos", {

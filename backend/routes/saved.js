@@ -10,9 +10,8 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 
     const { os, browser, deviceType, content, type } = req.body;
 
-    // Creamos un nuevo elemento guardado
     const newItem = new SavedItem({
-      userId: req.user._id,
+      userId: req.user.userId,
       os,
       browser,
       deviceType,
@@ -21,10 +20,8 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
       createdAt: new Date(),
     });
 
-    // Guardamos el elemento en la base de datos
     await newItem.save();
 
-    // Respondemos con el elemento guardado
     res.status(201).json(newItem);
   } catch (err) {
     console.error('Error al guardar el elemento:', err.message);
@@ -35,8 +32,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 // Ruta para obtener todos los elementos guardados por el usuario
 router.get('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    // Buscamos todos los elementos guardados por el usuario y los ordenamos por fecha de creación
-    const items = await SavedItem.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const items = await SavedItem.find({ userId: req.user.userId }).sort({ createdAt: -1 });
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });

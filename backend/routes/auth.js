@@ -38,7 +38,21 @@ router.post("/register", async (req, res) => {
 
   try {
     await newUser.save();
-    res.status(201).json({ message: "Usuario registrado exitosamente" });
+    
+    // Generar token
+    const token = jwt.sign(
+      { userId: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({ 
+      message: "Usuario registrado exitosamente",
+      token, // Añadir token
+      username: newUser.username,
+      role: newUser.role,
+      userId: newUser._id 
+    });
   } catch (err) {
     res.status(500).json({ message: "Error al registrar el usuario" });
   }
@@ -57,7 +71,11 @@ router.post("/login", async (req, res) => {
     return res.status(400).json({ message: "Credenciales incorrectas" });
   }
 
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign(
+    { userId: user._id, role: user.role }, 
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 
   const { os, browser, deviceType } = getDeviceInfo(req.headers["user-agent"]);
 
@@ -67,7 +85,7 @@ router.post("/login", async (req, res) => {
     deviceId,
     os,
     browser,
-    deviceType, // Añadimos el tipo de dispositivo
+    deviceType,
     lastActive: new Date(),
   });
 
@@ -76,22 +94,28 @@ router.post("/login", async (req, res) => {
     io.emit("newConnection", { message: "Nuevo cliente conectado", userId: user._id });
   }
 
-  res.json({ token, deviceId });
+  res.json({ token, deviceId, username: user.username, role: user.role,  userId: user._id });
 });
 
 
-router.get("/profile", async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(403).json({ message: "No token provided" });
 
-  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-    if (err) return res.status(403).json({ message: "Token inválido" });
-
-    const user = await User.findById(decoded.userId);
-    res.json({ username: user.username });
-  });
+router.get("/profile", passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.json({
+      username: user.username,
+      role: user.role,
+      userId: user._id, 
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el perfil", error });
+  }
 });
-
 router.post("/logout", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(403).json({ message: "No token provided" });
@@ -117,7 +141,7 @@ router.get("/devices", async (req, res) => {
     if (err) return res.status(403).json({ message: "Token inválido" });
 
     const devices = await Device.find({ userId: decoded.userId }).select("deviceId os browser deviceType clipboardContent");
-    console.log("Dispositivos obtenidos:", devices); // Depuración
+    console.log("Dispositivos obtenidos:", devices); 
 
     res.json(devices);
   });

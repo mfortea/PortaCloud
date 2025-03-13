@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from "../../context/AuthContext";
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -11,6 +12,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +42,7 @@ export default function Register() {
       return;
     }
 
-    setIsLoading(true); 
+    setIsLoading(true);
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
     try {
@@ -52,7 +54,7 @@ export default function Register() {
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem('token', data.token); 
+        localStorage.setItem('token', data.token);
         toast.success('Registro exitoso', {
           position: 'top-right',
           autoClose: 3000,
@@ -61,7 +63,13 @@ export default function Register() {
           pauseOnHover: true,
           draggable: true,
         });
-        router.push('/dashboard'); 
+        login({
+          username: data.username,
+          role: data.role,
+          token: data.token,
+          userId: data.userId
+        });
+        router.push('/dashboard');
       } else {
         const errorData = await res.json();
         toast.error(errorData.message || 'Registro fallido. Verifica tus credenciales.', {
@@ -83,7 +91,7 @@ export default function Register() {
         draggable: true,
       });
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 

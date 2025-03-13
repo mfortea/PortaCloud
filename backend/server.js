@@ -6,6 +6,7 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const authRoutes = require("./routes/auth");
 const savedRoutes = require("./routes/saved");
+const adminRoutes = require("./routes/admin");
 const passport = require('./config/passportConfig');
 
 const app = express();
@@ -23,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI);
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/saved", savedRoutes);
+app.use("/api/admin", adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));

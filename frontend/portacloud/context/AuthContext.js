@@ -7,42 +7,59 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // Función para iniciar sesión
   const login = (userData) => {
-    setUser(userData); // Actualiza el estado del usuario
+    setUser({
+      userId: userData.userId,
+      username: userData.username,
+      role: userData.role
+    });
+    localStorage.setItem("token", userData.token);
   };
 
-  // Función para cerrar sesión
   const logout = () => {
-    setUser(null); // Limpia el estado del usuario
+    setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("deviceId");
   };
 
-  // Verificar si el usuario está autenticado al cargar la página
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-      fetch(`${serverUrl}/api/auth/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.username) {
-            setUser(data); 
-          }
-        })
-        .catch(() => {
-          logout(); 
+    const verifyAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setAuthChecked(true);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}/api/auth/profile`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-    }
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser({
+            userId: data.userId,
+            username: data.username,
+            role: data.role
+          });
+        }
+      } catch (error) {
+        console.error("Auth verification error:", error);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    verifyAuth();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, login, logout, authChecked }}>
+      {authChecked ? children : <div className="loading-spinner">
+        <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
+      </div>}
     </AuthContext.Provider>
   );
 };

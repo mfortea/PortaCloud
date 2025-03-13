@@ -194,7 +194,7 @@ export default function Ajustes() {
           className="btn botones_ajustes btn-danger"
           onClick={() => setShowModalEliminarCuenta(true)}
         >
-          <i className="fa fa-remove"></i> Eliminar cuenta
+          <i className="fa-solid fa-trash-can"></i> Eliminar cuenta
         </button>
 
         <button className="btn botones_ajustes btn-primary" onClick={handleLogout}>
@@ -214,9 +214,9 @@ export default function Ajustes() {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="modalCambiarNombreLabel">
-                  Cambiar Nombre de Usuario
-                </h5>
+                <h3 className="modal-title" id="modalCambiarNombreLabel">
+                <i className="fa fa-user"></i> Cambiar Nombre de Usuario
+                </h3>
                 <button
                   type="button"
                   className="btn-close"
@@ -233,19 +233,19 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-                <button
+              <button
                   type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModalNombre(false)}
+                  className="btn w-100 botones_ajustes btn-success"
+                  onClick={cambiarNombreUsuario}
                 >
-                  Cerrar
+                  Cambiar nombre de usuario
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
-                  onClick={cambiarNombreUsuario}
+                  className="btn w-100 botones_ajustes btn-primary"
+                  onClick={() => setShowModalNombre(false)}
                 >
-                  Cambiar nombre
+                 <i className="fa-solid fa-xmark"></i> Cerrar
                 </button>
               </div>
             </div>
@@ -265,9 +265,9 @@ export default function Ajustes() {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="modalCambiarContraseñaLabel">
-                  Cambiar Contraseña
-                </h5>
+                <h3 className="modal-title" id="modalCambiarContraseñaLabel">
+                <i class="fa-solid fa-lock"></i> Cambiar Contraseña
+                </h3>
                 <button
                   type="button"
                   className="btn-close"
@@ -291,19 +291,19 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-                <button
+              <button
                   type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModalContraseña(false)}
-                >
-                  Cerrar
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
+                  className="btn w-100 botones_ajustes btn-success"
                   onClick={cambiarContraseña}
                 >
                   Cambiar contraseña
+                </button>
+                <button
+                  type="button"
+                  className="btn w-100 botones_ajustes  btn-primary"
+                  onClick={() => setShowModalContraseña(false)}
+                >
+                  <i className="fa-solid fa-xmark"></i> Cerrar
                 </button>
               </div>
             </div>
@@ -323,9 +323,9 @@ export default function Ajustes() {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="modalEliminarCuentaLabel">
-                  Eliminar Cuenta
-                </h5>
+                <h3 className="modal-title" id="modalEliminarCuentaLabel">
+                <i className="fa-solid fa-trash-can"></i> Eliminar Cuenta
+                </h3>
                 <button
                   type="button"
                   className="btn-close"
@@ -345,19 +345,19 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-                <button
+              <button
                   type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModalEliminarCuenta(false)}
+                  className="btn w-100 botones_ajustes btn-danger"
+                  onClick={eliminarCuenta}
                 >
-                  Cancelar
+                  <i className="fa-solid fa-trash-can"></i> Eliminar cuenta
                 </button>
                 <button
                   type="button"
-                  className="btn btn-danger"
-                  onClick={eliminarCuenta}
+                  className="btn w-100 botones_ajustes btn-primary"
+                  onClick={() => setShowModalEliminarCuenta(false)}
                 >
-                  Eliminar cuenta
+                  <i className="fa-solid fa-xmark"></i> Cancelar
                 </button>
               </div>
             </div>

@@ -51,20 +51,25 @@ export default function AppNavbar() {
             placement="start"
           >
             <Offcanvas.Header closeButton>
-            <img src="/logo.png" alt="Logo" className="mt-4 logo_ppal" />{" "}
-            <span className="mt-4 logo_letras">
-              <span className="negrita">PORTA</span>CLOUD
-            </span>
+              <img src="/logo.png" alt="Logo" className="mt-4 logo_ppal" />{" "}
+              <span className="mt-4 logo_letras">
+                <span className="negrita">PORTA</span>CLOUD
+              </span>
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="flex-column">
                 <Nav.Link href="/dashboard">
                   <i className="fa-solid fa-house"></i> Inicio
                 </Nav.Link>
+                {user && user.role === 'admin' && (
+                  <Nav.Link href="/admin">
+                    <i className="fa-solid fa-user-shield"></i> Administración
+                  </Nav.Link>
+                )}
                 <Nav.Link href="/guardados">
                   <i className="fa-solid fa-star"></i> Guardados
                 </Nav.Link>
-                <Nav.Link href="/ajustes">
+                <Nav.Link href="/ayuda">
                   <i className="fa-solid fa-circle-question"></i> Ayuda
                 </Nav.Link>
                 <Nav.Link href="/ajustes">
@@ -100,12 +105,17 @@ export default function AppNavbar() {
             <Nav.Link href="/dashboard">
               <i className="fa-solid fa-house"></i> Inicio
             </Nav.Link>
+            {user && user.role === 'admin' && (
+              <Nav.Link href="/admin">
+                <i className="fa-solid fa-user-shield"></i> Administración
+              </Nav.Link>
+            )}
             <Nav.Link href="/guardados">
               <i className="fa-solid fa-star"></i> Guardados
             </Nav.Link>
-            <Nav.Link href="/ajustes">
-                  <i className="fa-solid fa-circle-question"></i> Ayuda
-                </Nav.Link>
+            <Nav.Link href="/ayuda">
+              <i className="fa-solid fa-circle-question"></i> Ayuda
+            </Nav.Link>
             <Nav.Link href="/ajustes">
               <i className="fa-solid fa-gear"></i> Ajustes
             </Nav.Link>

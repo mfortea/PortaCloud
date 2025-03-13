@@ -409,7 +409,6 @@ export default function Dashboard() {
     setSaving(true);
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
-
     try {
       const response = await fetch(`${serverUrl}/api/saved`, {
         method: "POST",
