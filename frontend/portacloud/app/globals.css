@@ -909,6 +909,7 @@ input:hover {
 
   .device-card {
     background-color: #444444;
+    color: white;
   }
 
   .card {
@@ -1077,11 +1078,7 @@ input:hover {
   }
 
   .tipo_dispositivo {
-    background-color: rgb(0, 47, 75);
-    padding: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    color: white;
   }
 
   .enlace_github {
