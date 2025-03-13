@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { MdUpdate } from "react-icons/md";
 
 export default function NotSupported() {
     const router = useRouter();
@@ -62,9 +63,12 @@ export default function NotSupported() {
                             <td>Lee el contenido del portapapeles manualmente en Safari, ya que este navegador no soporta la actualización automática.</td>
                         </tr>
                         <tr>
-                            <td>
-                                <button className="btn btn-secondary" >
-                                    {true ? "Desactivar actualización automática del portapapeles" : "Activar actualización automática del portapapeles"}
+                            <td className="d-flex justify-content-center">
+                                <button
+                                    className="btn boton_aux btn-secondary d-flex align-items-center"
+                                    title="Activa o desactiva la actualización automática del portapapeles"
+                                >
+                                    <MdUpdate size={30} />
                                 </button>
                             </td>
                             <td>Activa o desactiva la actualización automática del portapapeles.</td>
@@ -75,16 +79,16 @@ export default function NotSupported() {
             <br></br>
             <br></br>
             <h2>Navegadores compatibles</h2>
-                <div className="mt-2 row justify-content-center">
-                    <img src="/chrome.png" alt="Google Chrome" className="img-fluid mb-3"
-                        style={{ width: 80 }} />
-                    <img src="/edge.png" alt="Microsoft Edge" className="img-fluid mb-3"
-                        style={{ width: 80}} />
-                    <img src="/safari.png" alt="Apple Safari" className="img-fluid mb-3"
-                        style={{ width: 80}} />*
-                </div>
-                <br></br>
-                <p className="font-italic">* La funcionalidad en Safari puede estar limitada</p>
+            <div className="mt-2 row justify-content-center">
+                <img src="/chrome.png" alt="Google Chrome" className="img-fluid mb-3"
+                    style={{ width: 80 }} />
+                <img src="/edge.png" alt="Microsoft Edge" className="img-fluid mb-3"
+                    style={{ width: 80 }} />
+                <img src="/safari.png" alt="Apple Safari" className="img-fluid mb-3"
+                    style={{ width: 80 }} />*
+            </div>
+            <br></br>
+            <p className="font-italic">* La funcionalidad en Safari puede estar limitada</p>
         </div>
     );
 }

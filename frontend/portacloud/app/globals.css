@@ -222,14 +222,20 @@ a {
   background-image: linear-gradient(90deg, rgba(255, 193, 7, 0.6), rgba(255, 255, 0, 0.6), rgba(255, 193, 7, 0.6));
   box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
   border: 2px solid transparent;
-
-
 }
 
 .boton_aux.btn-danger {
   background-image: linear-gradient(90deg, rgba(220, 53, 69, 0.6), rgba(255, 99, 71, 0.6), rgba(220, 53, 69, 0.6));
   box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
   border: 2px solid transparent;
+}
+
+.boton_aux.btn.btn-secondary {
+  background-image: linear-gradient(90deg, rgba(47, 0, 255, 0.6), rgba(84, 65, 252, 0.6), rgba(0, 3, 167, 0.6));
+  box-shadow: 0 0 20px rgba(87, 3, 167, 0.5);
+  border: 2px solid transparent;
+  font-size: 30px;
+  text-align: center;
 }
 
 .boton_aux:hover {
@@ -391,11 +397,19 @@ input:hover {
 /* ========== ESTILOS DE TARJETAS DE DISPOSITIVOS ========== */
 .device-card {
   padding: 30px;
-  background-color: #d1d1d1;
-  border-radius: 8px;
-  margin: 20px;
-  text-align: justify;
+  box-sizing: border-box;
+  border-radius: 30px;
+  border-width: 40px;
+  padding: 20px;
+  position: relative;
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 20px;
+  user-select: text;
 }
+
 
 .device-card .d-flex {
   gap: 5px;
@@ -415,11 +429,7 @@ input:hover {
 }
 
 .tipo_dispositivo {
-  background-color: rgb(202, 236, 255);
-  padding: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-size: 50px;
 }
 
 /* ========== ESTILOS DEL SPINNER DE CARGA ========== */
@@ -861,6 +871,14 @@ input:hover {
   margin: 10px !important;
 }
 
+.logo_acercade {
+  width: 150px;
+  margin-bottom: 30px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 
 
@@ -1097,11 +1115,11 @@ input:hover {
   .tabla_ayuda {
     background-color: #272727;
   }
-  
+
   .tabla_ayuda th {
     background-color: #000000;
   }
-  
+
 
   .input {
     color: white !important;

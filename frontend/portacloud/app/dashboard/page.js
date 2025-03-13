@@ -6,7 +6,12 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { UAParser } from 'ua-parser-js';
-import { IoMdClipboard } from "react-icons/io";
+import { MdOutlinePhoneIphone } from "react-icons/md";
+import { IoMdDesktop } from "react-icons/io";
+import { BsTabletLandscape } from "react-icons/bs";
+import { MdDevices } from "react-icons/md";
+import { MdUpdate } from "react-icons/md";
+import { MdUpdateDisabled } from "react-icons/md";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -603,23 +608,18 @@ export default function Dashboard() {
         {connectedDevices.length > 0 ? (
           connectedDevices.map((device, index) => (
             <div key={index} className="col-12 col-md-4 mb-3">
-              <div className="card shadow-sm">
-                <div className="mb-3 tipo_dispositivo">
-                  <p>
-                    <strong>
-                      {device.deviceType === "equipo"
-                        ? "Dispositivo de Escritorio"
-                        : device.deviceType === "smartphone"
-                          ? "Dispositivo Móvil"
-                          : device.deviceType === "tablet"
-                            ? "Tablet"
-                            : "Tipo de dispositivo desconocido"}
-                    </strong>
-                  </p>
-                </div>
-
+              <div className="device-card shadow-lg">
                 <div className="card-body text-center">
-                  <div className="d-flex justify-content-center mb-2">
+                  <div className="d-flex align-items-center justify-content-center mb-2">
+                    <p className="tipo_dispositivo mb-0 me-2 d-flex align-items-center">
+                      {device.deviceType === "equipo"
+                        ? <IoMdDesktop />
+                        : device.deviceType === "smartphone"
+                          ? <MdOutlinePhoneIphone />
+                          : device.deviceType === "tablet"
+                            ? <BsTabletLandscape />
+                            : <MdDevices />}
+                    </p>
                     <img
                       src={getDeviceLogo("os", device.os)}
                       alt={device.os}
@@ -690,16 +690,16 @@ export default function Dashboard() {
         )}
       </div>
 
-      <div className="text-center mt-4">
+      <div className="d-flex justify-content-center mt-4">
         <button
-          className="btn btn-secondary"
+          className="btn boton_aux btn-secondary d-flex justify-content-center align-items-center"
           onClick={toggleAutoRefreshClipboard}
+          title="Activa o desactiva la actualización automática del portapapeles"
         >
-          {autoRefreshClipboard
-            ? "Desactivar actualización automática del portapapeles"
-            : "Activar actualización automática del portapapeles"}
+          {autoRefreshClipboard ?   <MdUpdate size={30} /> : <MdUpdateDisabled size={30} />}
         </button>
       </div>
+
     </div>
   );
 }

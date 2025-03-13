@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import { MdOutlinePhoneIphone } from "react-icons/md";
+import { IoMdDesktop } from "react-icons/io";
+import { BsTabletLandscape } from "react-icons/bs";
+import { MdDevices } from "react-icons/md";
+
 
 export default function Guardados() {
   const router = useRouter();
@@ -14,8 +19,11 @@ export default function Guardados() {
   const [osFilter, setOsFilter] = useState("");
   const [browserFilter, setBrowserFilter] = useState("");
   const [osOptions, setOsOptions] = useState([]);
+  const [deviceTypeOptions, setDeviceTypeOptions] = useState([]);
   const [browserOptions, setBrowserOptions] = useState([]);
-  
+  const [deviceTypeFilter, setDeviceTypeFilter] = useState("");
+
+
   const fetchGuardados = async () => {
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
@@ -28,8 +36,12 @@ export default function Guardados() {
 
     const osSet = new Set(data.map((item) => item.os));
     const browserSet = new Set(data.map((item) => item.browser));
+    const deviceTypeSet = new Set(data.map((item) => item.deviceType));
+
     setOsOptions([...osSet]);
     setBrowserOptions([...browserSet]);
+    setDeviceTypeOptions([...deviceTypeSet]);
+
   };
 
 
@@ -138,8 +150,61 @@ export default function Guardados() {
     (item) =>
       (searchTerm === "" || item.content.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (osFilter === "" || item.os === osFilter) &&
-      (browserFilter === "" || item.browser === browserFilter)
+      (browserFilter === "" || item.browser === browserFilter) &&
+      (deviceTypeFilter === "" || item.deviceType === deviceTypeFilter)
   );
+
+  const getDeviceLogo = (deviceType, deviceName) => {
+    const logos = {
+      macos: "/macos.png",
+      windows: "/windows.png",
+      linux: "/linux.png",
+      android: "/android.png",
+      ios: "/ios.png",
+      chrome: "/chrome.png",
+      safari: "/safari.png",
+      edge: "/edge.png",
+      equipo: "/equipo.png",
+      tablet: "/tablet.png",
+      smartphone: "/smartphone.png",
+      default: "/default.png",
+    };
+
+    if (deviceType === "os") {
+      switch (deviceName.toLowerCase()) {
+        case "macos":
+          return logos.macos;
+        case "windows":
+          return logos.windows;
+        case "linux":
+          return logos.linux;
+        case "android":
+          return logos.android;
+        case "ios":
+          return logos.ios;
+        default:
+          return logos.default;
+      }
+    } else if (deviceType === "browser") {
+      switch (deviceName.toLowerCase()) {
+        case "chrome":
+          return logos.chrome;
+        case "mobile chrome":
+          return logos.chrome;
+        case "safari":
+          return logos.safari;
+        case "mobile safari":
+          return logos.safari;
+        case "edge":
+          return logos.edge;
+        case "mobile edge":
+          return logos.edge;
+        default:
+          return logos.default;
+      }
+    }
+    return logos.default;
+  };
 
   return (
     <div className="container py-5">
@@ -147,7 +212,7 @@ export default function Guardados() {
         <i className="fa fa-star"></i> Mis guardados
       </h1>
 
-      <div className="mb-4 d-flex gap-2">
+      <div className="mb-4 d-flex flex-column text-center flex-md-row gap-2">
         <input
           type="text"
           className="form-control"
@@ -156,15 +221,29 @@ export default function Guardados() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select className="form-control" value={osFilter} onChange={(e) => setOsFilter(e.target.value)}>
-          <option value="">Todos los SO ▼ </option>
+          <option value="">▼ Todos los SO </option>
           {osOptions.map((os) => (
             <option key={os} value={os}>{os}</option>
           ))}
         </select>
         <select className="form-control" value={browserFilter} onChange={(e) => setBrowserFilter(e.target.value)}>
-          <option value="">Todos los Navegadores ▼ </option>
+          <option value="">▼ Todos los Navegadores  </option>
           {browserOptions.map((browser) => (
             <option key={browser} value={browser}>{browser}</option>
+          ))}
+        </select>
+        <select className="form-control" value={deviceTypeFilter} onChange={(e) => setDeviceTypeFilter(e.target.value)}>
+          <option value="">▼ Todos los Tipos  </option>
+          {deviceTypeOptions.map((device) => (
+            <option key={device} value={device}>
+              {device === "smartphone"
+                ? "Dispositivo móvil"
+                : device === "tablet"
+                  ? "Tablet"
+                  : device === "equipo"
+                    ? "Dispositivo de Escritorio"
+                    : device}
+            </option>
           ))}
         </select>
       </div>
@@ -175,31 +254,39 @@ export default function Guardados() {
         <div className="row">
           {filteredItems.map((item) => (
             <div key={item._id} className="col-md-4 mb-4">
-              <div className="card shadow-sm">
-              <div className="mb-3 tipo_dispositivo">
-                    <p>
-                      <strong>
-                        {item.deviceType === "equipo"
-                          ? "Dispositivo de Escritorio"
-                          : item.deviceType === "smartphone"
-                            ? "Dispositivo Móvil"
-                            : item.deviceType === "tablet"
-                              ? "Tablet"
-                              : "Tipo de dispositivo desconocido"}
-                      </strong>
-                    </p>
-                  </div>
+              <div className="device-card shadow-lg">
+                <div className="mb-3 tipo_dispositivo">
+                  <p className="text-center">
+                    {item.deviceType === "equipo"
+                      ? <IoMdDesktop />
+                      : item.deviceType === "smartphone"
+                        ? <MdOutlinePhoneIphone />
+                        : item.deviceType === "tablet"
+                          ? <BsTabletLandscape />
+                          : <MdDevices />}
+                  </p>
+                </div>
                 <div className="card-body text-center">
-                <div className="clipboard-box p-3 m-3" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer" }}>
+                  <div className="clipboard-box p-3 m-3" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer" }}>
                     {item.type === "image" ? (
                       <img src={item.content} alt="Guardado" className="img-fluid mb-3" />
                     ) : (
                       <p>{item.content}</p>
                     )}
                   </div>
-                  <p><strong>Sistema Operativo:</strong> {item.os}</p>
-                  <p><strong>Navegador:</strong> {item.browser}</p>
-                  <p>Guardado el {new Date(item.createdAt).toLocaleString()}</p>
+                  <img
+                    src={getDeviceLogo("os", item.os)}
+                    alt={item.os}
+                    className="img-fluid"
+                    style={{ width: 40, height: 40 }}
+                  />
+                  <img
+                    src={getDeviceLogo("browser", item.browser)}
+                    alt={item.browser}
+                    className="img-fluid"
+                    style={{ width: 40, height: 40 }}
+                  />
+                  <p className="mt-3">Guardado el {new Date(item.createdAt).toLocaleString()}</p>
                   <button className="btn boton_aux btn-success m-2" onClick={() => descargarContenido(item)}>
                     <i className="fa fa-download"></i>
                   </button>

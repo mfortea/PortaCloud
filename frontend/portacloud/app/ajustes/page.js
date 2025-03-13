@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function Ajustes() {
   const router = useRouter();
@@ -200,6 +201,11 @@ export default function Ajustes() {
         <button className="btn botones_ajustes btn-primary" onClick={handleLogout}>
           <i className="fa fa-right-from-bracket"></i> Cerrar sesión
         </button>
+        <br></br>
+        <br></br>
+        <Link className="enlace_github" href="/acercade">
+          <i className="fa-solid fa-circle-question"></i> Acerca de PortaCloud
+        </Link>
       </div>
 
       {/* Modal Cambiar Nombre */}
@@ -215,7 +221,7 @@ export default function Ajustes() {
             <div className="modal-content">
               <div className="modal-header">
                 <h3 className="modal-title" id="modalCambiarNombreLabel">
-                <i className="fa fa-user"></i> Cambiar Nombre de Usuario
+                  <i className="fa fa-user"></i> Cambiar Nombre de Usuario
                 </h3>
                 <button
                   type="button"
@@ -233,7 +239,7 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-              <button
+                <button
                   type="button"
                   className="btn w-100 botones_ajustes btn-success"
                   onClick={cambiarNombreUsuario}
@@ -245,7 +251,7 @@ export default function Ajustes() {
                   className="btn w-100 botones_ajustes btn-primary"
                   onClick={() => setShowModalNombre(false)}
                 >
-                 <i className="fa-solid fa-xmark"></i> Cerrar
+                  <i className="fa-solid fa-xmark"></i> Cerrar
                 </button>
               </div>
             </div>
@@ -266,7 +272,7 @@ export default function Ajustes() {
             <div className="modal-content">
               <div className="modal-header">
                 <h3 className="modal-title" id="modalCambiarContraseñaLabel">
-                <i class="fa-solid fa-lock"></i> Cambiar Contraseña
+                  <i class="fa-solid fa-lock"></i> Cambiar Contraseña
                 </h3>
                 <button
                   type="button"
@@ -291,7 +297,7 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-              <button
+                <button
                   type="button"
                   className="btn w-100 botones_ajustes btn-success"
                   onClick={cambiarContraseña}
@@ -324,7 +330,7 @@ export default function Ajustes() {
             <div className="modal-content">
               <div className="modal-header">
                 <h3 className="modal-title" id="modalEliminarCuentaLabel">
-                <i className="fa-solid fa-trash-can"></i> Eliminar Cuenta
+                  <i className="fa-solid fa-trash-can"></i> Eliminar Cuenta
                 </h3>
                 <button
                   type="button"
@@ -345,7 +351,7 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-              <button
+                <button
                   type="button"
                   className="btn w-100 botones_ajustes btn-danger"
                   onClick={eliminarCuenta}
