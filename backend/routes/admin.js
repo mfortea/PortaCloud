@@ -4,7 +4,6 @@ const router = express.Router();
 const User = require("../models/User");
 const passport = require("passport");
 const Log = require('../models/Log');
-const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
 
 // Middleware para verificar si el usuario es administrador
@@ -74,7 +73,8 @@ router.put("/users/:id/role", passport.authenticate('jwt', { session: false }), 
     // Actualizar el rol
     const updatedUser = await User.findByIdAndUpdate(id, { role }, { new: true });
 
-    // Registrar log
+    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
     const log = new Log({
       userId: req.user.userId, 
       action: 'role_changed',
@@ -106,6 +106,7 @@ router.delete("/users/:id", passport.authenticate('jwt', { session: false }), is
     // Eliminar el usuario
     await User.findByIdAndDelete(id);
 
+    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     // Registrar log
     const log = new Log({
       userId: req.user.userId, 

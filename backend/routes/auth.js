@@ -9,7 +9,6 @@ const passport = require('passport');
 const getDeviceInfo = require('../utils/deviceInfo')
 const Log = require('../models/Log');
 const router = express.Router();
-const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
 let io;
 
@@ -39,7 +38,7 @@ router.post("/register", async (req, res) => {
 
   try {
     await newUser.save();
-    
+
     // Generar token
     const token = jwt.sign(
       { userId: newUser._id, role: newUser.role },
@@ -47,22 +46,22 @@ router.post("/register", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Usuario registrado exitosamente",
       token, // Añadir token
       username: newUser.username,
       role: newUser.role,
-      userId: newUser._id 
+      userId: newUser._id
     });
+    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const newLog = new Log({
+      userId: newUser._id,
+      action: 'register',
+      ipAddress: ipAddress,
+      userAgent: req.headers['user-agent']
+    });
+    await newLog.save();
 
-      const newLog = new Log({
-    userId: newUser._id,
-    action: 'register',
-    ipAddress: ipAddress,
-    userAgent: req.headers['user-agent']
-  });
-  await newLog.save();
-    
   } catch (err) {
     res.status(500).json({ message: "Error al registrar el usuario" });
   }
@@ -82,7 +81,7 @@ router.post("/login", async (req, res) => {
   }
 
   const token = jwt.sign(
-    { userId: user._id, role: user.role }, 
+    { userId: user._id, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
@@ -93,7 +92,7 @@ router.post("/login", async (req, res) => {
   await user.save();
 
   const deviceId = uuidv4();
-
+  const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const newLog = new Log({
     userId: user._id,
     action: 'login',
@@ -121,7 +120,7 @@ router.post("/login", async (req, res) => {
     io.emit("newConnection", { message: "Nuevo cliente conectado", userId: user._id });
   }
 
-  res.json({ token, deviceId, username: user.username, role: user.role,  userId: user._id });
+  res.json({ token, deviceId, username: user.username, role: user.role, userId: user._id });
 });
 
 
@@ -135,7 +134,7 @@ router.get("/profile", passport.authenticate('jwt', { session: false }), async (
     res.json({
       username: user.username,
       role: user.role,
-      userId: user._id, 
+      userId: user._id,
       createdAt: user.createdAt,
       lastLogin: user.lastLogin,
     });
@@ -152,7 +151,8 @@ router.post("/logout", async (req, res) => {
 
     await Device.deleteOne({ userId: decoded.userId, deviceId: req.body.deviceId });
     res.json({ message: "Sesión cerrada correctamente" });
-
+    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    
     const newLog = new Log({
       userId: decoded.userId,
       action: 'logout',
@@ -176,7 +176,7 @@ router.get("/devices", async (req, res) => {
     if (err) return res.status(403).json({ message: "Token inválido" });
 
     const devices = await Device.find({ userId: decoded.userId }).select("deviceId os browser deviceType clipboardContent");
-    console.log("Dispositivos obtenidos:", devices); 
+    console.log("Dispositivos obtenidos:", devices);
 
     res.json(devices);
   });
@@ -189,7 +189,7 @@ router.post("/updateClipboard", async (req, res) => {
     if (!device) return res.status(404).json({ message: "Dispositivo no encontrado" });
 
     device.clipboardContent = clipboardContent;
-    device.lastActive = new Date(); 
+    device.lastActive = new Date();
     await device.save();
 
     res.json({ message: "Contenido del portapapeles actualizado" });
