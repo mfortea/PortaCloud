@@ -8,8 +8,8 @@ const UAParser = require('ua-parser-js');
 const passport = require('passport');
 const getDeviceInfo = require('../utils/deviceInfo')
 const Log = require('../models/Log');
-
 const router = express.Router();
+const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
 let io;
 
@@ -58,7 +58,7 @@ router.post("/register", async (req, res) => {
       const newLog = new Log({
     userId: newUser._id,
     action: 'register',
-    ipAddress: req.ip,
+    ipAddress: ipAddress,
     userAgent: req.headers['user-agent']
   });
   await newLog.save();
@@ -97,7 +97,7 @@ router.post("/login", async (req, res) => {
   const newLog = new Log({
     userId: user._id,
     action: 'login',
-    ipAddress: req.ip,
+    ipAddress: ipAddress,
     userAgent: req.headers['user-agent'],
     details: {
       deviceId: deviceId,
@@ -156,7 +156,7 @@ router.post("/logout", async (req, res) => {
     const newLog = new Log({
       userId: decoded.userId,
       action: 'logout',
-      ipAddress: req.ip,
+      ipAddress: ipAddress,
       userAgent: req.headers['user-agent']
     });
     await newLog.save();
