@@ -92,6 +92,8 @@ router.post("/login", async (req, res) => {
   user.lastLogin = new Date();
   await user.save();
 
+  const deviceId = uuidv4();
+
   const newLog = new Log({
     userId: user._id,
     action: 'login',
@@ -105,7 +107,6 @@ router.post("/login", async (req, res) => {
   });
   await newLog.save();
 
-  const deviceId = uuidv4();
   const newDevice = await Device.create({
     userId: user._id,
     deviceId,
