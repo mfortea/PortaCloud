@@ -17,12 +17,12 @@ export default function Footer() {
       <div className="container">
         <p className="mb-0 text-center">
           © {currentYear || ''} PortaCloud  &nbsp; | &nbsp; <Link 
-          href="https://github.com/mfortea/TFG" 
+          href="https://github.com/mfortea/portacloud" 
           target="_blank" 
           rel="noopener noreferrer"
           className='enlace_github'
         >
-          <FaGithub size={20} /> mfortea/TFG
+          <FaGithub size={20} /> mfortea/PortaCloud
         </Link>
         </p>
 

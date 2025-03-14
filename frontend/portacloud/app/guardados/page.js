@@ -253,7 +253,7 @@ export default function Guardados() {
       ) : (
         <div className="row">
           {filteredItems.map((item) => (
-            <div key={item._id} className="col-md-4 mb-4">
+            <div key={item._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4">
               <div className="device-card shadow-lg">
                 <div className="mb-3 tipo_dispositivo">
                   <p className="text-center">
@@ -267,11 +267,11 @@ export default function Guardados() {
                   </p>
                 </div>
                 <div className="card-body text-center">
-                  <div className="clipboard-box p-3 m-3" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer" }}>
+                  <div className="clipboard-box p-3 m-3 text-break text-wrap" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }}>
                     {item.type === "image" ? (
                       <img src={item.content} alt="Guardado" className="img-fluid mb-3" />
                     ) : (
-                      <p>{item.content}</p>
+                      <p className="text-break text-wrap" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>{item.content}</p>
                     )}
                   </div>
                   <img

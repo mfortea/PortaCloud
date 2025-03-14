@@ -38,12 +38,16 @@ export default function AppNavbar() {
       {/* Navbar para móviles (menú desplegable) */}
       <Navbar expand="lg" className="p-3 d-lg-none">
         <Container fluid>
+        <div className="boton_logo" title="Volver a inicio">
           <Navbar.Brand href="/dashboard">
-            <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
-            <span className="logo_letras">
-              <span className="negrita">PORTA</span>CLOUD
-            </span>
+
+              <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
+              <span className="logo_letras">
+                <span className="negrita">PORTA</span>CLOUD
+              </span>
+
           </Navbar.Brand>
+          </div>
           <Navbar.Toggle aria-controls="offcanvasNavbar" />
           <Navbar.Offcanvas
             id="offcanvasNavbar"
@@ -58,9 +62,6 @@ export default function AppNavbar() {
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="flex-column">
-                <Nav.Link href="/dashboard">
-                  <i className="fa-solid fa-house"></i> Inicio
-                </Nav.Link>
                 {user && user.role === 'admin' && (
                   <Nav.Link href="/admin">
                     <i className="fa-solid fa-user-shield"></i> Administración
@@ -72,9 +73,6 @@ export default function AppNavbar() {
                 <Nav.Link href="/ayuda">
                   <i className="fa-solid fa-circle-question"></i> Ayuda
                 </Nav.Link>
-                <Nav.Link href="/ajustes">
-                  <i className="fa-solid fa-gear"></i> Ajustes
-                </Nav.Link>
                 <br></br>
                 <br></br>
                 <div className="div_usuario">
@@ -82,6 +80,9 @@ export default function AppNavbar() {
                     <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
                     {user ? user.username : "Cargando..."}
                   </p>
+                  <Nav.Link href="/ajustes">
+                    <i className="fa-solid fa-gear"></i> Ajustes
+                  </Nav.Link>
                   <Nav.Link onClick={handleLogout} className="text-danger">
                     <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
                   </Nav.Link>
@@ -95,16 +96,17 @@ export default function AppNavbar() {
       {/* Navbar para escritorio (barra superior) */}
       <Navbar expand="lg" className="p-3 d-none d-lg-block">
         <Container fluid>
+        <div className="boton_logo" title="Volver a inicio">
           <Navbar.Brand href="/dashboard">
-            <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
-            <span className="logo_letras">
-              <span className="negrita">PORTA</span>CLOUD
-            </span>
+
+              <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
+              <span className="logo_letras">
+                <span className="negrita">PORTA</span>CLOUD
+              </span>
+
           </Navbar.Brand>
+          </div>
           <Nav className="me-auto">
-            <Nav.Link href="/dashboard">
-              <i className="fa-solid fa-house"></i> Inicio
-            </Nav.Link>
             {user && user.role === 'admin' && (
               <Nav.Link href="/admin">
                 <i className="fa-solid fa-user-shield"></i> Administración
@@ -116,9 +118,6 @@ export default function AppNavbar() {
             <Nav.Link href="/ayuda">
               <i className="fa-solid fa-circle-question"></i> Ayuda
             </Nav.Link>
-            <Nav.Link href="/ajustes">
-              <i className="fa-solid fa-gear"></i> Ajustes
-            </Nav.Link>
           </Nav>
           <Nav>
             <div className="div_usuario">
@@ -126,6 +125,9 @@ export default function AppNavbar() {
                 <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
                 {user ? user.username : "Cargando..."}
               </p>
+              <Nav.Link href="/ajustes">
+                <i className="fa-solid fa-gear"></i> Ajustes
+              </Nav.Link>
               <Nav.Link onClick={handleLogout} className="text-danger">
                 <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
               </Nav.Link>

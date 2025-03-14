@@ -639,7 +639,7 @@ export default function Dashboard() {
                   </p>
 
                   <div
-                    className="clipboard-box p-3 mt-3"
+                    className="clipboard-box p-3 mt-3 text-break text-wrap"
                     onClick={() => copiarContenido(device.clipboardContent)}
                     title="Copiar contenido"
                     style={{ cursor: "pointer" }}

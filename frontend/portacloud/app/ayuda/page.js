@@ -11,6 +11,48 @@ export default function NotSupported() {
         <div className="container py-5 text-center mt-2">
             <h1><i className="fa-solid fa-circle-question"></i> Ayuda</h1>
             <br></br>
+            <div className="table-responsive">
+            <h2>Menú de navegación</h2>
+            <br></br>
+                <table className="tabla_ayuda mx-auto" style={{ maxWidth: '800px' }}>
+                    <thead>
+                        <tr>
+                            <th>Botón</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div className="boton_logo" title="Volver a inicio">
+
+                                    <img src="/logo.png" alt="Logo" className="logo_ppal" />{" "}
+                                    <span className="logo_letras">
+                                        <span className="negrita">PORTA</span>CLOUD
+                                    </span>
+
+
+                                </div>
+                            </td>
+                            <td>Vuelve a la pantalla principal (dashboard)</td>
+                        </tr>
+                        <tr>
+                            <td>
+                           <div className="nav-link"><i className="fa-solid fa-star"></i> Guardados</div>
+                            </td>
+                            <td>Muestra los elementos que se hayan guardado del portapapeles</td>
+                        </tr>
+                        <tr>
+                        <td>
+                           <div className="nav-link"><i className="fa-solid fa-gear"></i> Ajustes</div>
+                            </td>
+                            <td>Gestiona distintos ajustes del usuario actual</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <br></br><br></br>
             <h2>Significado de los botones</h2>
             <br></br>
             <div className="table-responsive">
@@ -79,6 +121,8 @@ export default function NotSupported() {
             <br></br>
             <br></br>
             <h2>Navegadores compatibles</h2>
+            <br></br>
+            <p>PortaCloud hace uso de la API Clipboard, para que todas las funciones funcionen plenamente se deberán utilizar alguno de los siguientes navegadores</p>
             <div className="mt-2 row justify-content-center">
                 <img src="/chrome.png" alt="Google Chrome" className="img-fluid mb-3"
                     style={{ width: 80 }} />
@@ -88,7 +132,7 @@ export default function NotSupported() {
                     style={{ width: 80 }} />*
             </div>
             <br></br>
-            <p className="font-italic">* La funcionalidad en Safari puede estar limitada</p>
+            <p className="font-italic">* En Safari funciones como la actualización automática del portapapeles y el soporte para imágenes no está soportado. Se deberá copiar manualmente en cada inicio de sesión con el botón "Leer portapapeles desde Safari", desde donde se podrá pegar el contenido actual del portapapeles</p>
         </div>
     );
 }

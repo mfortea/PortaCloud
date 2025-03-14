@@ -203,8 +203,8 @@ export default function Ajustes() {
         </button>
         <br></br>
         <br></br>
-        <Link className="enlace_github" href="/acercade">
-          <i className="fa-solid fa-circle-question"></i> Acerca de PortaCloud
+        <Link className="nav-link" href="/acercade">
+          <i className="fa-solid fa-circle-question"></i>&nbsp; Acerca de PortaCloud
         </Link>
       </div>
 

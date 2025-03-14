@@ -548,6 +548,23 @@ a {
 
   /* ========== ESTILOS DEL MENÚ ========== */
 
+  .boton_logo {
+    padding: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.5s;
+  }
+
+  .boton_logo:hover {
+    background-color: #0000002d;
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  .boton_logo:active {
+    background-color: rgb(106, 106, 106) !important;
+  }
+
   .bg-light {
     -webkit-box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
     -moz-box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);

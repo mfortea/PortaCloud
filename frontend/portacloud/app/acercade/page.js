@@ -48,12 +48,12 @@ export default function AcercaDe() {
             </p>
             <h4 className="text-center">
                 <Link
-                    href="https://github.com/mfortea/TFG"
+                    href="https://github.com/mfortea/PortaCloud"
                     target="_blank"
                     rel="noopener noreferrer"
                     className='enlace_github'
                 >
-                    <FaGithub size={40} /> mfortea/TFG
+                    <FaGithub size={40} /> mfortea/PortaCloud
                 </Link>
             </h4>
         </div>
