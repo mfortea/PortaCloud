@@ -5,6 +5,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -25,6 +27,11 @@ export default function AdminPage() {
   // Para identificar el usuario seleccionado al editar/eliminar
   const [selectedUserId, setSelectedUserId] = useState(null);
 
+  const [logs, setLogs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [logsPerPage] = useState(20);
+  const [isRefreshingLogs, setIsRefreshingLogs] = useState(false);
+
   useEffect(() => {
     const checkAuth = async () => {
       setIsCheckingAuth(true);
@@ -34,6 +41,7 @@ export default function AdminPage() {
         router.push("/dashboard");
       } else {
         await fetchUsers();
+        await fetchLogs();
       }
       setIsCheckingAuth(false);
     };
@@ -65,6 +73,36 @@ export default function AdminPage() {
     }
   };
 
+  // Función para obtener logs
+  const fetchLogs = async () => {
+    setIsRefreshingLogs(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/admin/logs`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setLogs(data);
+      } else {
+      }
+    } catch (error) {
+      toast.error("Error de conexión");
+    } finally {
+      setIsRefreshingLogs(false);
+    }
+  };
+
+// Calcular los logs a mostrar
+const indexOfLastLog = currentPage * logsPerPage;
+const indexOfFirstLog = indexOfLastLog - logsPerPage;
+const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
+
+// Cambiar de página
+const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   // Funciones para abrir modales
   const openEditRoleModal = (userId, currentRole) => {
     setSelectedUserId(userId);
@@ -76,15 +114,6 @@ export default function AdminPage() {
   const openDeleteUserModal = (userId) => {
     setSelectedUserId(userId);
     setModalType("deleteUser");
-    setIsModalOpen(true);
-  };
-
-  const openCreateUserModal = () => {
-    // Limpia los campos del formulario al abrir el modal
-    setNewUsername("");
-    setNewPassword("");
-    setNewRole("user");
-    setModalType("createUser");
     setIsModalOpen(true);
   };
 
@@ -118,6 +147,7 @@ export default function AdminPage() {
       if (response.ok) {
         toast.success("Rol actualizado exitosamente");
         await fetchUsers();
+        await fetchLogs();
       } else {
         toast.error("Error al actualizar el rol");
       }
@@ -142,6 +172,7 @@ export default function AdminPage() {
       if (response.ok) {
         toast.success("Usuario eliminado exitosamente");
         await fetchUsers();
+        await fetchLogs();
       } else {
         toast.error("Error al eliminar el usuario");
       }
@@ -151,7 +182,7 @@ export default function AdminPage() {
     closeModal();
   };
 
-  // Función para crear usuario (para el formulario fuera del modal)
+  // Función para crear usuario 
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
@@ -175,6 +206,7 @@ export default function AdminPage() {
       if (response.ok) {
         toast.success("Usuario creado exitosamente");
         await fetchUsers();
+        await fetchLogs();
       } else {
         toast.error("Error al crear el usuario");
       }
@@ -184,7 +216,9 @@ export default function AdminPage() {
   };
 
   if (isCheckingAuth || (!user && typeof window !== "undefined")) {
-    return <div>Cargando...</div>;
+    return <div className="loading-spinner">
+      <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
+    </div>;
   }
 
   return (
@@ -217,10 +251,12 @@ export default function AdminPage() {
               <tr key={userItem._id}>
                 <td className="bold">{userItem.username}</td>
                 <td>{userItem.role}</td>
-                <td>{new Date(userItem.createdAt).toLocaleDateString()}</td>
+                <td>
+                  {format(new Date(userItem.createdAt), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                </td>
                 <td>
                   {userItem.lastLogin
-                    ? new Date(userItem.lastLogin).toLocaleDateString()
+                    ? format(new Date(userItem.lastLogin), 'dd MMM yyyy HH:mm:ss', { locale: es })
                     : "Nunca"}
                 </td>
                 <td>
@@ -285,6 +321,76 @@ export default function AdminPage() {
         </button>
       </form>
 
+      <div className="mt-5">
+        <h2>
+          <i className="mb-3 fa-solid fa-scroll"></i> Registro de Actividades
+          &nbsp;
+          <button
+            onClick={fetchLogs}
+            className="ml-3 btn boton_aux btn-primary ms-3"
+            disabled={isRefreshingLogs}
+          >
+            {isRefreshingLogs ? (
+              <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+            ) : (
+              <i className="fa fa-refresh" aria-hidden="true"></i>
+            )}
+          </button>
+        </h2>
+        <div className="logs-container">
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>Fecha/Hora</th>
+                <th>Usuario</th>
+                <th>Acción</th>
+                <th>Dirección IP</th>
+                <th>Detalles</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentLogs.map((log) => (
+                <tr key={log._id}>
+                  <td>
+                    {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                  </td>
+                  <td>{log.userId?.username || 'Sistema'}</td>
+                  <td>
+                    {log.action === 'login' && 'Inicio de sesión'}
+                    {log.action === 'logout' && 'Cierre de sesión'}
+                    {log.action === 'register' && 'Registro nuevo'}
+                    {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
+                    {log.action === 'role_changed' && `Rol cambiado: ${log.details?.targetUser} (${log.details?.newRole})`}
+                    {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
+                  </td>
+                  <td>{log.ipAddress}</td>
+                  <td>
+                    {log.details && (
+                      <span className="log-details">
+                        {log.details.os} · {log.details.browser}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Paginación */}
+        <div className="pagination mt-3">
+          {Array.from({ length: Math.ceil(logs.length / logsPerPage) }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => paginate(i + 1)}
+              className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Modal */}
       {isModalOpen && (
         <div className="modal show" style={{ display: "block" }}>
@@ -302,7 +408,7 @@ export default function AdminPage() {
               <div className="modal-body">
                 {modalType === "editRole" && (
                   <>
-                  <h3>Selecciona un rol para aplicar</h3>
+                    <h3>Selecciona un rol para aplicar</h3>
                     <select className="w-100 mt-2 text-center" value={newRole} onChange={(e) => setNewRole(e.target.value)}>
                       <option value="user">Usuario</option>
                       <option value="admin">Administrador</option>

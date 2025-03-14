@@ -16,7 +16,7 @@ export default function AcercaDe() {
                 Este software está distribuido bajo la licencia MIT, lo que significa que puedes usarlo, modificarlo
                 y distribuirlo libremente, siempre que incluyas el aviso de copyright original.
             </p>
-            <div className="mt-3 p-3 border rounded bg-light">
+            <div className="licencia mt-3 p-3 border rounded">
                 <pre style={{ whiteSpace: "pre-wrap", fontFamily: "monospace", textAlign: "justify" }}>
                     MIT License
 

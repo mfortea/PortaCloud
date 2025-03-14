@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const passport = require("passport");
+const Log = require('../models/Log');
 
 
 // Middleware para verificar si el usuario es administrador
@@ -58,16 +59,32 @@ router.post("/users", passport.authenticate('jwt', { session: false }), async (r
   }
 });
 
-// Modificar el rol de un usuario
 router.put("/users/:id/role", passport.authenticate('jwt', { session: false }), isAdmin, async (req, res) => {
-  const { id } = req.params;
-  const { role } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(id, { role }, { new: true });
-    if (!user) {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    // Obtener el usuario antes de actualizarlo
+    const userToUpdate = await User.findById(id);
+    if (!userToUpdate) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    res.json({ message: "Rol actualizado exitosamente", user });
+
+    // Actualizar el rol
+    const updatedUser = await User.findByIdAndUpdate(id, { role }, { new: true });
+
+    // Registrar log
+    const log = new Log({
+      userId: req.user.userId, // El admin que realiza la acción
+      action: 'role_changed',
+      details: {
+        targetUser: updatedUser.username, // Nombre del usuario modificado
+        newRole: updatedUser.role // Nuevo rol asignado
+      }
+    });
+    await log.save();
+
+    res.json({ message: "Rol actualizado exitosamente", user: updatedUser });
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar el rol", error });
   }
@@ -75,15 +92,44 @@ router.put("/users/:id/role", passport.authenticate('jwt', { session: false }), 
 
 // Eliminar un usuario
 router.delete("/users/:id", passport.authenticate('jwt', { session: false }), isAdmin, async (req, res) => {
-  const { id } = req.params;
   try {
-    const user = await User.findByIdAndDelete(id);
-    if (!user) {
+    const { id } = req.params;
+
+    // Obtener el usuario antes de eliminarlo
+    const userToDelete = await User.findById(id);
+    if (!userToDelete) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
+
+    // Eliminar el usuario
+    await User.findByIdAndDelete(id);
+
+    // Registrar log
+    const log = new Log({
+      userId: req.user.userId, // El admin que realiza la acción
+      action: 'user_deleted',
+      details: {
+        deletedUser: userToDelete.username // Nombre del usuario eliminado
+      }
+    });
+    await log.save();
+
     res.json({ message: "Usuario eliminado exitosamente" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el usuario", error });
+  }
+});
+
+// Obtener logs
+router.get("/logs", passport.authenticate('jwt', { session: false }), isAdmin, async (req, res) => {
+  try {
+    const logs = await Log.find()
+      .sort({ timestamp: -1 })
+      .limit(50)
+      .populate('userId', 'username');
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los logs", error });
   }
 });
 

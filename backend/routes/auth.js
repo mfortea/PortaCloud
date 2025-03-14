@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const UAParser = require('ua-parser-js');
 const passport = require('passport');
 const getDeviceInfo = require('../utils/deviceInfo')
+const Log = require('../models/Log');
 
 const router = express.Router();
 
@@ -53,6 +54,15 @@ router.post("/register", async (req, res) => {
       role: newUser.role,
       userId: newUser._id 
     });
+
+      const newLog = new Log({
+    userId: newUser._id,
+    action: 'register',
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent']
+  });
+  await newLog.save();
+    
   } catch (err) {
     res.status(500).json({ message: "Error al registrar el usuario" });
   }
@@ -78,6 +88,22 @@ router.post("/login", async (req, res) => {
   );
 
   const { os, browser, deviceType } = getDeviceInfo(req.headers["user-agent"]);
+
+  user.lastLogin = new Date();
+  await user.save();
+
+  const newLog = new Log({
+    userId: user._id,
+    action: 'login',
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+    details: {
+      deviceId: deviceId,
+      os: os,
+      browser: browser
+    }
+  });
+  await newLog.save();
 
   const deviceId = uuidv4();
   const newDevice = await Device.create({
@@ -125,6 +151,14 @@ router.post("/logout", async (req, res) => {
 
     await Device.deleteOne({ userId: decoded.userId, deviceId: req.body.deviceId });
     res.json({ message: "Sesión cerrada correctamente" });
+
+    const newLog = new Log({
+      userId: decoded.userId,
+      action: 'logout',
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent']
+    });
+    await newLog.save();
 
     if (io) {
       io.emit("updateDevices", await Device.find({ userId: decoded.userId }));
