@@ -644,6 +644,7 @@ input:hover {
 /* ========== ESTILOS DEL MENÚ ========== */
 
 .boton_logo {
+  padding: 8px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.5s;
@@ -691,6 +692,15 @@ padding: 10px !important;
   margin-bottom: 0px !important;
   border-radius: 8px;
   background-color: #5151512d !important;
+}
+
+.usuario_movil {
+  font-size: 22px !important;
+  color: rgb(99, 99, 99) !important;
+  margin-bottom: 0px !important;
+  border-radius: 8px;
+  background-color: unset;
+  margin-bottom: 10px !important;
 }
 
 .div_usuario {
@@ -744,16 +754,23 @@ padding: 10px !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.navbar.d-none.d-lg-block .nav-link {
+.navbar.d-none.d-lg-block, .nav-link {
   font-size: 18px !important;
   padding: 10px 15px !important;
   color: #0a0a0a !important;
+  transition: background-color 0.3s ease-in-out;
 }
 
-.navbar.d-none.d-lg-block .nav-link:hover {
-  color: #ffffff !important;
+.navbar.d-none.d-lg-block,.nav-link:hover, .dropdown-item:hover {
+  color: #000000 !important;
+  transition: background-color 0.3s ease-in-out;
 }
 
+.nav-link:active, .dropdown-item:active{
+  background-color: #3c3c3c !important;
+  color: white !important;
+  transition: background-color 0.3s ease-in-out;
+}
 .navbar.d-none.d-lg-block .div_usuario {
   display: flex;
   align-items: center;
@@ -774,6 +791,20 @@ padding: 10px !important;
   color: #c82333 !important;
 }
 
+.menu-button {
+  width: 70px !important;
+  font-size: 20px !important;
+  background-color: #d6d6d6 !important;
+  border: none !important;
+  color: black !important;
+}
+
+.menu-button:hover {
+  background-color: #b1b1b1 !important;
+}
+.menu-button:active {
+  background-color: #545454 !important;
+}
 
 /* ========== ESTILOS DEL LOGIN ========== */
 /* Estilos generales para la landing page */
@@ -1313,5 +1344,27 @@ padding: 10px !important;
     background-color: #1b1b1b !important;
   }
 
+  .usuario_movil {
+    color: rgb(169, 169, 169) !important;
+  }
+
+  .menu-button {
+    width: 70px !important;
+    font-size: 20px !important;
+    background-color: #3a3a3a !important;
+    border: none !important;
+    color: rgb(180, 180, 180) !important;
+  }
+  
+  .menu-button:hover {
+    background-color: #5f5f5f !important;
+  }
+  .menu-button:active {
+    background-color: #2d2d2d !important;
+  }
+
+  .dropdown-item:hover {
+    color: white !important;
+  }
 
 }

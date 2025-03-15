@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Navbar, Nav, Offcanvas, Container, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav, Offcanvas, Container, NavDropdown, Button } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
 export default function AppNavbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const [showOffcanvas, setShowOffcanvas] = useState(false);
 
   const handleLogout = () => {
     const token = localStorage.getItem("token");
@@ -33,29 +34,35 @@ export default function AppNavbar() {
 
   return (
     <>
-      {/* Navbar para móviles */}
+      {/* Navbar para móviles*/}
       <Navbar expand="lg" className="p-3 d-lg-none">
         <Container fluid>
-          <Navbar.Brand href="/dashboard">
-            <img src="/logo.png" alt="Logo" className="logo_ppal" />
-            <span className="logo_letras">
-              <span className="negrita">PORTA</span>CLOUD
-            </span>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="offcanvasNavbar" />
-          <Navbar.Offcanvas id="offcanvasNavbar" placement="start">
+        <div className="boton_logo">
+            <Navbar.Brand href="/dashboard">
+              <img src="/logo.png" alt="Logo" className="logo_ppal" />
+              <span className="logo_letras">
+                <span className="negrita">PORTA</span>CLOUD
+              </span>
+            </Navbar.Brand>
+          </div>
+          <Button title="Abrir menú" className="menu-button" onClick={() => setShowOffcanvas(true)}>
+            <i className="fa-solid fa-bars"></i>
+          </Button>
+          <Offcanvas show={showOffcanvas} onHide={() => setShowOffcanvas(false)} placement="start">
             <Offcanvas.Header closeButton>
-              <Navbar.Brand href="/dashboard">
-                <img src="/logo.png" alt="Logo" className="logo_ppal" />
-                <span className="logo_letras">
-                  <span className="negrita">PORTA</span>CLOUD
-                </span>
-              </Navbar.Brand>
+            <div className="boton_logo">
+            <Navbar.Brand href="/dashboard">
+              <img src="/logo.png" alt="Logo" className="logo_ppal" />
+              <span className="logo_letras">
+                <span className="negrita">PORTA</span>CLOUD
+              </span>
+            </Navbar.Brand>
+          </div>
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="flex-column">
                 {user.role === "admin" && (
-                  <Nav.Link href="/admin">
+                  <Nav.Link className="nav-link" href="/admin">
                     <i className="fa-solid fa-user-shield"></i> Administración
                   </Nav.Link>
                 )}
@@ -66,7 +73,7 @@ export default function AppNavbar() {
                   <i className="fa-solid fa-circle-question"></i> Ayuda
                 </Nav.Link>
                 <div className="div_usuario mt-3">
-                  <p className="fw-bold usuario">
+                  <p className="fw-bold usuario_movil">
                     <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
                     {user.username || "Cargando..."}
                   </p>
@@ -79,7 +86,7 @@ export default function AppNavbar() {
                 </div>
               </Nav>
             </Offcanvas.Body>
-          </Navbar.Offcanvas>
+          </Offcanvas>
         </Container>
       </Navbar>
 
@@ -87,12 +94,12 @@ export default function AppNavbar() {
       <Navbar expand="lg" className="p-3 d-none d-lg-block">
         <Container fluid>
           <div className="boton_logo">
-          <Navbar.Brand href="/dashboard">
-            <img src="/logo.png" alt="Logo" className="logo_ppal" />
-            <span className="logo_letras">
-              <span className="negrita">PORTA</span>CLOUD
-            </span>
-          </Navbar.Brand>
+            <Navbar.Brand href="/dashboard">
+              <img src="/logo.png" alt="Logo" className="logo_ppal" />
+              <span className="logo_letras">
+                <span className="negrita">PORTA</span>CLOUD
+              </span>
+            </Navbar.Brand>
           </div>
           <Nav className="me-auto">
             {user.role === "admin" && (
