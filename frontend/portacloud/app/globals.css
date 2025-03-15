@@ -1188,6 +1188,17 @@ padding: 10px !important;
     color: white;
   }
 
+  .clipboard-box-saved {
+    background-color: #4e4e4e !important;
+    color: white;
+    border-style: none;
+  }
+
+  .clipboard-box-saved:hover {
+    background-color: #2c5377 !important;
+    color: white;
+  }
+
   .flex-column {
     background-color: #494949 !important;
     color: white !important;
@@ -1351,11 +1362,12 @@ padding: 10px !important;
   }
 
   .users-table th,
-  .users-table td {
+  .users-table td,   .saved-table th,
+  .saved-table td {
     background-color: #272727;
   }
 
-  .users-table th {
+  .users-table th,   .saved-table th {
     background-color: #000000;
   }
 
