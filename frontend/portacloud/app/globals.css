@@ -174,7 +174,7 @@ a {
     opacity: 1;
   }
 }
-
+/* Estilos para el contenedor de dispositivos */
 .device-container {
   display: flex;
   flex-wrap: wrap;
@@ -183,31 +183,32 @@ a {
   transition: all 0.5s;
 }
 
+/* Estilos para las tarjetas de dispositivos */
 .device-card-dashboard {
-  width: calc(50% - 20px);
-  /* Por defecto, dos dispositivos por fila */
+  width: calc(50% - 20px); /* Dos tarjetas por fila en pantallas grandes */
   max-width: 500px;
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-  opacity: 1;
   background: #ffffff;
-  /* Asegura que no haya bordes extraños */
   border-radius: 20px;
   padding: 20px;
   box-sizing: border-box;
-  border-radius: 30px;
-  border-width: 40px;
-  padding: 20px;
-  position: relative;
   color: rgb(0, 0, 0);
   font-size: 1.2rem;
   text-align: center;
   overflow: hidden;
-  border-radius: 20px;
-  user-select: text;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  overflow: hidden;
-  will-change: transform, height;
-  transform-origin: center;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Estilos para pantallas pequeñas (menos de 768px) */
+@media (max-width: 768px) {
+  .device-container {
+    flex-direction: column; /* Apilar tarjetas verticalmente */
+    align-items: center; /* Centrar las tarjetas */
+  }
+
+  .device-card-dashboard {
+    width: 100%; /* Ocupar el 100% del ancho en pantallas pequeñas */
+    max-width: 100%; /* Eliminar el límite de ancho */
+  }
 }
 
 .device-card-dashboard.single {
