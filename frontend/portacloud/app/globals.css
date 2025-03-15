@@ -431,7 +431,7 @@ input:hover {
   animation: brillo 3s infinite alternate;
   user-select: text;
   transition: all 0.3s ease, transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  min-height: 100px; 
+  min-height: 100px;
 }
 
 .clipboard-display::after {
@@ -644,7 +644,6 @@ input:hover {
 /* ========== ESTILOS DEL MENÚ ========== */
 
 .boton_logo {
-  padding: 5px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.5s;
@@ -666,23 +665,32 @@ input:hover {
   box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
 }
 
-.nav-link {
+.nav-link, .dropdown-item{
   color: #0a0a0a !important;
-  font-size: 22px !important;
-  padding: 15px !important;
 }
 
-.nav-link:hover {
+.nav-link:hover, .dropdown-item:hover{
   color: #ffffff !important;
   background-color: #0000002d;
   border-radius: 8px;
 }
 
+.dropdown-item{
+padding: 10px !important;
+}
+
+.dropdown-item:hover{
+  color: #ffffff !important;
+  background-color: #5151512d !important;
+}
+
+
 .usuario {
   font-size: 22px !important;
-  padding: 15px !important;
   color: rgb(99, 99, 99) !important;
   margin-bottom: 0px !important;
+  border-radius: 8px;
+  background-color: #5151512d !important;
 }
 
 .div_usuario {
@@ -1112,7 +1120,7 @@ input:hover {
     color: white !important;
   }
 
-  .nav-link:hover {
+  .nav-link:hover{
     color: rgb(132, 165, 255) !important;
   }
 
@@ -1292,4 +1300,18 @@ input:hover {
     background-color: #2c2c2c !important;
     border-style: none;
   }
+
+  .dropdown-menu {
+    background: rgb(42 42 42 / 80%) !important;
+  }
+
+  .dropdown-item {
+    color: white !important;
+  }
+
+  .dropdown-item:hover {
+    background-color: #1b1b1b !important;
+  }
+
+
 }
