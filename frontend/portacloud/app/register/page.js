@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../context/AuthContext";
 
@@ -97,8 +97,6 @@ export default function Register() {
 
   return (
     <div className="login-landing-page">
-      <ToastContainer />
-
       <div className="hero-section">
         <div className="hero-content">
           <img src="/logo.png" alt="Logo" className="logo" />
