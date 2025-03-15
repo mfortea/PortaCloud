@@ -4,6 +4,8 @@ const router = express.Router();
 const User = require("../models/User");
 const passport = require("passport");
 const Log = require('../models/Log');
+const SavedItem = require('../models/SavedItem');
+const Device = require('../models/Device');
 
 
 // Middleware para verificar si el usuario es administrador
@@ -96,29 +98,25 @@ router.put("/users/:id/role", passport.authenticate('jwt', { session: false }), 
 router.delete("/users/:id", passport.authenticate('jwt', { session: false }), isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // Eliminar todas las entidades relacionadas
+    await Promise.all([
+      User.findByIdAndDelete(id),
+      Device.deleteMany({ userId: id }),
+      SavedItem.deleteMany({ userId: id })
+    ]);
 
-    // Obtener el usuario antes de eliminarlo
-    const userToDelete = await User.findById(id);
-    if (!userToDelete) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-
-    // Eliminar el usuario
-    await User.findByIdAndDelete(id);
-
-    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     // Registrar log
-    const log = new Log({
-      userId: req.user.userId, 
+    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await new Log({
+      userId: req.user.userId,
       action: 'user_deleted',
       ipAddress: ipAddress,
-      details: {
-        deletedUser: userToDelete.username 
-      }
-    });
-    await log.save();
+      details: { deletedUser: id }
+    }).save();
 
-    res.json({ message: "Usuario eliminado exitosamente" });
+    res.json({ message: "Usuario y datos asociados eliminados correctamente" });
+
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el usuario", error });
   }

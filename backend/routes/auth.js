@@ -9,6 +9,7 @@ const passport = require('passport');
 const getDeviceInfo = require('../utils/deviceInfo');
 const Log = require('../models/Log');
 const router = express.Router();
+const SavedItem = require('../models/SavedItem')
 
 let io;
 
@@ -297,41 +298,36 @@ router.put("/update-password", async (req, res) => {
 router.delete("/delete-account", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return res.status(403).json({ message: "Token no proporcionado" });
-    }
+    if (!token) return res.status(403).json({ message: "Token no proporcionado" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.userId;
 
     const { password } = req.body;
-    if (!password) {
-      return res.status(400).json({ message: "La contraseña es requerida" });
-    }
+    if (!password) return res.status(400).json({ message: "La contraseña es requerida" });
 
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "La contraseña es incorrecta" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "La contraseña es incorrecta" });
 
-    await User.findByIdAndDelete(userId);
-    await Device.deleteMany({ userId });
+    await Promise.all([
+      User.findByIdAndDelete(userId),
+      Device.deleteMany({ userId }),
+      SavedItem.deleteMany({ userId })
+    ]);
 
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    const newLog = new Log({
+    await new Log({
       userId: userId,
       action: 'account_deleted',
       ipAddress: ipAddress,
       userAgent: req.headers['user-agent']
-    });
-    await newLog.save();
+    }).save();
 
-    res.json({ message: "Cuenta eliminada correctamente" });
+    res.json({ message: "Cuenta y datos asociados eliminados correctamente" });
+
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar la cuenta", error: error.message });
   }
