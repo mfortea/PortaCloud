@@ -22,7 +22,9 @@ export default function Guardados() {
   const [deviceTypeOptions, setDeviceTypeOptions] = useState([]);
   const [browserOptions, setBrowserOptions] = useState([]);
   const [deviceTypeFilter, setDeviceTypeFilter] = useState("");
-
+  const [viewMode, setViewMode] = useState("grid");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const fetchGuardados = async () => {
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
@@ -154,6 +156,10 @@ export default function Guardados() {
       (deviceTypeFilter === "" || item.deviceType === deviceTypeFilter)
   );
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+
   const getDeviceLogo = (deviceType, deviceName) => {
     const logos = {
       macos: "/macos.png",
@@ -246,59 +252,110 @@ export default function Guardados() {
             </option>
           ))}
         </select>
+        <select className="form-control" value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
+          <option value="list">▼ Tipo de vista  </option>
+          <option value="grid">Tarjetas</option>
+          <option value="list">Lista</option>
+        </select>
       </div>
-
-      {filteredItems.length === 0 ? (
+      {currentItems.length === 0 ? (
         <h3 className="text-center">No hay elementos guardados que coincidan.</h3>
       ) : (
-        <div className="row">
-          {filteredItems.map((item) => (
-            <div key={item._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4">
-              <div className="device-card shadow-lg">
-                <div className="mb-3 tipo_dispositivo">
-                  <p className="text-center">
-                    {item.deviceType === "equipo"
-                      ? <IoMdDesktop />
-                      : item.deviceType === "smartphone"
-                        ? <MdOutlinePhoneIphone />
-                        : item.deviceType === "tablet"
-                          ? <BsTabletLandscape />
-                          : <MdDevices />}
-                  </p>
-                </div>
-                <div className="card-body text-center">
-                  <div className="clipboard-box p-3 m-3 text-break text-wrap" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }}>
-                    {item.type === "image" ? (
-                      <img src={item.content} alt="Guardado" className="img-fluid mb-3" />
-                    ) : (
-                      <p className="text-break text-wrap" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>{item.content}</p>
-                    )}
+        <>
+          {viewMode === "grid" ? (
+            <div className="row">
+              {currentItems.map((item) => (
+                <div key={item._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4">
+                  <div className="device-card shadow-lg">
+                    <div className="card-body text-center">
+                      <div className="d-flex justify-content-center align-items-center mt-3 gap-2 mb-3">
+                        <div>
+                          {item.deviceType === "equipo"
+                            ? <IoMdDesktop size={40} />
+                            : item.deviceType === "smartphone"
+                              ? <MdOutlinePhoneIphone size={40} />
+                              : item.deviceType === "tablet"
+                                ? <BsTabletLandscape size={40} />
+                                : <MdDevices size={40} />}
+                        </div>
+                        {/* Icono del SO */}
+                        <img
+                          src={getDeviceLogo("os", item.os)}
+                          alt={item.os}
+                          style={{ width: 40, height: 40 }}
+                        />
+                        {/* Icono del navegador */}
+                        <img
+                          src={getDeviceLogo("browser", item.browser)}
+                          alt={item.browser}
+                          style={{ width: 40, height: 40 }}
+                        />
+                      </div>
+                      <p className="mt-3">Guardado el {new Date(item.createdAt).toLocaleString()}</p>
+                      <div>
+                        <button className="btn boton_aux btn-success m-2" onClick={() => descargarContenido(item)}>
+                          <i className="fa fa-download"></i>
+                        </button>
+                        <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
+                          <i className="fa fa-remove"></i>
+                        </button>
+                      </div>
+                      <div className="clipboard-box-saved p-3 m-3 text-break text-wrap" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }}>
+                        {item.type === "image" ? (
+                          <img src={item.content} alt="Guardado" className="img-fluid mb-3" />
+                        ) : (
+                          <p className="text-break text-wrap" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>{item.content}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <img
-                    src={getDeviceLogo("os", item.os)}
-                    alt={item.os}
-                    className="img-fluid"
-                    style={{ width: 40, height: 40 }}
-                  />
-                  <img
-                    src={getDeviceLogo("browser", item.browser)}
-                    alt={item.browser}
-                    className="img-fluid"
-                    style={{ width: 40, height: 40 }}
-                  />
-                  <p className="mt-3">Guardado el {new Date(item.createdAt).toLocaleString()}</p>
-                  <button className="btn boton_aux btn-success m-2" onClick={() => descargarContenido(item)}>
-                    <i className="fa fa-download"></i>
-                  </button>
-                  <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
-                    <i className="fa fa-remove"></i>
-                  </button>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          ) : (
+            <table className="saved-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '50%' }}>Contenido</th>
+                  <th style={{ width: '15%' }}>Plataforma</th>
+                  <th style={{ width: '15%' }}>Fecha</th>
+                  <th style={{ width: '20%' }}>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.map((item) => (
+                  <tr key={item._id}>
+                    <td className="saved-clipboard" onClick={() => copiarContenido(item.content)} style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }} title="Copiar contenido">
+                      {item.content}
+                    </td>
+                    <td className="text-center"><img className="me-2" src={getDeviceLogo("os", item.os)} alt={item.os} style={{ width: 30 }} /><img src={getDeviceLogo("browser", item.browser)} alt={item.browser} style={{ width: 30 }} /></td>
+
+                    <td>{new Date(item.createdAt).toLocaleString()}</td>
+                    <td>
+                      <button className="btn boton_aux btn-success mx-1" onClick={() => descargarContenido(item)}>
+                        <i className="fa fa-download"></i>
+                      </button>
+                      <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
+                        <i className="fa fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
       )}
+      <h5 className="mt-3 text-center">{filteredItems.length} elementos guardados</h5>
+      <div className="pagination-controls text-center mt-3">
+        <button className="btn me-3 boton_aux btn-secondary mx-2" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+          <i className="fa fa-arrow-left"></i>
+        </button>
+        <span className="me-2">Página {currentPage} de {Math.ceil(filteredItems.length / itemsPerPage)}</span>
+        <button className="btn boton_aux  btn-secondary mx-2" disabled={indexOfLastItem >= filteredItems.length} onClick={() => setCurrentPage(currentPage + 1)}>
+          <i className="fa fa-arrow-right"></i>
+        </button>
+      </div>
     </div>
   );
 }

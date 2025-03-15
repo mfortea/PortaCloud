@@ -180,6 +180,7 @@ a {
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
+  transition: all 0.5s;
 }
 
 .device-card-dashboard {
@@ -480,6 +481,7 @@ input:hover {
   padding: 30px;
   text-align: center;
   user-select: text;
+  transition: all 0.5s;
 }
 
 .clipboard-display img {
@@ -496,9 +498,23 @@ input:hover {
   font-family: monospace;
   transition: all 0.3s ease;
   min-height: 80px;
+  transition: all 0.5s;
 }
 
-.clipboard-box:hover {
+.clipboard-box-saved {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  text-align: center;
+  font-family: monospace;
+  transition: all 0.3s ease;
+  user-select: text;
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
+}
+
+.clipboard-box:hover, .clipboard-box-saved:hover {
   background-color: #a4d0ff;
   transition: all 0.5s;
 }
@@ -517,6 +533,11 @@ input:hover {
   overflow: hidden;
   border-radius: 20px;
   user-select: text;
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
+  min-width: 300px;
+  height: 100%; 
 }
 
 .device-card .d-flex {
@@ -1070,7 +1091,50 @@ padding: 10px !important;
   margin-right: auto;
 }
 
+/* ========== ESTILOS SECCIÓN GUARDADOS ========== */
+.saved-table {
+  width: 100%;
+  table-layout: fixed; 
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-radius: 10px;
+}
 
+.saved-table th,
+.saved-table td {
+  text-align: left;
+  padding: 10px;
+  text-align: center; /* Centra el contenido horizontalmente */
+  vertical-align: middle; /* Centra el contenido verticalmente */
+  word-wrap: break-word; 
+  border-style: solid;
+  border-color: #e5e5e5;
+  border-width: 1px;
+}
+
+.saved-table th {
+  background-color: #ebebeb;
+  padding: 8px;
+}
+
+.saved-clipboard{
+  font-family: monospace;
+  text-align: center;
+  user-select: text;
+  word-break: break-word; 
+  overflow-wrap: break-word; 
+}
+
+.saved-clipboard:hover{
+  background-color: #a4d0ff;
+  transition: all 0.5s;
+}
+
+.saved-clipboard:active{
+  color: white;
+  background-color: #6a8aac;
+  transition: all 0.5s;
+}
 
 
 /* ========== ESTILOS DEL MODO OSCURO ========== */
