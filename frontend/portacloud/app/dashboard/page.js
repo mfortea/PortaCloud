@@ -28,6 +28,7 @@ export default function Dashboard() {
   const [clipboardAnimation, setClipboardAnimation] = useState(false);
   const platform = require('platform');
   const [showSafariModal, setShowSafariModal] = useState(false);
+  const [loadingDevices, setLoadingDevices] = useState(false);
 
   const actualizarPortapapeles = async () => {
     try {
@@ -83,25 +84,43 @@ export default function Dashboard() {
     }
   };
 
-
   const actualizarDispositivos = async (token) => {
+    setLoadingDevices(true); // Activar el estado de carga
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     try {
       const response = await fetch(`${serverUrl}/api/auth/devices`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       let devices = await response.json();
-
-      // Excluir el dispositivo actual
+  
       const currentDeviceId = localStorage.getItem("deviceId");
       devices = devices.filter((device) => device.deviceId !== currentDeviceId);
-
-      setConnectedDevices(devices);
+  
+      setConnectedDevices((prevDevices) => {
+        return devices.map((device) => {
+          const prevDevice = prevDevices.find((d) => d.deviceId === device.deviceId);
+          const contentChanged = prevDevice && prevDevice.clipboardContent !== device.clipboardContent;
+  
+          return {
+            ...device,
+            new: !prevDevices.some((d) => d.deviceId === device.deviceId),
+            flash: contentChanged,
+          };
+        });
+      });
+  
+      setTimeout(() => {
+        setConnectedDevices((prevDevices) =>
+          prevDevices.map((device) => ({ ...device, flash: false }))
+        );
+      }, 1000);
     } catch (error) {
       console.error("Error al obtener los dispositivos:", error);
+    } finally {
+      setLoadingDevices(false); // Desactivar el estado de carga
     }
   };
-
+  
   const descargarContenidoDispositivo = (content, type) => {
     if (!content) return;
 
@@ -228,7 +247,7 @@ export default function Dashboard() {
     if (showAlert) {
       const timer = setTimeout(() => {
         setShowAlert(false);
-      }, 3000); // Oculta el alert después de 3 segundos
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [showAlert]);
@@ -260,7 +279,7 @@ export default function Dashboard() {
       if (token) {
         actualizarDispositivos(token);
       }
-    }, 4000);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -604,82 +623,72 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <div className="row">
+      <div className="device-container">
         {connectedDevices.length > 0 ? (
           connectedDevices.map((device, index) => (
-            <div key={index} className="col-12 col-md-4 mb-3">
-              <div className="device-card shadow-lg">
-                <div className="card-body text-center">
-                  <div className="d-flex align-items-center justify-content-center mb-2">
-                    <p className="tipo_dispositivo mb-0 me-2 d-flex align-items-center">
-                      {device.deviceType === "equipo"
-                        ? <IoMdDesktop />
-                        : device.deviceType === "smartphone"
-                          ? <MdOutlinePhoneIphone />
-                          : device.deviceType === "tablet"
-                            ? <BsTabletLandscape />
-                            : <MdDevices />}
-                    </p>
-                    <img
-                      src={getDeviceLogo("os", device.os)}
-                      alt={device.os}
-                      className="img-fluid"
-                      style={{ width: 40, height: 40 }}
-                    />
-                    <img
-                      src={getDeviceLogo("browser", device.browser)}
-                      alt={device.browser}
-                      className="img-fluid"
-                      style={{ width: 40, height: 40 }}
-                    />
-                  </div>
-
-                  <p>
-                    <strong>Portapapeles</strong>
+            <div
+              key={device.deviceId}
+              className={`device-card-dashboard shadow-lg ${connectedDevices.length === 1 ? "single" : ""} ${device.new ? "enter" : ""}`}
+            >
+              <div className="card-body text-center">
+                <div className="d-flex align-items-center justify-content-center mb-2">
+                  <p className="tipo_dispositivo mb-0 me-2 d-flex align-items-center">
+                    {device.deviceType === "equipo"
+                      ? <IoMdDesktop />
+                      : device.deviceType === "smartphone"
+                        ? <MdOutlinePhoneIphone />
+                        : device.deviceType === "tablet"
+                          ? <BsTabletLandscape />
+                          : <MdDevices />}
                   </p>
-
-                  <div
-                    className="clipboard-box p-3 mt-3 text-break text-wrap"
-                    onClick={() => copiarContenido(device.clipboardContent)}
-                    title="Copiar contenido"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <p>
-                      {device.clipboardContent ||
-                        "No hay contenido en el portapapeles"}
-                    </p>
-                  </div>
-
-                  <button
-                    className="btn boton_aux btn-warning mt-3"
-                    onClick={() =>
-                      guardarContenido(device.clipboardContent, "text", device.os, device.browser, device.deviceType)
-                    }
-                    disabled={saving || !device.clipboardContent}
-                  >
-                    {saving ? (
-                      <i
-                        className="fa fa-circle-notch fa-spin"
-                        aria-hidden="true"
-                      ></i>
-                    ) : (
-                      <i
-                        className="fa fa-star"
-                        aria-hidden="true"
-                      ></i>
-                    )}
-                  </button>
-
-                  <button
-                    className="btn boton_aux btn-success mt-3"
-                    title="Descargar el contenido a un fichero"
-                    onClick={() =>
-                      descargarContenidoDispositivo(device.clipboardContent, "text")
-                    }
-                  >
-                    <i className="fa fa-download" aria-hidden="true"></i>
-                  </button>
+                  <img
+                    src={getDeviceLogo("os", device.os)}
+                    alt={device.os}
+                    className="img-fluid"
+                    style={{ width: 40, height: 40 }}
+                  />
+                  <img
+                    src={getDeviceLogo("browser", device.browser)}
+                    alt={device.browser}
+                    className="img-fluid"
+                    style={{ width: 40, height: 40 }}
+                  />
                 </div>
+
+                <p><strong>Portapapeles</strong></p>
+
+                <div
+                  className={`clipboard-box p-3 mt-3 text-break text-wrap ${device.flash ? "flash" : ""}`}
+                  onClick={() => copiarContenido(device.clipboardContent)}
+                  title="Copiar contenido"
+                  style={{ cursor: "pointer" }}
+                >
+                  <p>{device.clipboardContent || "No hay contenido en el portapapeles"}</p>
+                </div>
+
+                <button
+                  className="btn boton_aux btn-warning mt-3"
+                  onClick={() =>
+                    guardarContenido(device.clipboardContent, "text", device.os, device.browser, device.deviceType)
+                  }
+                  disabled={saving || !device.clipboardContent}
+                >
+                  {saving ? (
+                    <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+                  ) : (
+                    <i className="fa fa-star" aria-hidden="true"></i>
+                  )}
+                </button>
+
+                <button
+                  className="btn boton_aux btn-success mt-3"
+                  title="Descargar el contenido a un fichero"
+                  onClick={() =>
+                    descargarContenidoDispositivo(device.clipboardContent, "text")
+                  }
+                >
+                  <i className="fa fa-download" aria-hidden="true"></i>
+                </button>
               </div>
             </div>
           ))
@@ -696,7 +705,7 @@ export default function Dashboard() {
           onClick={toggleAutoRefreshClipboard}
           title="Activa o desactiva la actualización automática del portapapeles"
         >
-          {autoRefreshClipboard ?   <MdUpdate size={30} /> : <MdUpdateDisabled size={30} />}
+          {autoRefreshClipboard ? <MdUpdate size={30} /> : <MdUpdateDisabled size={30} />}
         </button>
       </div>
 

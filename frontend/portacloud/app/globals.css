@@ -81,763 +81,1130 @@ a {
 }
 
 @media only screen and (max-width: 991px) {
-  html, body {
+
+  html,
+  body {
     overflow: hidden;
     height: 100%;
   }
+
   .scroll-container {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; 
+    scrollbar-width: none;
     height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
   .scroll-container::-webkit-scrollbar {
-    display: none; 
+    display: none;
   }
 
   .scroll-container main {
-    flex-grow: 1; 
+    flex-grow: 1;
   }
 }
 
 
-  /* ========== ESTILOS DEL LOGO ========== */
-  .logo_div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* ========== ESTILOS DEL LOGO ========== */
+.logo_div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo_ppal {
+  cursor: pointer;
+  width: 40px !important;
+  transition: all 0.5s;
+  margin-right: 10px;
+}
+
+.logo_ppal:hover {
+  filter: saturate(3);
+  transition: all 0.5s;
+}
+
+.logo_letras {
+  text-align: center;
+  font-family: Helvetica, sans-serif;
+  font-size: 20px;
+  color: #2c2c2c;
+}
+
+.negrita {
+  font-weight: bold !important;
+}
+
+/* ========== ESTILOS DEL DASHBOARD ========== */
+.footer {
+  margin-top: auto;
+}
+
+.clipboard-display {
+  position: relative;
+  margin: 40px auto;
+  box-sizing: border-box;
+  background-color: #f8f9fa;
+  border-radius: 40px;
+  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+}
+
+.clipboard-display.portal-animation {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(0, 123, 255, 0.8);
+  animation: portalEffect 1s ease-in-out;
+}
+
+@keyframes portalEffect {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
   }
 
-  .logo_ppal {
-    cursor: pointer;
-    width: 40px !important;
-    transition: all 0.5s;
-    margin-right: 10px;
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 50px rgba(0, 123, 255, 1);
   }
 
-  .logo_ppal:hover {
-    filter: saturate(3);
-    transition: all 0.5s;
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.device-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.device-card-dashboard {
+  width: calc(50% - 20px);
+  /* Por defecto, dos dispositivos por fila */
+  max-width: 500px;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 1;
+  background: #ffffff;
+  /* Asegura que no haya bordes extraños */
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 30px;
+  border-width: 40px;
+  padding: 20px;
+  position: relative;
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 20px;
+  user-select: text;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  overflow: hidden;
+  will-change: transform, height;
+  transform-origin: center;
+}
+
+.device-card-dashboard.single {
+  width: 100%;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.device-card-dashboard.enter {
+  transform: scale(0.8);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.device-card-dashboard.enter-active {
+  transform: scale(1);
+  opacity: 1;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.device-card-dashboard.exit {
+  transform: scale(1);
+  opacity: 1;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.device-card-dashboard.exit-active {
+  transform: scale(0.8);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* ========== ESTILOS DE AJUSTES ========== */
+
+.botones_ajustes {
+  height: 60px;
+  margin-bottom: 20px;
+  width: 100%;
+  font-size: 20px !important;
+  transition: all 0.5 ease;
+}
+
+.botones_ajustes.btn-primary {
+  background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+  border: 2px solid transparent;
+}
+
+.botones_ajustes.btn-danger {
+  background-image: linear-gradient(90deg, rgba(220, 53, 69, 0.6), rgba(255, 99, 71, 0.6), rgba(220, 53, 69, 0.6));
+  box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
+  border: 2px solid transparent;
+}
+
+.botones_ajustes.btn-success {
+  background-image: linear-gradient(90deg, rgba(40, 167, 69, 0.6), rgba(72, 209, 75, 0.6), rgba(40, 167, 69, 0.6));
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+  border: 2px solid transparent;
+}
+
+.botones_ajustes:hover {
+  opacity: 0.9;
+  filter: brightness(1.2);
+  transition: all 0.3s ease;
+}
+
+.botones_ajustes:active {
+  filter: brightness(0.5);
+
+}
+
+.botones_ajustes:disabled {
+  opacity: 0.2 !important;
+  pointer-events: none;
+}
+
+@media (min-width: 992px) {
+  .botones_ajustes {
+    width: 350px !important;
+  }
+}
+
+
+/* ========== ESTILOS DE BOTONES ========== */
+
+.btn button {
+  transition: background-color 0.5s ease;
+}
+
+.btn button:hover {
+  transition: all 0.3s;
+}
+
+.boton_aux {
+  margin: 10px !important;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px !important;
+  color: white;
+  transition: background-color 0.5s ease;
+  border-radius: 100px !important;
+}
+
+
+.boton_aux.btn-primary {
+  background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+  border: 2px solid transparent;
+}
+
+.boton_aux.btn-success {
+  background-image: linear-gradient(90deg, rgba(40, 167, 69, 0.6), rgba(72, 209, 75, 0.6), rgba(40, 167, 69, 0.6));
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+  border: 2px solid transparent;
+}
+
+.boton_aux.btn-warning {
+  background-image: linear-gradient(90deg, rgba(255, 193, 7, 0.6), rgba(255, 255, 0, 0.6), rgba(255, 193, 7, 0.6));
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+  border: 2px solid transparent;
+}
+
+.boton_aux.btn-danger {
+  background-image: linear-gradient(90deg, rgba(220, 53, 69, 0.6), rgba(255, 99, 71, 0.6), rgba(220, 53, 69, 0.6));
+  box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
+  border: 2px solid transparent;
+}
+
+.boton_aux.btn.btn-secondary {
+  background-image: linear-gradient(90deg, rgba(47, 0, 255, 0.6), rgba(84, 65, 252, 0.6), rgba(0, 3, 167, 0.6));
+  box-shadow: 0 0 20px rgba(87, 3, 167, 0.5);
+  border: 2px solid transparent;
+  font-size: 30px;
+  text-align: center;
+}
+
+.boton_aux:hover {
+  opacity: 0.9;
+  filter: brightness(1.3);
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+.boton_aux:active {
+  transform: scale(1.05);
+  filter: brightness(0.5);
+
+}
+
+.boton_aux:disabled {
+  opacity: 0.2 !important;
+  pointer-events: none;
+}
+
+.btn.btn-secondary {
+  background-image: linear-gradient(90deg, rgba(83, 83, 83, 0.6), rgba(83, 83, 83, 0.281), rgba(48, 48, 48, 0.6));
+  box-shadow: 0 0 20px rgba(48, 48, 48, 0.5);
+  border: 2px solid transparent;
+}
+
+
+/* ========== ESTILOS DE INPUT ========== */
+input {
+  margin: 10px;
+  border-radius: 5px;
+  border-style: none;
+  background-color: #dbdbdb;
+  height: 40px;
+  text-align: center;
+  transition: all 1s;
+  font-size: 15px;
+}
+
+input:hover {
+  background-color: #f0f0f0;
+  transition: all 0.5s;
+}
+
+/* ========== ESTILOS DEL HOME ========== */
+.home-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.home-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.home-description {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.home-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.home-button:hover {
+  background-color: #0056b3;
+}
+
+/* ========== ESTILOS DEL PORTAPAPELES ========== */
+
+.clipboard-display {
+  margin: 40px;
+  box-sizing: border-box;
+  background-color: #f8f9fa;
+  border-radius: 30px;
+  padding: 20px;
+  position: relative;
+  background: rgba(0, 123, 255, 0.1);
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+  border-radius: 20px;
+  animation: brillo 3s infinite alternate;
+  user-select: text;
+  transition: all 0.3s ease, transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  min-height: 100px; 
+}
+
+.clipboard-display::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 3px;
+  background: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.6), rgba(0, 123, 255, 0.6));
+  background-size: 200% 200%;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  animation: rotate-gradient 2s infinite alternate;
+  z-index: 1;
+  pointer-events: none;
+  /* Añadido para permitir la selección */
+}
+
+
+@keyframes rotate-gradient {
+  0% {
+    background-position: 0% 50%;
   }
 
-  .logo_letras {
-    text-align: center;
-    font-family: Helvetica, sans-serif;
-    font-size: 20px;
-    color: #2c2c2c;
+  100% {
+    background-position: 100% 50%;
   }
 
-  .negrita {
-    font-weight: bold !important;
+}
+
+@keyframes brillo {
+  0% {
+    box-shadow: 0 0 10px rgba(19, 133, 255, 0.5);
   }
 
-  /* ========== ESTILOS DEL DASHBOARD ========== */
-  .footer {
-    margin-top: auto;
+  100% {
+    box-shadow: 0 0 25px rgba(0, 123, 255, 0.9);
+  }
+}
+
+
+.clipboard-display p {
+  font-family: monospace;
+  padding: 30px;
+  text-align: center;
+  user-select: text;
+}
+
+.clipboard-display img {
+  padding: 20px;
+  border-radius: 40px;
+  width: 400px;
+}
+
+.clipboard-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  text-align: center;
+  font-family: monospace;
+  transition: all 0.3s ease;
+  min-height: 80px;
+}
+
+.clipboard-box:hover {
+  background-color: #a4d0ff;
+  transition: all 0.5s;
+}
+
+/* ========== ESTILOS DE TARJETAS DE DISPOSITIVOS ========== */
+.device-card {
+  padding: 30px;
+  box-sizing: border-box;
+  border-radius: 30px;
+  border-width: 40px;
+  padding: 20px;
+  position: relative;
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 20px;
+  user-select: text;
+}
+
+.device-card .d-flex {
+  gap: 5px;
+  justify-content: center;
+}
+
+.device-card .d-flex img {
+  margin: 0;
+}
+
+.device-card .d-flex img+img {
+  margin-left: 5px;
+}
+
+.img-fluid {
+  margin: 10px !important;
+}
+
+.tipo_dispositivo {
+  font-size: 50px;
+}
+
+
+@keyframes flashEffect {
+  0% {
+    background-color: rgba(0, 166, 255, 0.7);
+  }
+
+  50% {
+    background-color: rgba(255, 255, 0, 0);
+  }
+
+  100% {
+    background-color: rgba(0, 136, 255, 0.7);
+  }
+}
+
+.flash {
+  animation: flashEffect 0.5s ease-in-out 2;
+}
+
+.clipboard-box.flash {
+  animation: flashEffect 0.5s ease-in-out 2;
+}
+
+.clipboard-change {
+  animation: clipboardFlash 1s ease-in-out;
+}
+
+/* ========== ESTILOS DEL SPINNER DE CARGA ========== */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1000;
+}
+
+.cargando {
+  font-size: 80px;
+  animation: cargando-animacion 1.5s infinite linear;
+  color: #007BFF;
+}
+
+@keyframes cargando-animacion {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========== ESTILOS DE ANIMACIONES DE ALERTAS ========== */
+.alert-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.alert-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.alert-exit {
+  opacity: 1;
+}
+
+.alert-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+
+/* ========== ESTILOS DEL FOOTER ========== */
+
+.footer {
+  background-color: rgb(241, 241, 241) !important;
+  color: black !important;
+}
+
+.enlace_github {
+  color: black !important;
+  text-decoration: none;
+}
+
+.enlace_github:hover {
+  color: rgb(0, 162, 255) !important;
+}
+
+
+/* ========== ESTILOS DEL MENÚ ========== */
+
+.boton_logo {
+  padding: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+.boton_logo:hover {
+  background-color: #0000002d;
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.boton_logo:active {
+  background-color: rgb(106, 106, 106) !important;
+}
+
+.bg-light {
+  -webkit-box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
+  -moz-box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
+  box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
+}
+
+.nav-link {
+  color: #0a0a0a !important;
+  font-size: 22px !important;
+  padding: 15px !important;
+}
+
+.nav-link:hover {
+  color: #ffffff !important;
+  background-color: #0000002d;
+  border-radius: 8px;
+}
+
+.usuario {
+  font-size: 22px !important;
+  padding: 15px !important;
+  color: rgb(99, 99, 99) !important;
+  margin-bottom: 0px !important;
+}
+
+.div_usuario {
+  border-style: none;
+  border-radius: 10px;
+  border-width: 2px;
+  background-color: #e9e9e9fa;
+  padding: 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.navbar {
+  position: fixed !important;
+  top: 0;
+  width: 100%;
+  background: rgba(241, 241, 241, 0.8) !important;
+  color: black !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: background-color 0.3s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.offcanvas {
+  position: fixed;
+  bottom: 0;
+  z-index: var(--bs-offcanvas-zindex);
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  color: var(--bs-offcanvas-color);
+  visibility: hidden;
+  background-clip: padding-box;
+  outline: 0;
+  transition: var(--bs-offcanvas-transition);
+  background-color: #ffffffbd !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: background-color 0.3s ease-in-out;
+}
+
+
+/* Estilos para la Navbar superior en modo escritorio */
+.navbar.d-none.d-lg-block {
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.d-none.d-lg-block .nav-link {
+  font-size: 18px !important;
+  padding: 10px 15px !important;
+  color: #0a0a0a !important;
+}
+
+.navbar.d-none.d-lg-block .nav-link:hover {
+  color: #ffffff !important;
+}
+
+.navbar.d-none.d-lg-block .div_usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar.d-none.d-lg-block .usuario {
+  font-size: 18px !important;
+  color: rgb(99, 99, 99) !important;
+  margin-bottom: 0 !important;
+}
+
+.navbar.d-none.d-lg-block .text-danger {
+  color: #dc3545 !important;
+}
+
+.navbar.d-none.d-lg-block .text-danger:hover {
+  color: #c82333 !important;
+}
+
+
+/* ========== ESTILOS DEL LOGIN ========== */
+/* Estilos generales para la landing page */
+.login-landing-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Sección del héroe (fondo y contenido principal) */
+.hero-section {
+  flex: 1 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  background: linear-gradient(180deg, #f8f9fa, #7590be 43%, #003288);
+  background-size: 400% 400%;
+  color: #0e0e0e;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 1px 31px 60px -42px rgb(0 0 0 / 34%);
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-content .logo {
+  width: 100px;
+  margin-bottom: 1rem;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+}
+
+/* Sección del formulario de login */
+.login-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  margin: 50px;
+}
+
+.login-card h2 {
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #006eff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+  border: 2px solid transparent;
+  transition: all 0.5s ease;
+}
+
+
+.login-button:hover {
+  opacity: 0.9;
+  filter: brightness(1.2);
+  transition: all 0.5s ease;
+}
+
+.login-button:active {
+  transform: scale(1.05);
+  filter: brightness(0.5);
+
+}
+
+.login-button:disabled {
+  opacity: 0.2 !important;
+  pointer-events: none;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.register-link a {
+  color: #277eff;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+/* ========== ESTILO 404/ NO SOPORTADO========== */
+.logo_404 {
+  width: 150px;
+  filter: hue-rotate(150deg);
+}
+
+.no_soportado {
+  color: rgb(200, 2, 2);
+  font-size: 40px;
+}
+
+/* ========== ESTILO DE LAS VENTANAS MODALES ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: unset !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(15px);
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  max-width: 400px;
+}
+
+.modal-content {
+  background: unset !important;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(15px) !important;
+  border: none;
+}
+
+
+.modal-header,
+.modal-footer {
+  border: none;
+}
+
+.modal select {
+  padding: 10px;
+  border-style: none;
+  background-color: #e9e9e9;
+  border-radius: 8px;
+}
+
+/* ========== ESTILOS DEL ADMIN ========== */
+.admin-page {
+  padding: 20px;
+}
+
+.create-user-form {
+  margin-bottom: 20px;
+}
+
+.create-user-form div {
+  margin-bottom: 10px;
+}
+
+.create-user-form label {
+  margin-bottom: 5px;
+}
+
+.create-user-form input,
+.create-user-form select {
+  width: 100%;
+  padding: 8px;
+  text-align: left;
+}
+
+.users-table {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.users-table th,
+.users-table td {
+  text-align: left;
+  background-color: #f7f7f7;
+  padding: 8px;
+  border-style: solid;
+  border-color: #cacaca;
+  border-width: 1px;
+}
+
+.users-table th {
+  background-color: #dbdbdb;
+  padding: 8px;
+
+}
+
+/* ========== ESTILOS DEL APARTADO DE AYUDA ========== */
+.tabla_ayuda {
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.tabla_ayuda th,
+.tabla_ayuda td {
+  padding: 10px;
+}
+
+.tabla_ayuda th {
+  background-color: #e0e0e0;
+  padding: 10px;
+  margin: 10px !important;
+}
+
+.logo_acercade {
+  width: 150px;
+  margin-bottom: 30px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
+
+/* ========== ESTILOS DEL MODO OSCURO ========== */
+@media (prefers-color-scheme: dark) {
+
+  body {
+    background-color: #161616 !important;
+    color: white !important;
   }
 
   .clipboard-display {
-    position: relative;
-    margin: 40px auto;
-    box-sizing: border-box;
-    background-color: #f8f9fa;
-    border-radius: 40px;
-    transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  }
-
-  .clipboard-display.portal-animation {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px rgba(0, 123, 255, 0.8);
-    animation: portalEffect 1s ease-in-out;
-  }
-
-  @keyframes portalEffect {
-    0% {
-      transform: scale(0.7);
-      opacity: 0;
-    }
-
-    50% {
-      transform: scale(1.2);
-      opacity: 1;
-      box-shadow: 0 0 50px rgba(0, 123, 255, 1);
-    }
-
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  /* ========== ESTILOS DE AJUSTES ========== */
-
-  .botones_ajustes {
-    height: 60px;
-    margin-bottom: 20px;
-    width: 100%;
-    font-size: 20px !important;
-    transition: all 0.5 ease;
-  }
-
-  .botones_ajustes.btn-primary {
-    background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
-    border: 2px solid transparent;
-  }
-
-  .botones_ajustes.btn-danger {
-    background-image: linear-gradient(90deg, rgba(220, 53, 69, 0.6), rgba(255, 99, 71, 0.6), rgba(220, 53, 69, 0.6));
-    box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
-    border: 2px solid transparent;
-  }
-
-  .botones_ajustes.btn-success {
-    background-image: linear-gradient(90deg, rgba(40, 167, 69, 0.6), rgba(72, 209, 75, 0.6), rgba(40, 167, 69, 0.6));
-    box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
-    border: 2px solid transparent;
-  }
-
-  .botones_ajustes:hover {
-    opacity: 0.9;
-    filter: brightness(1.2);
-    transition: all 0.3s ease;
-  }
-
-  .botones_ajustes:active {
-    filter: brightness(0.5);
-
-  }
-
-  .botones_ajustes:disabled {
-    opacity: 0.2 !important;
-    pointer-events: none;
-  }
-
-  @media (min-width: 992px) {
-    .botones_ajustes {
-      width: 350px !important;
-    }
-  }
-
-
-  /* ========== ESTILOS DE BOTONES ========== */
-
-  .btn button {
-    transition: background-color 0.5s ease;
-  }
-
-  .btn button:hover {
-    transition: all 0.3s;
-  }
-
-  .boton_aux {
-    margin: 10px !important;
-    width: 60px;
-    height: 60px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px !important;
+    background-color: #3e4b5e !important;
     color: white;
-    transition: background-color 0.5s ease;
-    border-radius: 100px !important;
   }
 
-
-  .boton_aux.btn-primary {
-    background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
-    border: 2px solid transparent;
-  }
-
-  .boton_aux.btn-success {
-    background-image: linear-gradient(90deg, rgba(40, 167, 69, 0.6), rgba(72, 209, 75, 0.6), rgba(40, 167, 69, 0.6));
-    box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
-    border: 2px solid transparent;
-  }
-
-  .boton_aux.btn-warning {
-    background-image: linear-gradient(90deg, rgba(255, 193, 7, 0.6), rgba(255, 255, 0, 0.6), rgba(255, 193, 7, 0.6));
-    box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
-    border: 2px solid transparent;
-  }
-
-  .boton_aux.btn-danger {
-    background-image: linear-gradient(90deg, rgba(220, 53, 69, 0.6), rgba(255, 99, 71, 0.6), rgba(220, 53, 69, 0.6));
-    box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
-    border: 2px solid transparent;
-  }
-
-  .boton_aux.btn.btn-secondary {
-    background-image: linear-gradient(90deg, rgba(47, 0, 255, 0.6), rgba(84, 65, 252, 0.6), rgba(0, 3, 167, 0.6));
-    box-shadow: 0 0 20px rgba(87, 3, 167, 0.5);
-    border: 2px solid transparent;
-    font-size: 30px;
-    text-align: center;
-  }
-
-  .boton_aux:hover {
-    opacity: 0.9;
-    filter: brightness(1.3);
-    transform: scale(1.05);
-    transition: all 0.3s ease;
-  }
-
-  .boton_aux:active {
-    transform: scale(1.05);
-    filter: brightness(0.5);
-
-  }
-
-  .boton_aux:disabled {
-    opacity: 0.2 !important;
-    pointer-events: none;
-  }
-
-  .btn.btn-secondary {
-    background-image: linear-gradient(90deg, rgba(83, 83, 83, 0.6), rgba(83, 83, 83, 0.281), rgba(48, 48, 48, 0.6));
-    box-shadow: 0 0 20px rgba(48, 48, 48, 0.5);
-    border: 2px solid transparent;
-  }
-
-
-  /* ========== ESTILOS DE INPUT ========== */
   input {
-    margin: 10px;
-    border-radius: 5px;
-    border-style: none;
-    background-color: #dbdbdb;
-    height: 40px;
-    text-align: center;
-    transition: all 1s;
-    font-size: 15px;
+    background-color: #333;
   }
 
   input:hover {
-    background-color: #f0f0f0;
-    transition: all 0.5s;
+    background-color: #444444;
   }
 
-  /* ========== ESTILOS DEL HOME ========== */
-  .home-container {
-    text-align: center;
-    margin-top: 50px;
+  .logo_letras {
+    color: #aaaaaa;
   }
 
-  .home-title {
-    font-size: 2rem;
-    margin-bottom: 20px;
+  .device-card {
+    background-color: #444444;
+    color: white;
   }
 
-  .home-description {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-  }
-
-  .home-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-  }
-
-  .home-button:hover {
-    background-color: #0056b3;
-  }
-
-  /* ========== ESTILOS DEL PORTAPAPELES ========== */
-
-  .clipboard-display {
-    margin: 40px;
-    box-sizing: border-box;
-    background-color: #f8f9fa;
-    border-radius: 30px;
-    padding: 20px;
-    position: relative;
-    background: rgba(0, 123, 255, 0.1);
-    color: rgb(0, 0, 0);
-    font-size: 1.2rem;
-    text-align: center;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
-    border-radius: 20px;
-    animation: brillo 3s infinite alternate;
-    user-select: text;
-  }
-
-  .clipboard-display::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 20px;
-    padding: 3px;
-    background: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.6), rgba(0, 123, 255, 0.6));
-    background-size: 200% 200%;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: destination-out;
-    animation: rotate-gradient 2s infinite alternate;
-    z-index: 1;
-    pointer-events: none;
-    /* Añadido para permitir la selección */
-  }
-
-
-  @keyframes rotate-gradient {
-    0% {
-      background-position: 0% 50%;
-    }
-
-    100% {
-      background-position: 100% 50%;
-    }
-
-  }
-
-  @keyframes brillo {
-    0% {
-      box-shadow: 0 0 10px rgba(19, 133, 255, 0.5);
-    }
-
-    100% {
-      box-shadow: 0 0 25px rgba(0, 123, 255, 0.9);
-    }
-  }
-
-
-  .clipboard-display p {
-    font-family: monospace;
-    padding: 30px;
-    text-align: center;
-    user-select: text;
-  }
-
-  .clipboard-display img {
-    padding: 20px;
-    border-radius: 40px;
-    width: 400px;
+  .card {
+    background-color: #3a3a3a !important;
+    color: white !important;
   }
 
   .clipboard-box {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-    text-align: center;
-    font-family: monospace;
-    transition: all 0.5s;
+    background-color: #4e4e4e !important;
+    color: white;
+    border-style: none;
   }
 
   .clipboard-box:hover {
-    background-color: #a4d0ff;
-    transition: all 0.5s;
+    background-color: #2c5377 !important;
+    color: white;
   }
 
-  /* ========== ESTILOS DE TARJETAS DE DISPOSITIVOS ========== */
-  .device-card {
-    padding: 30px;
-    box-sizing: border-box;
-    border-radius: 30px;
-    border-width: 40px;
-    padding: 20px;
-    position: relative;
-    color: rgb(0, 0, 0);
-    font-size: 1.2rem;
-    text-align: center;
-    overflow: hidden;
-    border-radius: 20px;
-    user-select: text;
+  .flex-column {
+    background-color: #494949 !important;
+    color: white !important;
+    border-style: none;
   }
-
-
-  .device-card .d-flex {
-    gap: 5px;
-    justify-content: center;
-  }
-
-  .device-card .d-flex img {
-    margin: 0;
-  }
-
-  .device-card .d-flex img+img {
-    margin-left: 5px;
-  }
-
-  .img-fluid {
-    margin: 10px !important;
-  }
-
-  .tipo_dispositivo {
-    font-size: 50px;
-  }
-
-  /* ========== ESTILOS DEL SPINNER DE CARGA ========== */
-  .loading-spinner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: rgba(255, 255, 255, 0.8);
-    z-index: 1000;
-  }
-
-  .cargando {
-    font-size: 80px;
-    animation: cargando-animacion 1.5s infinite linear;
-    color: #007BFF;
-  }
-
-  @keyframes cargando-animacion {
-    0% {
-      transform: rotate(0deg);
-    }
-
-    50% {
-      transform: rotate(180deg);
-    }
-
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  /* ========== ESTILOS DE ANIMACIONES DE ALERTAS ========== */
-  .alert-enter {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-
-  .alert-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 300ms, transform 300ms;
-  }
-
-  .alert-exit {
-    opacity: 1;
-  }
-
-  .alert-exit-active {
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity 300ms, transform 300ms;
-  }
-
-
-  /* ========== ESTILOS DEL FOOTER ========== */
 
   .footer {
-    background-color: rgb(241, 241, 241) !important;
-    color: black !important;
+    background-color: #414141 !important;
+    color: white !important;
   }
 
-  .enlace_github {
-    color: black !important;
-    text-decoration: none;
-  }
-
-  .enlace_github:hover {
-    color: rgb(0, 162, 255) !important;
-  }
-
-
-  /* ========== ESTILOS DEL MENÚ ========== */
-
-  .boton_logo {
-    padding: 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.5s;
-  }
-
-  .boton_logo:hover {
-    background-color: #0000002d;
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
-
-  .boton_logo:active {
-    background-color: rgb(106, 106, 106) !important;
-  }
-
-  .bg-light {
-    -webkit-box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
-    -moz-box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
-    box-shadow: 22px 7px 37px -32px rgba(158, 158, 158, 1);
-  }
-
-  .nav-link {
-    color: #0a0a0a !important;
-    font-size: 22px !important;
-    padding: 15px !important;
-  }
-
-  .nav-link:hover {
-    color: #ffffff !important;
-    background-color: #0000002d;
-    border-radius: 8px;
+  .logo_letras {
+    color: #ffffff;
   }
 
   .usuario {
-    font-size: 22px !important;
-    padding: 15px !important;
-    color: rgb(99, 99, 99) !important;
-    margin-bottom: 0px !important;
+    color: #cfcfcf !important;
   }
 
   .div_usuario {
-    border-style: none;
-    border-radius: 10px;
-    border-width: 2px;
-    background-color: #e9e9e9fa;
-    padding: 10px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: background-color 0.3s ease-in-out;
+    background-color: #525252;
   }
 
-  .navbar {
-    position: fixed !important;
-    top: 0;
-    width: 100%;
-    background: rgba(241, 241, 241, 0.8) !important;
-    color: black !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 1000;
-    transition: background-color 0.3s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  .nav-link {
+    color: white !important;
   }
 
-  .offcanvas {
-    position: fixed;
-    bottom: 0;
-    z-index: var(--bs-offcanvas-zindex);
-    display: flex;
-    flex-direction: column;
-    max-width: 100%;
-    color: var(--bs-offcanvas-color);
-    visibility: hidden;
-    background-clip: padding-box;
-    outline: 0;
-    transition: var(--bs-offcanvas-transition);
-    background-color: #ffffffbd !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 1000;
-    transition: background-color 0.3s ease-in-out;
+  .nav-link:hover {
+    color: rgb(132, 165, 255) !important;
+  }
+
+  input {
+    border-style: none !important;
+    color: rgb(255, 255, 255) !important;
+    background-color: #3b3b3bbf !important;
+  }
+
+  input:hover {
+    background-color: #686868 !important;
+  }
+
+  input:active {
+    background-color: #2c2c2c !important;
+  }
+
+  input::placeholder {
+    color: rgb(212, 212, 212) !important;
   }
 
 
-  /* Estilos para la Navbar superior en modo escritorio */
-  .navbar.d-none.d-lg-block {
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
 
-  .navbar.d-none.d-lg-block .nav-link {
-    font-size: 18px !important;
-    padding: 10px 15px !important;
-    color: #0a0a0a !important;
-  }
-
-  .navbar.d-none.d-lg-block .nav-link:hover {
-    color: #ffffff !important;
-  }
-
-  .navbar.d-none.d-lg-block .div_usuario {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .navbar.d-none.d-lg-block .usuario {
-    font-size: 18px !important;
-    color: rgb(99, 99, 99) !important;
-    margin-bottom: 0 !important;
-  }
-
-  .navbar.d-none.d-lg-block .text-danger {
-    color: #dc3545 !important;
-  }
-
-  .navbar.d-none.d-lg-block .text-danger:hover {
-    color: #c82333 !important;
-  }
-
-
-  /* ========== ESTILOS DEL LOGIN ========== */
-  /* Estilos generales para la landing page */
-  .login-landing-page {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #f8f9fa;
-  }
-
-  /* Sección del héroe (fondo y contenido principal) */
-  .hero-section {
-    flex: 1 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-    background: linear-gradient(180deg, #f8f9fa, #7590be 43%, #003288);
-    background-size: 400% 400%;
-    color: #0e0e0e;
-    padding: 2rem;
-    text-align: center;
-    box-shadow: 1px 31px 60px -42px rgb(0 0 0 / 34%);
-  }
-
-  @keyframes gradientAnimation {
-    0% {
-      background-position: 0% 50%;
-    }
-
-    50% {
-      background-position: 100% 50%;
-    }
-
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  .hero-content {
-    max-width: 600px;
-  }
-
-  .hero-content .logo {
-    width: 100px;
-    margin-bottom: 1rem;
-  }
-
-  .hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .hero-content p {
-    font-size: 1.2rem;
-  }
-
-  /* Sección del formulario de login */
   .login-section {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: #222222 !important;
   }
 
   .login-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    width: 100%;
-    margin: 50px;
+    background-color: #343434 !important;
   }
 
-  .login-card h2 {
-    text-align: center;
+  .navbar {
+    background: rgb(42 42 42 / 80%) !important;
+    border-style: none !important;
   }
 
-  .form-group {
-    margin-bottom: 1rem;
+  .navbar.d-none.d-lg-block {
+    border-style: none !important;
   }
 
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
+  .navbar.d-none.d-lg-block .nav-link {
+    color: #ffffff !important;
   }
 
-  .form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  .navbar.d-none.d-lg-block .usuario {
+    color: rgb(199 199 199) !important;
   }
 
-  .login-button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #006eff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
-    border: 2px solid transparent;
-    transition: all 0.5s ease;
+  .offcanvas,
+  .offcanvas-lg,
+  .offcanvas-md,
+  .offcanvas-sm,
+  .offcanvas-xl,
+  .offcanvas-xxl {
+    --bs-offcanvas-bg: unset;
+    background: rgb(28 28 28 / 79%) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: background-color 0.3s ease-in-out;
   }
 
-
-  .login-button:hover {
-    opacity: 0.9;
-    filter: brightness(1.2);
-    transition: all 0.5s ease;
+  .navbar-toggler {
+    background-color: #545454 !important;
   }
 
-  .login-button:active {
-    transform: scale(1.05);
-    filter: brightness(0.5);
-
+  .border-bottom {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    border-bottom: black !important;
   }
 
-  .login-button:disabled {
-    opacity: 0.2 !important;
-    pointer-events: none;
+  .flex-column {
+    background-color: unset !important;
+    color: white !important;
+    border-style: none;
   }
 
-  .register-link {
-    text-align: center;
-    margin-top: 1rem;
+  .loading-spinner {
+    background-color: rgb(16 16 16 / 80%);
   }
 
-  .register-link a {
-    color: #277eff;
-    text-decoration: none;
+  .div_usuario {
+    background-color: #48484836 !important;
   }
 
-  .register-link a:hover {
-    text-decoration: underline;
+  .hero-section {
+    background: linear-gradient(180deg, #222, #000f28);
+    color: white !important;
   }
 
-  /* ========== ESTILO 404/ NO SOPORTADO========== */
-  .logo_404 {
-    width: 150px;
-    filter: hue-rotate(150deg);
+  .btn-close {
+    background-color: rgb(117, 117, 117) !important;
   }
 
-  .no_soportado {
-    color: rgb(200, 2, 2);
-    font-size: 40px;
-  }
-
-  /* ========== ESTILO DE LAS VENTANAS MODALES ========== */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: unset !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 
   .modal-dialog {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(56, 56, 56, 0.6);
     backdrop-filter: blur(15px);
     border-radius: 12px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
@@ -852,344 +1219,72 @@ a {
     border: none;
   }
 
+  .login-landing-page {
+    background-color: #161616 !important;
+    color: white !important;
+  }
 
   .modal-header,
   .modal-footer {
     border: none;
   }
 
-  .modal select {
-    padding: 10px;
-    border-style: none;
-    background-color: #e9e9e9;
-    border-radius: 8px;
+  .tipo_dispositivo {
+    color: white;
   }
 
-  /* ========== ESTILOS DEL ADMIN ========== */
-  .admin-page {
-    padding: 20px;
+  .enlace_github {
+    color: rgb(255, 255, 255) !important;
+    text-decoration: none;
   }
 
-  .create-user-form {
-    margin-bottom: 20px;
-  }
-
-  .create-user-form div {
-    margin-bottom: 10px;
-  }
-
-  .create-user-form label {
-    margin-bottom: 5px;
-  }
-
-  .create-user-form input,
-  .create-user-form select {
-    width: 100%;
-    padding: 8px;
-    text-align: left;
-  }
-
-  .users-table {
-    width: 100%;
-    margin-top: 20px;
-    border-radius: 10px;
+  .enlace_github:hover {
+    color: rgb(0, 162, 255) !important;
   }
 
   .users-table th,
   .users-table td {
-    text-align: left;
-    background-color: #f7f7f7;
-    padding: 8px;
-    border-style: solid;
-    border-color: #cacaca;
-    border-width: 1px;
+    background-color: #272727;
   }
 
   .users-table th {
-    background-color: #dbdbdb;
-    padding: 8px;
-
+    background-color: #000000;
   }
 
-  /* ========== ESTILOS DEL APARTADO DE AYUDA ========== */
+  .modal select {
+    background-color: #474747;
+  }
+
+  .form-control {
+    background-color: #222222 !important;
+    border: unset !important;
+    color: white !important;
+  }
+
   .tabla_ayuda {
-    border-radius: 8px;
-    background-color: #fafafa;
-  }
-
-  .tabla_ayuda th,
-  .tabla_ayuda td {
-    padding: 10px;
+    background-color: #272727;
   }
 
   .tabla_ayuda th {
-    background-color: #e0e0e0;
-    padding: 10px;
-    margin: 10px !important;
-  }
-
-  .logo_acercade {
-    width: 150px;
-    margin-bottom: 30px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    background-color: #000000;
   }
 
 
-
-
-  /* ========== ESTILOS DEL MODO OSCURO ========== */
-  @media (prefers-color-scheme: dark) {
-
-    body {
-      background-color: #161616 !important;
-      color: white !important;
-    }
-
-    .clipboard-display {
-      background-color: #3e4b5e !important;
-      color: white;
-    }
-
-    input {
-      background-color: #333;
-    }
-
-    input:hover {
-      background-color: #444444;
-    }
-
-    .logo_letras {
-      color: #aaaaaa;
-    }
-
-    .device-card {
-      background-color: #444444;
-      color: white;
-    }
-
-    .card {
-      background-color: #3a3a3a !important;
-      color: white !important;
-    }
-
-    .clipboard-box {
-      background-color: #4e4e4e !important;
-      color: white;
-      border-style: none;
-    }
-
-    .clipboard-box:hover {
-      background-color: #2c5377 !important;
-      color: white;
-    }
-
-    .flex-column {
-      background-color: #494949 !important;
-      color: white !important;
-      border-style: none;
-    }
-
-    .footer {
-      background-color: #414141 !important;
-      color: white !important;
-    }
-
-    .logo_letras {
-      color: #ffffff;
-    }
-
-    .usuario {
-      color: #cfcfcf !important;
-    }
-
-    .div_usuario {
-      background-color: #525252;
-    }
-
-    .nav-link {
-      color: white !important;
-    }
-
-    .nav-link:hover {
-      color: rgb(132, 165, 255) !important;
-    }
-
-    input {
-      border-style: none !important;
-      color: rgb(255, 255, 255) !important;
-      background-color: #3b3b3bbf !important;
-    }
-
-    input:hover {
-      background-color: #686868 !important;
-    }
-
-    input:active {
-      background-color: #2c2c2c !important;
-    }
-
-    input::placeholder {
-      color: rgb(212, 212, 212) !important;
-    }
-
-
-
-    .login-section {
-      background-color: #222222 !important;
-    }
-
-    .login-card {
-      background-color: #343434 !important;
-    }
-
-    .navbar {
-      background: rgb(42 42 42 / 80%) !important;
-      border-style: none !important;
-    }
-
-    .navbar.d-none.d-lg-block {
-      border-style: none !important;
-    }
-
-    .navbar.d-none.d-lg-block .nav-link {
-      color: #ffffff !important;
-    }
-
-    .navbar.d-none.d-lg-block .usuario {
-      color: rgb(199 199 199) !important;
-    }
-
-    .offcanvas,
-    .offcanvas-lg,
-    .offcanvas-md,
-    .offcanvas-sm,
-    .offcanvas-xl,
-    .offcanvas-xxl {
-      --bs-offcanvas-bg: unset;
-      background: rgb(28 28 28 / 79%) !important;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index: 1000;
-      transition: background-color 0.3s ease-in-out;
-    }
-
-    .navbar-toggler {
-      background-color: #545454 !important;
-    }
-
-    .border-bottom {
-      border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
-      border-bottom: black !important;
-    }
-
-    .flex-column {
-      background-color: unset !important;
-      color: white !important;
-      border-style: none;
-    }
-
-    .loading-spinner {
-      background-color: rgb(16 16 16 / 80%);
-    }
-
-    .div_usuario {
-      background-color: #48484836 !important;
-    }
-
-    .hero-section {
-      background: linear-gradient(180deg, #222, #000f28);
-      color: white !important;
-    }
-
-    .btn-close {
-      background-color: rgb(117, 117, 117) !important;
-    }
-
-
-    .modal-dialog {
-      background: rgba(56, 56, 56, 0.6);
-      backdrop-filter: blur(15px);
-      border-radius: 12px;
-      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-      padding: 20px;
-      max-width: 400px;
-    }
-
-    .modal-content {
-      background: unset !important;
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(15px) !important;
-      border: none;
-    }
-
-    .login-landing-page {
-      background-color: #161616 !important;
-      color: white !important;
-    }
-
-    .modal-header,
-    .modal-footer {
-      border: none;
-    }
-
-    .tipo_dispositivo {
-      color: white;
-    }
-
-    .enlace_github {
-      color: rgb(255, 255, 255) !important;
-      text-decoration: none;
-    }
-
-    .enlace_github:hover {
-      color: rgb(0, 162, 255) !important;
-    }
-
-    .users-table th,
-    .users-table td {
-      background-color: #272727;
-    }
-
-    .users-table th {
-      background-color: #000000;
-    }
-
-    .modal select {
-      background-color: #474747;
-    }
-
-    .form-control {
-      background-color: #222222 !important;
-      border: unset !important;
-      color: white !important;
-    }
-
-    .tabla_ayuda {
-      background-color: #272727;
-    }
-
-    .tabla_ayuda th {
-      background-color: #000000;
-    }
-
-
-    .input {
-      color: white !important;
-    }
-
-    select {
-      background-color: #3b3b3bbf !important;
-    }
-
-    .botones_ajustes:hover {
-      opacity: 0.9;
-      filter: brightness(1.5);
-    }
-
-    .licencia {
-      background-color: #2c2c2c !important;
-      border-style: none;
-    }
+  .input {
+    color: white !important;
   }
+
+  select {
+    background-color: #3b3b3bbf !important;
+  }
+
+  .botones_ajustes:hover {
+    opacity: 0.9;
+    filter: brightness(1.5);
+  }
+
+  .licencia {
+    background-color: #2c2c2c !important;
+    border-style: none;
+  }
+}
