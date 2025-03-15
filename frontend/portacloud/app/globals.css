@@ -1059,6 +1059,11 @@ input:hover {
     color: #aaaaaa;
   }
 
+  .device-card-dashboard {
+    background-color: #444444;
+    color: white;
+  }
+
   .device-card {
     background-color: #444444;
     color: white;
