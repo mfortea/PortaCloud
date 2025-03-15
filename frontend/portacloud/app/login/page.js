@@ -78,8 +78,6 @@ export default function Login() {
 
   return (
     <div className="login-landing-page">
-      {/* Contenedor de notificaciones */}
-      <ToastContainer />
 
       <div className="hero-section">
         <div className="hero-content">

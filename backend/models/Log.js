@@ -6,7 +6,7 @@ const logSchema = new mongoose.Schema({
   action: { 
     type: String, 
     required: true,
-    enum: ['login', 'logout', 'register', 'user_created', 'role_changed', 'user_deleted'] 
+    enum: ['login', 'logout', 'register', 'user_created', 'role_changed', 'user_deleted', 'username_changed', 'password_changed', 'account_deleted'] 
   },
   timestamp: { type: Date, default: Date.now },
   ipAddress: String,

@@ -4,164 +4,149 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function Ajustes() {
   const router = useRouter();
-  const { user, logout } = useAuth();
-  const [notificacion, setNotificacion] = useState({ mensaje: "", tipo: "" });
-  const [nuevoNombre, setNuevoNombre] = useState("");
-  const [nuevaContraseña, setNuevaContraseña] = useState("");
-  const [confirmarContraseña, setConfirmarContraseña] = useState("");
-  const [confirmarContraseñaBorrado, setConfirmarContraseñaBorrado] =
-    useState("");
+  const { user, logout, updateUser } = useAuth();
+  const [newUsername, setNewUsername] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
 
-  const [showModalNombre, setShowModalNombre] = useState(false);
-  const [showModalContraseña, setShowModalContraseña] = useState(false);
-  const [showModalEliminarCuenta, setShowModalEliminarCuenta] = useState(false);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
-    } else if (!user) {
-      setLoading(true);
     } else {
-      setLoading(false);
+      setLoading(!user);
     }
   }, [user, router]);
+
+  const handleUpdateUsername = async () => {
+    if (!newUsername.trim()) {
+      toast.error("Ingresa un nuevo nombre de usuario");
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem("token");
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  
+      const response = await fetch(`${serverUrl}/api/auth/update-username`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newUsername }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        toast.success("Nombre de usuario actualizado");
+        setShowUsernameModal(false);
+        setNewUsername("");
+        updateUser({ ...user, username: newUsername });
+      } else {
+        toast.error(data.message || "Error al actualizar el nombre de usuario");
+      }
+    } catch (error) {
+      console.error("Error en handleUpdateUsername:", error);
+      toast.error("Error de conexión");
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden");
+      return;
+    }
+  
+    if (!currentPassword) {
+      toast.error("Ingresa tu contraseña actual");
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem("token");
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  
+      const response = await fetch(`${serverUrl}/api/auth/update-password`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        toast.success("Contraseña actualizada");
+        setShowPasswordModal(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        toast.error(data.message || "Error al actualizar la contraseña");
+      }
+    } catch (error) {
+      console.error("Error en handleUpdatePassword:", error);
+      toast.error("Error de conexión");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      toast.error("Ingresa tu contraseña para confirmar");
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem("token");
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  
+      const response = await fetch(`${serverUrl}/api/auth/delete-account`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: deletePassword }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        localStorage.clear();
+        router.push("/login");
+        toast.success("Cuenta eliminada correctamente");
+      } else {
+        toast.error(data.message || "Error al eliminar la cuenta");
+      }
+    } catch (error) {
+      console.error("Error en handleDeleteAccount:", error);
+      toast.error("Error de conexión");
+    }
+  };
+  
 
   if (loading) {
     return (
       <div className="loading-spinner">
-        <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
+        <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
       </div>
     );
   }
-
-  const mostrarNotificacion = (mensaje, tipo) => {
-    setNotificacion({ mensaje, tipo });
-    setTimeout(() => setNotificacion({ mensaje: "", tipo: "" }), 3000);
-  };
-
-  const cambiarNombreUsuario = async () => {
-    const token = localStorage.getItem("token");
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
-    if (!nuevoNombre) {
-      mostrarNotificacion(
-        "Por favor, ingresa un nuevo nombre de usuario.",
-        "danger"
-      );
-      return;
-    }
-
-    try {
-      const response = await fetch(`${serverUrl}/api/auth/cambiarNombre`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nombre: nuevoNombre }),
-      });
-
-      if (response.ok) {
-        mostrarNotificacion("Nombre de usuario cambiado con éxito.", "success");
-      } else {
-        mostrarNotificacion("Error al cambiar el nombre de usuario.", "danger");
-      }
-    } catch (error) {
-      mostrarNotificacion("Error al cambiar el nombre de usuario.", "danger");
-    }
-  };
-
-  const cambiarContraseña = async () => {
-    const token = localStorage.getItem("token");
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
-    if (!nuevaContraseña || !confirmarContraseña) {
-      mostrarNotificacion(
-        "Por favor, ingresa la nueva contraseña y la confirmación.",
-        "danger"
-      );
-      return;
-    }
-
-    if (nuevaContraseña !== confirmarContraseña) {
-      mostrarNotificacion("Las contraseñas no coinciden.", "danger");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${serverUrl}/api/auth/cambiarContraseña`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nuevaContraseña }),
-      });
-
-      if (response.ok) {
-        mostrarNotificacion("Contraseña cambiada con éxito.", "success");
-      } else {
-        mostrarNotificacion("Error al cambiar la contraseña.", "danger");
-      }
-    } catch (error) {
-      mostrarNotificacion("Error al cambiar la contraseña.", "danger");
-    }
-  };
-
-  const eliminarCuenta = async () => {
-    const token = localStorage.getItem("token");
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
-    if (confirmarContraseñaBorrado !== nuevaContraseña) {
-      mostrarNotificacion(
-        "Las contraseñas no coinciden, no se puede eliminar la cuenta.",
-        "danger"
-      );
-      return;
-    }
-
-    try {
-      const response = await fetch(`${serverUrl}/api/auth/eliminarCuenta`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        localStorage.removeItem("token");
-        router.push("/login");
-        mostrarNotificacion("Cuenta eliminada con éxito.", "success");
-      } else {
-        mostrarNotificacion("Error al eliminar la cuenta.", "danger");
-      }
-    } catch (error) {
-      mostrarNotificacion("Error al eliminar la cuenta.", "danger");
-    }
-  };
-
-  const handleLogout = () => {
-    const token = localStorage.getItem("token");
-    const deviceId = localStorage.getItem("deviceId");
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
-    fetch(`${serverUrl}/api/auth/logout`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ deviceId }),
-    }).finally(() => {
-      logout();
-      router.push("/login");
-    });
-  };
 
   return (
     <div className="container py-5">
@@ -169,89 +154,74 @@ export default function Ajustes() {
         <i className="fa fa-gear"></i> Ajustes
       </h1>
 
-      {notificacion.mensaje && (
-        <div className={`alert alert-${notificacion.tipo}`} role="alert">
-          {notificacion.mensaje}
-        </div>
-      )}
-
-      {/* Contenedor de botones */}
       <div className="d-flex flex-column align-items-center">
         <button
           className="btn botones_ajustes btn-primary"
-          onClick={() => setShowModalNombre(true)}
+          onClick={() => setShowUsernameModal(true)}
         >
-          <i className="fa fa-user"></i> Cambiar nombre de usuario
+          <i className="fa fa-user-edit me-2"></i>
+          Cambiar nombre de usuario
         </button>
 
         <button
           className="btn botones_ajustes btn-primary"
-          onClick={() => setShowModalContraseña(true)}
+          onClick={() => setShowPasswordModal(true)}
         >
-          <i className="fa fa-lock"></i> Cambiar contraseña
+          <i className="fa fa-lock me-2"></i>
+          Cambiar contraseña
         </button>
 
         <button
           className="btn botones_ajustes btn-danger"
-          onClick={() => setShowModalEliminarCuenta(true)}
+          onClick={() => setShowDeleteModal(true)}
         >
-          <i className="fa-solid fa-trash-can"></i> Eliminar cuenta
+          <i className="fa fa-trash me-2"></i>
+          Eliminar cuenta
         </button>
 
-        <button className="btn botones_ajustes btn-primary" onClick={handleLogout}>
-          <i className="fa fa-right-from-bracket"></i> Cerrar sesión
-        </button>
-        <br></br>
-        <br></br>
-        <Link className="nav-link" href="/acercade">
-          <i className="fa-solid fa-circle-question"></i>&nbsp; Acerca de PortaCloud
+        <Link href="/acercade" className=" nav-link text-decoration-none">
+          <i className="fa fa-info-circle me-2"></i>
+          Acerca de PortaCloud
         </Link>
       </div>
 
-      {/* Modal Cambiar Nombre */}
-      {showModalNombre && (
-        <div
-          className="modal fade show"
-          style={{ display: "block" }}
-          tabIndex="-1"
-          aria-labelledby="modalCambiarNombreLabel"
-          aria-hidden="true"
-        >
+      {/* Modales */}
+      {showUsernameModal && (
+        <div className="modal show d-block">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h3 className="modal-title" id="modalCambiarNombreLabel">
-                  <i className="fa fa-user"></i> Cambiar Nombre de Usuario
+                <h3 className="modal-title">
+                  <i className="fa fa-user-edit me-2"></i>
+                  Cambiar nombre de usuario
                 </h3>
-                <button
-                  type="button"
+                <button 
+                  type="button" 
                   className="btn-close"
-                  onClick={() => setShowModalNombre(false)}
+                  onClick={() => setShowUsernameModal(false)}
                 ></button>
               </div>
               <div className="modal-body">
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control mb-3"
                   placeholder="Nuevo nombre de usuario"
-                  value={nuevoNombre}
-                  onChange={(e) => setNuevoNombre(e.target.value)}
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
                 />
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn w-100 botones_ajustes btn-success"
-                  onClick={cambiarNombreUsuario}
+                <button 
+                  className="btn botones_ajustes w-100 btn-success"
+                  onClick={handleUpdateUsername}
                 >
-                  Cambiar nombre de usuario
+                  Guardar cambios
                 </button>
-                <button
-                  type="button"
-                  className="btn w-100 botones_ajustes btn-primary"
-                  onClick={() => setShowModalNombre(false)}
+                <button 
+                  className="btn botones_ajustes w-100 btn-primary"
+                  onClick={() => setShowUsernameModal(false)}
                 >
-                  <i className="fa-solid fa-xmark"></i> Cerrar
+                  Cancelar
                 </button>
               </div>
             </div>
@@ -259,57 +229,56 @@ export default function Ajustes() {
         </div>
       )}
 
-      {/* Modal Cambiar Contraseña */}
-      {showModalContraseña && (
-        <div
-          className="modal fade show"
-          style={{ display: "block" }}
-          tabIndex="-1"
-          aria-labelledby="modalCambiarContraseñaLabel"
-          aria-hidden="true"
-        >
+      {showPasswordModal && (
+        <div className="modal show d-block">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h3 className="modal-title" id="modalCambiarContraseñaLabel">
-                  <i class="fa-solid fa-lock"></i> Cambiar Contraseña
+                <h3 className="modal-title">
+                  <i className="fa fa-lock me-2"></i>
+                  Cambiar contraseña
                 </h3>
-                <button
-                  type="button"
+                <button 
+                  type="button" 
                   className="btn-close"
-                  onClick={() => setShowModalContraseña(false)}
+                  onClick={() => setShowPasswordModal(false)}
                 ></button>
               </div>
               <div className="modal-body">
+                <input
+                  type="password"
+                  className="form-control mb-3"
+                  placeholder="Contraseña actual"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+                <input
+                  type="password"
+                  className="form-control mb-3"
+                  placeholder="Nueva contraseña"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
                 <input
                   type="password"
                   className="form-control"
-                  placeholder="Nueva contraseña"
-                  value={nuevaContraseña}
-                  onChange={(e) => setNuevaContraseña(e.target.value)}
-                />
-                <input
-                  type="password"
-                  className="form-control mt-2"
-                  placeholder="Confirmar contraseña"
-                  value={confirmarContraseña}
-                  onChange={(e) => setConfirmarContraseña(e.target.value)}
+                  placeholder="Confirmar nueva contraseña"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn w-100 botones_ajustes btn-success"
-                  onClick={cambiarContraseña}
+                <button 
+                  className="btn botones_ajustes w-100 btn-success "
+                  onClick={handleUpdatePassword}
                 >
-                  Cambiar contraseña
+                  Actualizar contraseña
                 </button>
-                <button
-                  type="button"
-                  className="btn w-100 botones_ajustes  btn-primary"
-                  onClick={() => setShowModalContraseña(false)}
+                <button 
+                  className="btn botones_ajustes w-100 btn-primary"
+                  onClick={() => setShowPasswordModal(false)}
                 >
-                  <i className="fa-solid fa-xmark"></i> Cerrar
+                  Cancelar
                 </button>
               </div>
             </div>
@@ -317,53 +286,45 @@ export default function Ajustes() {
         </div>
       )}
 
-      {/* Modal Eliminar Cuenta */}
-      {showModalEliminarCuenta && (
-        <div
-          className="modal fade show"
-          style={{ display: "block" }}
-          tabIndex="-1"
-          aria-labelledby="modalEliminarCuentaLabel"
-          aria-hidden="true"
-        >
+      {showDeleteModal && (
+        <div className="modal show d-block">
           <div className="modal-dialog">
             <div className="modal-content">
-              <div className="modal-header">
-                <h3 className="modal-title" id="modalEliminarCuentaLabel">
-                  <i className="fa-solid fa-trash-can"></i> Eliminar Cuenta
+              <div className="modal-header bg-danger text-white">
+                <h3 className="modal-title">
+                  <i className="fa fa-exclamation-triangle me-2"></i>
+                  Eliminar cuenta permanentemente
                 </h3>
-                <button
-                  type="button"
+                <button 
+                  type="button" 
                   className="btn-close"
-                  onClick={() => setShowModalEliminarCuenta(false)}
+                  onClick={() => setShowDeleteModal(false)}
                 ></button>
               </div>
               <div className="modal-body">
-                <p>¿Estás seguro de que deseas eliminar tu cuenta?</p>
+                <p className="text-danger">
+                  ¡Esta acción no se puede deshacer! Todos tus datos serán eliminados.
+                </p>
                 <input
                   type="password"
                   className="form-control"
                   placeholder="Ingresa tu contraseña para confirmar"
-                  value={confirmarContraseñaBorrado}
-                  onChange={(e) =>
-                    setConfirmarContraseñaBorrado(e.target.value)
-                  }
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
                 />
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn w-100 botones_ajustes btn-danger"
-                  onClick={eliminarCuenta}
+                <button 
+                  className="btn botones_ajustes w-100 btn-danger"
+                  onClick={handleDeleteAccount}
                 >
-                  <i className="fa-solid fa-trash-can"></i> Eliminar cuenta
+                  Eliminar definitivamente
                 </button>
-                <button
-                  type="button"
-                  className="btn w-100 botones_ajustes btn-primary"
-                  onClick={() => setShowModalEliminarCuenta(false)}
+                <button 
+                  className="btn  botones_ajustes w-100 btn-primary"
+                  onClick={() => setShowDeleteModal(false)}
                 >
-                  <i className="fa-solid fa-xmark"></i> Cancelar
+                  Cancelar
                 </button>
               </div>
             </div>

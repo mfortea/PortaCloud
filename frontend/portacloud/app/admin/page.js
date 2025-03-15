@@ -95,13 +95,13 @@ export default function AdminPage() {
     }
   };
 
-// Calcular los logs a mostrar
-const indexOfLastLog = currentPage * logsPerPage;
-const indexOfFirstLog = indexOfLastLog - logsPerPage;
-const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
+  // Calcular los logs a mostrar
+  const indexOfLastLog = currentPage * logsPerPage;
+  const indexOfFirstLog = indexOfLastLog - logsPerPage;
+  const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
 
-// Cambiar de página
-const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  // Cambiar de página
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   // Funciones para abrir modales
   const openEditRoleModal = (userId, currentRole) => {
@@ -338,47 +338,50 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
           </button>
         </h2>
         <div className="logs-container">
-  {/* Agregamos una clase extra "table-responsive" */}
-  <div className="table-responsive">
-    <table className="users-table">
-      <thead>
-        <tr>
-          <th>Fecha/Hora</th>
-          <th>Usuario</th>
-          <th>Acción</th>
-          <th>Dirección IP</th>
-          <th>Detalles</th>
-        </tr>
-      </thead>
-      <tbody>
-        {currentLogs.map((log) => (
-          <tr key={log._id}>
-            <td>
-              {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
-            </td>
-            <td>{log.userId?.username || 'Sistema'}</td>
-            <td>
-              {log.action === 'login' && 'Inicio de sesión'}
-              {log.action === 'logout' && 'Cierre de sesión'}
-              {log.action === 'register' && 'Registro nuevo'}
-              {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
-              {log.action === 'role_changed' && `Rol cambiado: ${log.details?.targetUser} (${log.details?.newRole})`}
-              {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
-            </td>
-            <td>{log.ipAddress}</td>
-            <td>
-              {log.details && (
-                <span className="log-details">
-                  {log.details.os} · {log.details.browser}
-                </span>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+          {/* Agregamos una clase extra "table-responsive" */}
+          <div className="table-responsive">
+            <table className="users-table">
+              <thead>
+                <tr>
+                  <th>Fecha/Hora</th>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Dirección IP</th>
+                  <th>Detalles</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentLogs.map((log) => (
+                  <tr key={log._id}>
+                    <td>
+                      {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                    </td>
+                    <td>{log.userId?.username || 'Sistema'}</td>
+                    <td>
+                      {log.action === 'login' && 'Inicio de sesión'}
+                      {log.action === 'logout' && 'Cierre de sesión'}
+                      {log.action === 'register' && 'Registro nuevo'}
+                      {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
+                      {log.action === 'role_changed' && `Rol cambiado: ${log.details?.targetUser} (${log.details?.newRole})`}
+                      {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
+                      {log.action === 'username_changed' && `Nombre de usuario cambiado: ${log.details?.oldUsername} → ${log.details?.newUsername}`}
+                      {log.action === 'password_changed' && 'Contraseña actualizada'}
+                      {log.action === 'account_deleted' && 'Cuenta eliminada'}
+                    </td>
+                    <td>{log.ipAddress}</td>
+                    <td>
+                      {log.details && (
+                        <span className="log-details">
+                          {log.details.os} · {log.details.browser}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
 
         {/* Paginación */}

@@ -1,4 +1,3 @@
-// context/AuthContext.js
 "use client";
 
 import React, { createContext, useState, useContext, useEffect } from "react";
@@ -22,6 +21,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("deviceId");
+  };
+
+  // Función para actualizar la información del usuario
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
   };
 
   useEffect(() => {
@@ -56,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, authChecked }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, authChecked }}>
       {authChecked ? children : <div className="loading-spinner">
         <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
       </div>}
