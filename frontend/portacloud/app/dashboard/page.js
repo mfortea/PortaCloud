@@ -32,39 +32,130 @@ export default function Dashboard() {
   const [loadingDevices, setLoadingDevices] = useState(false);
   const [lastHash, setLastHash] = useState("");
   const token = localStorage.getItem("token");
-  const deviceId = localStorage.getItem("deviceId");
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
 
   const actualizarPortapapeles = async () => {
     try {
-      const clipboardData = await navigator.clipboard.read();
-  
-      for (const item of clipboardData) {
-        let content, type;
-  
-        if (item.types.includes("image/png")) {
-          const blob = await item.getType("image/png");
-          const formData = new FormData();
-          formData.append("image", blob, "clipboard-image.png");
-          formData.append("type", "image");
-          formData.append("deviceId", localStorage.getItem("deviceId"));
-  
-          const response = await fetch(`${serverUrl}/api/auth/updateClipboard`, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData,
-          });
-  
-          const result = await response.json();
-          setClipboardContent({ type: "image", content: `${serverUrl}${result.content}` });
-        } else if (item.types.includes("text/plain")) {
-          const text = await item.getType("text/plain").then((r) => r.text());
-          setClipboardContent({ type: "text", content: text });
+      if (!navigator.clipboard) return;
+
+      let newClipboardContent = null;
+
+      if (isSafari) {
+        const text = await navigator.clipboard.readText();
+        newClipboardContent = { type: "text", content: text };
+      } else {
+        const clipboardData = await navigator.clipboard.read();
+        for (const item of clipboardData) {
+          if (item.types.includes("image/png")) {
+            const blob = await item.getType("image/png");
+            const url = URL.createObjectURL(blob);
+            newClipboardContent = { 
+              type: "image", 
+              content: url,
+              blob: blob,
+              raw: blob // Guardamos el blob original para enviar al backend
+            };
+          } else if (item.types.includes("text/plain")) {
+            const text = await item.getType("text/plain").then((r) => r.text());
+            newClipboardContent = { type: "text", content: text };
+          }
         }
+      }
+
+      if (newClipboardContent?.content !== clipboardContent?.content) {
+        setClipboardAnimation(true);
+        setTimeout(() => setClipboardAnimation(false), 1000);
+        setClipboardContent(newClipboardContent);
+
+        // Envío al backend
+        const token = localStorage.getItem("token");
+        const deviceId = localStorage.getItem("deviceId");
+        const formData = new FormData();
+
+        if (newClipboardContent.type === "image") {
+          formData.append("image", newClipboardContent.raw, "clipboard-image.png");
+          formData.append("type", "image");
+        } else {
+          formData.append("content", newClipboardContent.content);
+          formData.append("type", "text");
+        }
+
+        formData.append("deviceId", deviceId);
+
+        const response = await fetch(`${serverUrl}/api/auth/updateClipboard`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+
+        const result = await response.json();
+        console.log("Respuesta del servidor:", result);
       }
     } catch (error) {
       console.error("Error actualizando el portapapeles:", error);
+    }
+  };
+
+
+  const guardarContenido = async (content, type, os, browser, deviceType) => {
+    if (!content) {
+      toast.error("No hay contenido para guardar");
+      return;
+    }
+  
+    setSaving(true);
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+    const token = localStorage.getItem("token");
+  
+    try {
+      const formData = new FormData();
+  
+      // Añadir campos comunes al FormData
+      formData.append("os", os);
+      formData.append("browser", browser);
+      formData.append("deviceType", deviceType);
+      formData.append("type", type);
+  
+      if (type === "image") {
+        // Si es una imagen del portapapeles local
+        if (content.startsWith("blob:")) {
+          // Obtener el Blob desde la URL de tipo blob
+          const response = await fetch(content);
+          const blob = await response.blob();
+          formData.append("image", blob, "clipboard-image.png");
+        } 
+        // Si es una imagen de un dispositivo remoto
+        else if (content.startsWith("/uploads/")) {
+          const cleanPath = content.replace(serverUrl, ""); // Eliminar serverUrl si está presente
+          const response = await fetch(`${serverUrl}${cleanPath}`);
+          const blob = await response.blob();
+          formData.append("image", blob, "clipboard-image.png");
+        }
+      } else {
+        // Si es texto, adjuntar el contenido directamente
+        formData.append("content", content);
+      }
+  
+      // Enviar la solicitud al backend
+      const response = await fetch(`${serverUrl}/api/saved`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error del servidor");
+      }
+  
+      // Mostrar notificación de éxito
+      toast.success("Contenido guardado con éxito");
+    } catch (error) {
+      // Mostrar notificación de error
+      toast.error(`Error al guardar: ${error.message}`);
+      console.error("Error en guardarContenido:", error.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -76,15 +167,15 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       let devices = await response.json();
-  
+
       const currentDeviceId = localStorage.getItem("deviceId");
       devices = devices.filter((device) => device.deviceId !== currentDeviceId);
-  
+
       setConnectedDevices((prevDevices) => {
         return devices.map((device) => {
           const prevDevice = prevDevices.find((d) => d.deviceId === device.deviceId);
           const contentChanged = prevDevice && prevDevice.clipboardContent !== device.clipboardContent;
-  
+
           return {
             ...device,
             new: !prevDevices.some((d) => d.deviceId === device.deviceId),
@@ -92,7 +183,7 @@ export default function Dashboard() {
           };
         });
       });
-  
+
       setTimeout(() => {
         setConnectedDevices((prevDevices) =>
           prevDevices.map((device) => ({ ...device, flash: false }))
@@ -103,35 +194,6 @@ export default function Dashboard() {
     } finally {
       setLoadingDevices(false); // Desactivar el estado de carga
     }
-  };
-  
-  const descargarContenidoDispositivo = (content, type) => {
-    if (!content) return;
-
-    const now = new Date();
-    const fileName = `${now.getDate().toString().padStart(2, "0")}_${(
-      now.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}_${now.getFullYear()}_${now
-        .getHours()
-        .toString()
-        .padStart(2, "0")}_${now.getMinutes().toString().padStart(2, "0")}_${now
-          .getSeconds()
-          .toString()
-          .padStart(2, "0")}`;
-
-    const link = document.createElement("a");
-
-    if (type === "text") {
-      const blob = new Blob([content], { type: "text/plain" });
-      link.href = URL.createObjectURL(blob);
-      link.download = `${fileName}.txt`;
-    }
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const infoDispositivo = () => {
@@ -347,9 +409,42 @@ export default function Dashboard() {
     setAutoRefreshClipboard((prevState) => !prevState);
   };
 
-  const descargarContenido = () => {
+  const descargarContenido = async () => {
     if (!clipboardContent) return;
   
+    try {
+      const now = new Date();
+      const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
+  
+      if (clipboardContent.type === "image") {
+        const cleanPath = clipboardContent.content.replace(serverUrl, "");
+        const response = await fetch(`${serverUrl}${cleanPath}`);
+        const blob = await response.blob();
+        
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${fileName}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        const blob = new Blob([clipboardContent.content], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${fileName}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      toast.error("Error al descargar");
+    }
+  };
+
+
+  const descargarContenidoDispositivo = (content, type) => {
+    if (!content) return;
+
     const now = new Date();
     const fileName = `${now.getDate().toString().padStart(2, "0")}_${(
       now.getMonth() + 1
@@ -362,24 +457,23 @@ export default function Dashboard() {
           .getSeconds()
           .toString()
           .padStart(2, "0")}`;
-  
+
     const link = document.createElement("a");
-  
-    if (item.type === "image") {
-      link.href = `${serverUrl}${item.filePath}`; // Usar filePath en lugar de content
-      link.download = `guardado_${new Date(item.createdAt).toISOString()}.png`;
-      link.click();
-    } else {
-      const blob = new Blob([item.content], { type: "text/plain" });
+
+    if (content.startsWith("/uploads/")) {
+      link.href = `${serverUrl}${content}`;
+      link.download = `portacloud_${fileName}.png`;
+    } else { 
+      const blob = new Blob([content], { type: "text/plain" });
       link.href = URL.createObjectURL(blob);
-      link.download = `guardado_${new Date(item.createdAt).toISOString()}.txt`;
-      link.click();
+      link.download = `${fileName}.txt`;
     }
-  
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
+
 
   const borrarContenido = async () => {
     try {
@@ -410,47 +504,6 @@ export default function Dashboard() {
         pauseOnHover: true,
         draggable: true,
       });
-    }
-  };
-
-  const guardarContenido = async (content, type, os, browser, deviceType) => {
-    if (!content) return;
-  
-    setSaving(true);
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-    const token = localStorage.getItem("token");
-  
-    try {
-      const formData = new FormData();
-      
-      if (type === "image") {
-        // Obtener el Blob directamente del contenido del portapapeles
-        const blob = await fetch(content.content).then(r => r.blob());
-        formData.append("image", blob, "clipboard-image.png");
-      } else {
-        formData.append("content", content.content);
-      }
-  
-      formData.append("type", type);
-      formData.append("os", os);
-      formData.append("browser", browser);
-      formData.append("deviceType", deviceType);
-  
-      const response = await fetch(`${serverUrl}/api/saved`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-  
-      if (!response.ok) throw new Error("Error en la respuesta del servidor");
-      
-      toast.success("Contenido guardado con éxito.");
-      fetchGuardados(); // Actualizar lista de guardados
-  
-    } catch (error) {
-      toast.error(`Error al guardar: ${error.message}`);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -553,7 +606,13 @@ export default function Dashboard() {
           className="btn boton_aux btn-warning"
           onClick={() => {
             const { os, browser, deviceType } = infoDispositivo();
-            guardarContenido(clipboardContent.content, clipboardContent.type, os, browser, deviceType);
+            guardarContenido(
+              clipboardContent.content,
+              clipboardContent.type,
+              os,
+              browser,
+              deviceType
+            );
           }}
           title="Guardar contenido actual"
           disabled={saving || !clipboardContent}
@@ -635,13 +694,21 @@ export default function Dashboard() {
                   title="Copiar contenido"
                   style={{ cursor: "pointer" }}
                 >
-                  <p>{device.clipboardContent || "No hay contenido en el portapapeles"}</p>
+                  {device.clipboardContent?.startsWith("/uploads/") ? (
+                    <img
+                      src={`${serverUrl}${device.clipboardContent}`}
+                      alt="Imagen del portapapeles"
+                      className="img-fluid"
+                    />
+                  ) : (
+                    <p>{device.clipboardContent || "No hay contenido en el portapapeles"}</p>
+                  )}
                 </div>
 
                 <button
                   className="btn boton_aux btn-warning mt-3"
                   onClick={() =>
-                    guardarContenido(device.clipboardContent, "text", device.os, device.browser, device.deviceType)
+                    guardarContenido(device.clipboardContent, device.clipboardContent?.startsWith("/uploads/") ? "image" : "text", device.os, device.browser, device.deviceType)
                   }
                   disabled={saving || !device.clipboardContent}
                 >

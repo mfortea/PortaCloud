@@ -138,7 +138,7 @@ export default function Guardados() {
   const descargarContenido = (item) => {
     const link = document.createElement("a");
     if (item.type === "image") {
-      link.href = `${serverUrl}${item.filePath}`;
+      link.href = `${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`;
       link.download = `guardado_${new Date(item.createdAt).toISOString()}.png`;
     } else {
       const blob = new Blob([item.content], { type: "text/plain" });
@@ -302,7 +302,7 @@ export default function Guardados() {
                       </div>
                       <div className="clipboard-box-saved p-3 m-3 text-break text-wrap" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }}>
                         {item.type === "image" ? (
-                          <img src={item.content} alt="Guardado" className="img-fluid mb-3" />
+                          <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`} alt="Guardado" className="img-fluid mb-3" />
                         ) : (
                           <p className="text-break text-wrap" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>{item.content}</p>
                         )}

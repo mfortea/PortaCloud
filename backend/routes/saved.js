@@ -1,10 +1,14 @@
 const express = require('express');
 const passport = require('passport');
 const SavedItem = require('../models/SavedItem');
-const getDeviceInfo = require('../utils/deviceInfo');
+const ContentRegistry = require('../models/ContentRegistry');
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
+
+// Configuración de almacenamiento
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -16,63 +20,113 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post("/", upload.single("image"), async (req, res) => {
-  try {
-    const { os, browser, deviceType, type } = req.body;
-    const content = type === "image" ? `/uploads/${req.file.filename}` : req.body.content;
 
-    const newItem = new SavedItem({
-      userId: req.user.userId,
-      os,
-      browser,
-      deviceType,
-      content,
-      type,
-      filePath: type === "image" ? `/uploads/${req.file.filename}` : null,
-      createdAt: new Date(),
-    });
+router.post("/", 
+  passport.authenticate('jwt', { session: false }),
+  upload.single("image"),
+  async (req, res) => {
+    console.log("Iniciando guardado de contenido...");
 
-    await newItem.save();
-    res.status(201).json(newItem);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    try {
+      const { os, browser, deviceType, type, content } = req.body;
+      const userId = req.user.userId;
 
-// Ruta para obtener todos los elementos guardados por el usuario
-router.get('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  try {
-    const items = await SavedItem.find({ userId: req.user.userId }).sort({ createdAt: -1 });
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Ruta para eliminar un elemento guardado por su ID
-router.delete("/:id", async (req, res) => {
-  try {
-    const item = await SavedItem.findById(req.params.id);
-    if (!item) return res.status(404).json({ message: "Elemento no encontrado" });
-
-    // Eliminar archivo físico si es imagen
-    if (item.type === "image" && item.filePath) {
-      const fullPath = path.join(__dirname, "..", item.filePath);
-      if (fs.existsSync(fullPath)) {
-        fs.unlinkSync(fullPath);
+      if (!os || !browser || !deviceType || !type) {
+        return res.status(400).json({ error: "Faltan campos requeridos" });
       }
-    }
 
-    // Eliminar registro de ContentRegistry si es imagen
-    if (item.type === "image") {
-      await ContentRegistry.deleteOne({ filePath: item.filePath });
-    }
+      let savedContent;
+      let filePath = null;
 
-    await SavedItem.findByIdAndDelete(req.params.id);
-    res.json({ message: "Elemento eliminado" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+      if (type === "image" && req.file) {
+        // Generar hash para la imagen
+        const fileBuffer = fs.readFileSync(req.file.path);
+        const hash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
+
+        // Verificar si la imagen ya existe en ContentRegistry
+        const existing = await ContentRegistry.findOne({ hash });
+        if (existing) {
+          // Si ya existe, usar la ruta existente y eliminar el archivo temporal
+          fs.unlinkSync(req.file.path);
+          filePath = existing.filePath;
+        } else {
+          // Si no existe, guardar la nueva imagen
+          filePath = `/uploads/${req.file.filename}`;
+          await ContentRegistry.create({ hash, filePath, referenceCount: 1 });
+        }
+
+        savedContent = filePath;
+      } else {
+        // Si es texto, usar el contenido directamente
+        savedContent = content;
+      }
+
+      // Crear y guardar el nuevo elemento en SavedItem
+      const newItem = new SavedItem({
+        userId,
+        os,
+        browser,
+        deviceType,
+        content: savedContent,
+        type,
+        filePath,
+      });
+
+      await newItem.save();
+      res.status(201).json(newItem);
+
+    } catch (err) {
+      console.error("Error al guardar:", err);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
   }
-});
+);
+
+// Ruta GET con autenticación
+router.get('/', 
+  passport.authenticate('jwt', { session: false }), 
+  async (req, res) => {
+    try {
+      const items = await SavedItem.find({ userId: req.user.userId })
+        .sort({ createdAt: -1 });
+      res.json(items);
+    } catch (err) {
+      res.status(500).json({ error: "Error al obtener elementos" });
+    }
+  }
+);
+
+// Ruta DELETE con autenticación y validación de propiedad
+router.delete("/:id", 
+  passport.authenticate('jwt', { session: false }), 
+  async (req, res) => {
+    try {
+      const item = await SavedItem.findOne({
+        _id: req.params.id,
+        userId: req.user.userId // Verificar propiedad
+      });
+
+      if (!item) return res.status(404).json({ message: "Elemento no encontrado" });
+
+      // Eliminar archivo físico
+      if (item.type === "image" && item.filePath) {
+        const fullPath = path.join(__dirname, "..", item.filePath);
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+          await ContentRegistry.findOneAndUpdate(
+            { filePath: item.filePath },
+            { $inc: { referenceCount: -1 } }
+          );
+        }
+      }
+
+      await SavedItem.deleteOne({ _id: req.params.id });
+      res.json({ message: "Elemento eliminado" });
+
+    } catch (err) {
+      res.status(500).json({ error: "Error al eliminar" });
+    }
+  }
+);
 
 module.exports = router;
