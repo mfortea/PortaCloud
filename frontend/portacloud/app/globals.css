@@ -1138,6 +1138,19 @@ padding: 10px !important;
   transition: all 0.5s;
 }
 
+@media (min-width: 768px) { 
+  .saved-table th:nth-child(1) { width: 50%; }
+  .saved-table th:nth-child(2) { width: 15%; }
+  .saved-table th:nth-child(3) { width: 15%; }
+  .saved-table th:nth-child(4) { width: 20%; }
+}
+
+@media (max-width: 767px) { 
+  .saved-table th {
+    width: auto; 
+  }
+}
+
 
 /* ========== ESTILOS DEL MODO OSCURO ========== */
 @media (prefers-color-scheme: dark) {

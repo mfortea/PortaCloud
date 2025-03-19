@@ -338,7 +338,6 @@ export default function AdminPage() {
           </button>
         </h2>
         <div className="logs-container">
-          {/* Agregamos una clase extra "table-responsive" */}
           <div className="table-responsive">
             <table className="users-table">
               <thead>

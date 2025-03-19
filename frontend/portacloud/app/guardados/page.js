@@ -313,13 +313,14 @@ export default function Guardados() {
               ))}
             </div>
           ) : (
+            <div className="table-responsive">
             <table className="saved-table">
               <thead>
                 <tr>
-                  <th style={{ width: '50%' }}>Contenido</th>
-                  <th style={{ width: '15%' }}>Plataforma</th>
-                  <th style={{ width: '15%' }}>Fecha</th>
-                  <th style={{ width: '20%' }}>Acciones</th>
+                  <th>Contenido</th>
+                  <th>Plataforma</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -343,6 +344,7 @@ export default function Guardados() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </>
       )}
