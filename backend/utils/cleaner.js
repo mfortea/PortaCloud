@@ -2,6 +2,7 @@
 const ContentRegistry = require("../models/ContentRegistry");
 const fs = require("fs");
 const path = require("path");
+const Device = require("../models/Device");
 
 const cleanOrphanFiles = async () => {
   try {
