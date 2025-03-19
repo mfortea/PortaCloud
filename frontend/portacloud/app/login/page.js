@@ -9,13 +9,19 @@ import "react-toastify/dist/ReactToastify.css";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Estado para manejar el spinner
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
+  const { user, login } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard"); 
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Activar el estado de carga
+    setIsLoading(true); 
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
   
     try {
