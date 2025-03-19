@@ -293,7 +293,7 @@ export default function Ajustes() {
               <div className="modal-header bg-danger text-white">
                 <h3 className="modal-title">
                   <i className="fa fa-exclamation-triangle me-2"></i>
-                  Eliminar cuenta permanentemente
+                  Eliminar cuenta
                 </h3>
                 <button 
                   type="button" 

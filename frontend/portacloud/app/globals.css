@@ -11,6 +11,7 @@
   }
 }
 
+
 /* ========== ESTILOS GENERALES ========== */
 html,
 body {
@@ -104,6 +105,10 @@ a {
   .scroll-container main {
     flex-grow: 1;
   }
+}
+
+*:focus {
+  outline: none !important;
 }
 
 
@@ -520,6 +525,10 @@ input:hover {
   transition: all 0.5s;
 }
 
+.clipboard-box:active, .clipboard-box-saved:active {
+  filter: brightness(0.5);
+}
+
 /* ========== ESTILOS DE TARJETAS DE DISPOSITIVOS ========== */
 .device-card {
   padding: 30px;
@@ -623,27 +632,6 @@ input:hover {
   }
 }
 
-/* ========== ESTILOS DE ANIMACIONES DE ALERTAS ========== */
-.alert-enter {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.alert-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms, transform 300ms;
-}
-
-.alert-exit {
-  opacity: 1;
-}
-
-.alert-exit-active {
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: opacity 300ms, transform 300ms;
-}
 
 
 /* ========== ESTILOS DEL FOOTER ========== */
@@ -981,38 +969,50 @@ padding: 10px !important;
 
 /* ========== ESTILO DE LAS VENTANAS MODALES ========== */
 .modal-overlay {
-  position: absolute;
+  position: fixed; 
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: unset !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 999;
+}
+
+.modal-dialog, .modal-content, .modal-dialog {
+  background-color: #ffffff57 !important;
+  backdrop-filter: blur(40px) !important;
+  border: solid !important;
+  border-width: 2px !important;
+  border-color: rgb(220, 220, 220) !important;
 }
 
 .modal-dialog {
-  margin-top: 130px !important;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(15px);
+  position: relative;
   border-radius: 12px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-  padding: 20px;
   max-width: 400px;
+  width: 90%;
+  box-sizing: border-box; 
+  margin-top: 130px !important;
+}
+
+@media (max-width: 768px) {
+  .modal-dialog {
+    width: 90%; 
+    max-width: 100%; 
+  }
 }
 
 .modal-content {
-  background: unset !important;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(15px) !important;
-  border: none;
+  border: none !important;
 }
 
 
 .modal-header,
 .modal-footer {
-  border: none;
+  border: none !important;
 }
 
 .modal select {
@@ -1020,6 +1020,21 @@ padding: 10px !important;
   border-style: none;
   background-color: #e9e9e9;
   border-radius: 8px;
+}
+
+.btn-close {
+  background-color: rgba(133, 133, 133, 0.458) !important;
+  backdrop-filter: blur(50px) !important;
+}
+
+.btn-close:active {
+  background-color: #5e5e5e !important;
+  outline: none !important;
+}
+
+.btn-close:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* ========== ESTILOS DEL ADMIN ========== */
@@ -1333,25 +1348,23 @@ padding: 10px !important;
   }
 
   .btn-close {
-    background-color: rgb(117, 117, 117) !important;
+    background-color: rgba(133, 133, 133, 0.458) !important;
+    backdrop-filter: blur(50px) !important;
   }
 
-
-  .modal-dialog {
-    background: rgba(56, 56, 56, 0.6);
-    backdrop-filter: blur(15px);
-    border-radius: 12px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    max-width: 400px;
+  .btn-close:active {
+    background-color: #191919 !important;
+    color: white;
   }
 
-  .modal-content {
-    background: unset !important;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(15px) !important;
-    border: none;
+  .modal-dialog, .modal-content, .modal-dialog {
+    background-color: #31313152 !important;
+    backdrop-filter: blur(40px) !important;
+    border: solid !important;
+    border-width: 2px !important;
+    border-color: rgb(50, 50, 50) !important;
   }
+  
 
   .login-landing-page {
     background-color: #161616 !important;
@@ -1416,6 +1429,10 @@ padding: 10px !important;
   .botones_ajustes:hover {
     opacity: 0.9;
     filter: brightness(1.5);
+  }
+
+  .botones_ajustes:active {
+    filter: brightness(0.5);
   }
 
   .licencia {
