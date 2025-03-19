@@ -12,6 +12,7 @@ import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
 import { MdUpdate } from "react-icons/md";
 import { MdUpdateDisabled } from "react-icons/md";
+import CryptoJS from "crypto-js";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -29,55 +30,38 @@ export default function Dashboard() {
   const platform = require('platform');
   const [showSafariModal, setShowSafariModal] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
+  const [lastHash, setLastHash] = useState("");
+  const token = localStorage.getItem("token");
+  const deviceId = localStorage.getItem("deviceId");
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+
 
   const actualizarPortapapeles = async () => {
     try {
-      if (!navigator.clipboard || !document.hasFocus()) return;
-
-      let newClipboardContent = null;
-
-      if (isSafari) {
-        const text = await navigator.clipboard.readText();
-        newClipboardContent = { type: "text", content: text };
-      } else {
-        const clipboardData = await navigator.clipboard.read();
-        for (const item of clipboardData) {
-          if (item.types.includes("image/png")) {
-            const blob = await item.getType("image/png");
-            const url = URL.createObjectURL(blob);
-            newClipboardContent = { type: "image", content: url, blob };
-          } else if (item.types.includes("text/plain")) {
-            const text = await item.getType("text/plain").then((r) => r.text());
-            newClipboardContent = { type: "text", content: text };
-          }
+      const clipboardData = await navigator.clipboard.read();
+  
+      for (const item of clipboardData) {
+        let content, type;
+  
+        if (item.types.includes("image/png")) {
+          const blob = await item.getType("image/png");
+          const formData = new FormData();
+          formData.append("image", blob, "clipboard-image.png");
+          formData.append("type", "image");
+          formData.append("deviceId", localStorage.getItem("deviceId"));
+  
+          const response = await fetch(`${serverUrl}/api/auth/updateClipboard`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData,
+          });
+  
+          const result = await response.json();
+          setClipboardContent({ type: "image", content: `${serverUrl}${result.content}` });
+        } else if (item.types.includes("text/plain")) {
+          const text = await item.getType("text/plain").then((r) => r.text());
+          setClipboardContent({ type: "text", content: text });
         }
-      }
-
-      if (newClipboardContent && newClipboardContent.content !== clipboardContent?.content) {
-        setClipboardAnimation(true);
-        setTimeout(() => setClipboardAnimation(false), 1000);
-        setClipboardContent(newClipboardContent);
-
-        const token = localStorage.getItem("token");
-        const deviceId = localStorage.getItem("deviceId");
-        const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
-        console.log(`Enviando contenido actualizado al backend: ${newClipboardContent.content}`);
-
-        const response = await fetch(`${serverUrl}/api/auth/updateClipboard`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            deviceId,
-            clipboardContent: newClipboardContent.content,
-          }),
-        });
-
-        const result = await response.json();
-        console.log(`✔️ Respuesta del servidor:`, result);
       }
     } catch (error) {
       console.error("Error actualizando el portapapeles:", error);
@@ -365,7 +349,7 @@ export default function Dashboard() {
 
   const descargarContenido = () => {
     if (!clipboardContent) return;
-
+  
     const now = new Date();
     const fileName = `${now.getDate().toString().padStart(2, "0")}_${(
       now.getMonth() + 1
@@ -378,18 +362,20 @@ export default function Dashboard() {
           .getSeconds()
           .toString()
           .padStart(2, "0")}`;
-
+  
     const link = document.createElement("a");
-
-    if (clipboardContent.type === "image" && clipboardContent.blob) {
-      link.href = URL.createObjectURL(clipboardContent.blob);
-      link.download = `portacloud_${fileName}.png`;
-    } else if (clipboardContent.type === "text") {
-      const blob = new Blob([clipboardContent.content], { type: "text/plain" });
+  
+    if (item.type === "image") {
+      link.href = `${serverUrl}${item.filePath}`; // Usar filePath en lugar de content
+      link.download = `guardado_${new Date(item.createdAt).toISOString()}.png`;
+      link.click();
+    } else {
+      const blob = new Blob([item.content], { type: "text/plain" });
       link.href = URL.createObjectURL(blob);
-      link.download = `${fileName}.txt`;
+      link.download = `guardado_${new Date(item.createdAt).toISOString()}.txt`;
+      link.click();
     }
-
+  
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -429,54 +415,40 @@ export default function Dashboard() {
 
   const guardarContenido = async (content, type, os, browser, deviceType) => {
     if (!content) return;
-
+  
     setSaving(true);
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
+  
     try {
+      const formData = new FormData();
+      
+      if (type === "image") {
+        // Obtener el Blob directamente del contenido del portapapeles
+        const blob = await fetch(content.content).then(r => r.blob());
+        formData.append("image", blob, "clipboard-image.png");
+      } else {
+        formData.append("content", content.content);
+      }
+  
+      formData.append("type", type);
+      formData.append("os", os);
+      formData.append("browser", browser);
+      formData.append("deviceType", deviceType);
+  
       const response = await fetch(`${serverUrl}/api/saved`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          os,
-          browser,
-          deviceType,
-          content,
-          type,
-        }),
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
       });
-
-      if (response.ok) {
-        toast.success("Contenido guardado con éxito.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      } else {
-        toast.error("Error al guardar el contenido.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
+  
+      if (!response.ok) throw new Error("Error en la respuesta del servidor");
+      
+      toast.success("Contenido guardado con éxito.");
+      fetchGuardados(); // Actualizar lista de guardados
+  
     } catch (error) {
-      toast.error("Error al guardar el contenido.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(`Error al guardar: ${error.message}`);
     } finally {
       setSaving(false);
     }

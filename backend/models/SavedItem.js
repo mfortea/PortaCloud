@@ -25,14 +25,16 @@ const savedItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  type: {
-    type: String,
-    required: true,
-  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  type: {
+    type: String,
+    required: true,
+    enum: ["text", "image"] 
+  },
+  filePath: String 
 });
 
 const SavedItem = mongoose.model("SavedItem", savedItemSchema);

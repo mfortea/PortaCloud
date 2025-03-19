@@ -138,7 +138,7 @@ export default function Guardados() {
   const descargarContenido = (item) => {
     const link = document.createElement("a");
     if (item.type === "image") {
-      link.href = item.content;
+      link.href = `${serverUrl}${item.filePath}`;
       link.download = `guardado_${new Date(item.createdAt).toISOString()}.png`;
     } else {
       const blob = new Blob([item.content], { type: "text/plain" });

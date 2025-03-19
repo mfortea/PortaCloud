@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const savedRoutes = require("./routes/saved");
 const adminRoutes = require("./routes/admin");
 const passport = require('./config/passportConfig');
+const cleanOrphanFiles = require("./utils/cleaner");
 
 const app = express();
 const server = createServer(app);
@@ -25,6 +26,9 @@ mongoose.connect(process.env.MONGO_URI);
 app.use("/api/auth", authRoutes);
 app.use("/api/saved", savedRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/uploads", express.static("uploads"));
+
+cleanOrphanFiles();
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));

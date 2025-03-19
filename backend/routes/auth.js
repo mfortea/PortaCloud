@@ -10,6 +10,22 @@ const getDeviceInfo = require('../utils/deviceInfo');
 const Log = require('../models/Log');
 const router = express.Router();
 const SavedItem = require('../models/SavedItem')
+const TempImage = require("../models/TempImage");
+const multer = require("multer");
+const ContentRegistry = require("../models/ContentRegistry");
+const crypto = require("crypto");
+const fs = require("fs");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
 
 let io;
 
@@ -18,6 +34,52 @@ router.use((req, res, next) => {
     req.io = io;
   }
   next();
+});
+
+
+router.post("/updateClipboard", upload.single("image"), async (req, res) => {
+  const { deviceId, type } = req.body;
+
+  try {
+    let content, hash;
+
+    if (type === "image" && req.file) {
+      // Generar hash solo para imágenes
+      const fileBuffer = fs.readFileSync(req.file.path);
+      hash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
+
+      const existing = await ContentRegistry.findOne({ hash });
+      if (existing) {
+        fs.unlinkSync(req.file.path);
+        content = existing.filePath;
+        await ContentRegistry.updateOne(
+          { hash },
+          { $inc: { referenceCount: 1 } }
+        );
+      } else {
+        content = `/uploads/${req.file.filename}`;
+        await ContentRegistry.create({ hash, filePath: content, referenceCount: 1 });
+      }
+    } else {
+      // Manejo simple para texto
+      content = req.body.content;
+      hash = null;
+    }
+
+    const device = await Device.findOneAndUpdate(
+      { deviceId },
+      {
+        clipboardContent: content,
+        contentHash: hash,
+        lastActive: new Date(),
+      },
+      { new: true }
+    );
+
+    res.json({ message: "Contenido actualizado", content });
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar", error });
+  }
 });
 
 router.post("/set-socket", (req, res) => {
@@ -180,22 +242,6 @@ router.get("/devices", async (req, res) => {
   });
 });
 
-router.post("/updateClipboard", async (req, res) => {
-  const { deviceId, clipboardContent } = req.body;
-
-  try {
-    const device = await Device.findOne({ deviceId });
-    if (!device) return res.status(404).json({ message: "Dispositivo no encontrado" });
-
-    device.clipboardContent = clipboardContent;
-    device.lastActive = new Date();
-    await device.save();
-
-    res.json({ message: "Contenido del portapapeles actualizado" });
-  } catch (error) {
-    res.status(500).json({ message: "Error al actualizar el contenido del portapapeles", error });
-  }
-});
 
 router.put("/update-username", async (req, res) => {
   try {

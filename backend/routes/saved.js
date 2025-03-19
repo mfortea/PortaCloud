@@ -3,12 +3,23 @@ const passport = require('passport');
 const SavedItem = require('../models/SavedItem');
 const getDeviceInfo = require('../utils/deviceInfo');
 const router = express.Router();
+const multer = require("multer");
+const path = require("path");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
 
-// Ruta para guardar un nuevo elemento
-router.post('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
+const upload = multer({ storage });
+
+router.post("/", upload.single("image"), async (req, res) => {
   try {
-
-    const { os, browser, deviceType, content, type } = req.body;
+    const { os, browser, deviceType, type } = req.body;
+    const content = type === "image" ? `/uploads/${req.file.filename}` : req.body.content;
 
     const newItem = new SavedItem({
       userId: req.user.userId,
@@ -17,14 +28,13 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
       deviceType,
       content,
       type,
+      filePath: type === "image" ? `/uploads/${req.file.filename}` : null,
       createdAt: new Date(),
     });
 
     await newItem.save();
-
     res.status(201).json(newItem);
   } catch (err) {
-    console.error('Error al guardar el elemento:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -40,11 +50,26 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
 });
 
 // Ruta para eliminar un elemento guardado por su ID
-router.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    // Eliminamos el elemento por su ID
+    const item = await SavedItem.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Elemento no encontrado" });
+
+    // Eliminar archivo físico si es imagen
+    if (item.type === "image" && item.filePath) {
+      const fullPath = path.join(__dirname, "..", item.filePath);
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+      }
+    }
+
+    // Eliminar registro de ContentRegistry si es imagen
+    if (item.type === "image") {
+      await ContentRegistry.deleteOne({ filePath: item.filePath });
+    }
+
     await SavedItem.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Elemento eliminado' });
+    res.json({ message: "Elemento eliminado" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
