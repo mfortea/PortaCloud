@@ -1,3 +1,3 @@
 node_modules/
-backend/uploads/*
+backend/uploads/*.png
 .DS_Store
