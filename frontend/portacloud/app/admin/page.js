@@ -31,7 +31,19 @@ export default function AdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [logsPerPage] = useState(20);
   const [isRefreshingLogs, setIsRefreshingLogs] = useState(false);
+  const [closing, setClosing] = useState(false);
 
+    const closeModal = (modalType) => {
+      setClosing(true);
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setModalType(null);
+        setSelectedUserId(null);
+        setClosing(false);
+      }, 100);
+    };
+    
+  
   useEffect(() => {
     const checkAuth = async () => {
       setIsCheckingAuth(true);
@@ -115,13 +127,6 @@ export default function AdminPage() {
     setSelectedUserId(userId);
     setModalType("deleteUser");
     setIsModalOpen(true);
-  };
-
-  // Función para cerrar el modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalType(null);
-    setSelectedUserId(null);
   };
 
   // Función para enviar el cambio de rol
@@ -399,9 +404,9 @@ export default function AdminPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="modal show" style={{ display: "block" }}>
-          <div className="modal-dialog">
-            <div className="modal-content text-center">
+        <div className={`modal show d-block ${closing ? "closing" : ""}`}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header">
                 {modalType === "editRole" && (
                   <h2 className="modal-title"><i className="fa-solid fa-user-tag"></i> Cambiar Rol</h2>
