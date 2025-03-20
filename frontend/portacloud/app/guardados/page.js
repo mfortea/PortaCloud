@@ -22,6 +22,7 @@ export default function Guardados() {
   const [deviceTypeOptions, setDeviceTypeOptions] = useState([]);
   const [browserOptions, setBrowserOptions] = useState([]);
   const [deviceTypeFilter, setDeviceTypeFilter] = useState("");
+  const [contentTypeFilter, setContentTypeFilter] = useState("");
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -178,8 +179,10 @@ export default function Guardados() {
       (searchTerm === "" || item.content.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (osFilter === "" || item.os === osFilter) &&
       (browserFilter === "" || item.browser === browserFilter) &&
-      (deviceTypeFilter === "" || item.deviceType === deviceTypeFilter)
+      (deviceTypeFilter === "" || item.deviceType === deviceTypeFilter) &&
+      (contentTypeFilter === "" || item.type === contentTypeFilter)
   );
+
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -275,6 +278,12 @@ export default function Guardados() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <select className="form-control" value={contentTypeFilter} onChange={(e) => setContentTypeFilter(e.target.value)}>
+          <option value="">▼ Todos los tipos</option>
+          <option value="image">Imagen</option>
+          <option value="text">Texto</option>
+        </select>
+
         <select className="form-control" value={osFilter} onChange={(e) => setOsFilter(e.target.value)}>
           <option value="">▼ Todos los SO </option>
           {osOptions.map((os) => (
@@ -288,7 +297,7 @@ export default function Guardados() {
           ))}
         </select>
         <select className="form-control" value={deviceTypeFilter} onChange={(e) => setDeviceTypeFilter(e.target.value)}>
-          <option value="">▼ Todos los Tipos  </option>
+          <option value="">▼ Todos los dispositivos  </option>
           {deviceTypeOptions.map((device) => (
             <option key={device} value={device}>
               {device === "smartphone"
@@ -407,6 +416,15 @@ export default function Guardados() {
 
                       <td>{new Date(item.createdAt).toLocaleString()}</td>
                       <td>
+                        {item.type === "image" && (
+                          <button
+                            className="btn boton_aux btn-primary m-2"
+                            onClick={() => verImagen(`${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`)}
+                            title="Vista previa de la imagen"
+                          >
+                            <i className="fa fa-eye"></i>
+                          </button>
+                        )}
                         <button className="btn boton_aux btn-success mx-1" onClick={() => descargarContenido(item)}>
                           <i className="fa fa-download"></i>
                         </button>
