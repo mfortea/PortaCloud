@@ -110,33 +110,33 @@ export default function Dashboard() {
     try {
       const formData = new FormData();
   
-      // Añadir campos comunes al FormData
       formData.append("os", os);
       formData.append("browser", browser);
       formData.append("deviceType", deviceType);
       formData.append("type", type);
   
       if (type === "image") {
-        // Si es una imagen del portapapeles local
         if (content.startsWith("blob:")) {
-          // Obtener el Blob desde la URL de tipo blob
           const response = await fetch(content);
           const blob = await response.blob();
           formData.append("image", blob, "clipboard-image.png");
         } 
-        // Si es una imagen de un dispositivo remoto
         else if (content.startsWith("/uploads/")) {
-          const cleanPath = content.replace(serverUrl, ""); // Eliminar serverUrl si está presente
+          const cleanPath = content.replace(serverUrl, "");
           const response = await fetch(`${serverUrl}${cleanPath}`);
           const blob = await response.blob();
           formData.append("image", blob, "clipboard-image.png");
+        } 
+        else if (content.startsWith("http") || content.startsWith("/")) {
+          const response = await fetch(content);
+          if (!response.ok) throw new Error("No se pudo obtener el archivo de la ruta proporcionada");
+          const blob = await response.blob();
+          formData.append("image", blob, "archivo-subido.png");
         }
       } else {
-        // Si es texto, adjuntar el contenido directamente
         formData.append("content", content);
       }
   
-      // Enviar la solicitud al backend
       const response = await fetch(`${serverUrl}/api/saved`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -148,16 +148,15 @@ export default function Dashboard() {
         throw new Error(errorData.message || "Error del servidor");
       }
   
-      // Mostrar notificación de éxito
       toast.success("Contenido guardado con éxito");
     } catch (error) {
-      // Mostrar notificación de error
       toast.error(`Error al guardar: ${error.message}`);
       console.error("Error en guardarContenido:", error.message);
     } finally {
       setSaving(false);
     }
   };
+  
 
   const actualizarDispositivos = async (token) => {
     setLoadingDevices(true); // Activar el estado de carga
@@ -402,7 +401,7 @@ export default function Dashboard() {
   const recargarDispositivos = () => {
     setRefreshing(true);
     actualizarDispositivos(localStorage.getItem("token"));
-    setTimeout(() => setRefreshing(false), 1000);
+    setTimeout(() => setRefreshing(false), 1500);
   };
 
   const toggleAutoRefreshClipboard = () => {
@@ -556,21 +555,29 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="clipboard-display mb-4 text-center">
-        {clipboardContent ? (
-          clipboardContent.type === "image" ? (
-            <img
-              src={clipboardContent.content}
-              alt="Imagen del portapapeles"
-              className="img-fluid clipboard-image"
-            />
-          ) : (
-            <p>{clipboardContent.content}</p>
-          )
-        ) : (
-          <p>No hay contenido en el portapapeles</p>
-        )}
-      </div>
+<div className="clipboard-display mb-4 text-center">
+  {clipboardContent ? (
+    clipboardContent.type === "image" ? (
+      <img
+        src={clipboardContent.content}
+        alt="Imagen del portapapeles"
+        className="img-fluid clipboard-image"
+      />
+    ) : clipboardContent.content?.startsWith("/uploads/") ? (
+      <img
+        src={`${serverUrl}${clipboardContent.content}`}
+        alt="Imagen del portapapeles"
+        className="img-fluid"
+      />
+    ) : (
+      <p>{clipboardContent.content}</p>
+    )
+  ) : (
+    <p>No hay contenido en el portapapeles</p>
+  )}
+</div>
+
+
 
       {isSafari && (
         <div className="mt-3 text-center">

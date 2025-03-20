@@ -19,6 +19,25 @@ export default function Ajustes() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [closing, setClosing] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
+  
+  const cerrarModal = (modalType) => {
+    setClosing(true);
+    
+    setTimeout(() => {
+      if (modalType === "username") {
+        setShowUsernameModal(false);
+      } else if (modalType === "password") {
+        setShowPasswordModal(false);
+      } else if (modalType === "delete") {
+        setShowDeleteModal(false);
+      }
+      
+      setClosing(false);
+    }, 100);
+  };
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -34,11 +53,11 @@ export default function Ajustes() {
       toast.error("Ingresa un nuevo nombre de usuario");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-  
+
       const response = await fetch(`${serverUrl}/api/auth/update-username`, {
         method: "PUT",
         headers: {
@@ -47,9 +66,9 @@ export default function Ajustes() {
         },
         body: JSON.stringify({ newUsername }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         toast.success("Nombre de usuario actualizado");
         setShowUsernameModal(false);
@@ -69,16 +88,16 @@ export default function Ajustes() {
       toast.error("Las contraseñas no coinciden");
       return;
     }
-  
+
     if (!currentPassword) {
       toast.error("Ingresa tu contraseña actual");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-  
+
       const response = await fetch(`${serverUrl}/api/auth/update-password`, {
         method: "PUT",
         headers: {
@@ -87,9 +106,9 @@ export default function Ajustes() {
         },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         toast.success("Contraseña actualizada");
         setShowPasswordModal(false);
@@ -110,11 +129,11 @@ export default function Ajustes() {
       toast.error("Ingresa tu contraseña para confirmar");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-  
+
       const response = await fetch(`${serverUrl}/api/auth/delete-account`, {
         method: "DELETE",
         headers: {
@@ -123,9 +142,9 @@ export default function Ajustes() {
         },
         body: JSON.stringify({ password: deletePassword }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         localStorage.clear();
         router.push("/login");
@@ -138,7 +157,7 @@ export default function Ajustes() {
       toast.error("Error de conexión");
     }
   };
-  
+
 
   if (loading) {
     return (
@@ -186,19 +205,20 @@ export default function Ajustes() {
       </div>
 
       {/* Modales */}
+      {/* Modales */}
       {showUsernameModal && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
-            <div className="modal-content">
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("username")}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header">
                 <h3 className="modal-title">
                   <i className="fa fa-user-edit me-2"></i>
                   Cambiar nombre de usuario
                 </h3>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-close"
-                  onClick={() => setShowUsernameModal(false)}
+                  onClick={cerrarModal}
                 ></button>
               </div>
               <div className="modal-body">
@@ -211,15 +231,15 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-                <button 
+                <button
                   className="btn botones_ajustes w-100 btn-success"
                   onClick={handleUpdateUsername}
                 >
                   Guardar cambios
                 </button>
-                <button 
+                <button
                   className="btn botones_ajustes w-100 btn-primary"
-                  onClick={() => setShowUsernameModal(false)}
+                  onClick={cerrarModal}
                 >
                   Cancelar
                 </button>
@@ -230,18 +250,18 @@ export default function Ajustes() {
       )}
 
       {showPasswordModal && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
-            <div className="modal-content">
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("password")}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header">
                 <h3 className="modal-title">
                   <i className="fa fa-lock me-2"></i>
                   Cambiar contraseña
                 </h3>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-close"
-                  onClick={() => setShowPasswordModal(false)}
+                  onClick={cerrarModal}
                 ></button>
               </div>
               <div className="modal-body">
@@ -268,15 +288,15 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-                <button 
-                  className="btn botones_ajustes w-100 btn-success "
+                <button
+                  className="btn botones_ajustes w-100 btn-success"
                   onClick={handleUpdatePassword}
                 >
                   Actualizar contraseña
                 </button>
-                <button 
+                <button
                   className="btn botones_ajustes w-100 btn-primary"
-                  onClick={() => setShowPasswordModal(false)}
+                  onClick={cerrarModal}
                 >
                   Cancelar
                 </button>
@@ -287,18 +307,18 @@ export default function Ajustes() {
       )}
 
       {showDeleteModal && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
-            <div className="modal-content">
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("delete")}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header bg-danger text-white">
                 <h3 className="modal-title">
                   <i className="fa fa-exclamation-triangle me-2"></i>
                   Eliminar cuenta
                 </h3>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-close"
-                  onClick={() => setShowDeleteModal(false)}
+                  onClick={cerrarModal}
                 ></button>
               </div>
               <div className="modal-body">
@@ -314,15 +334,15 @@ export default function Ajustes() {
                 />
               </div>
               <div className="modal-footer">
-                <button 
+                <button
                   className="btn botones_ajustes w-100 btn-danger"
                   onClick={handleDeleteAccount}
                 >
                   Eliminar definitivamente
                 </button>
-                <button 
-                  className="btn  botones_ajustes w-100 btn-primary"
-                  onClick={() => setShowDeleteModal(false)}
+                <button
+                  className="btn botones_ajustes w-100 btn-primary"
+                  onClick={cerrarModal}
                 >
                   Cancelar
                 </button>
@@ -331,6 +351,7 @@ export default function Ajustes() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

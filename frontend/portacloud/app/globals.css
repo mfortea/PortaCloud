@@ -978,6 +978,7 @@ padding: 10px !important;
   align-items: center;
   justify-content: center;
   z-index: 999;
+  
 }
 
 .modal-dialog, .modal-content, .modal-dialog {
@@ -986,13 +987,14 @@ padding: 10px !important;
   border: solid !important;
   border-width: 2px !important;
   border-color: rgb(220, 220, 220) !important;
+  animation: zoomIn 0.3s ease-out !important;
 }
 
 .modal-dialog {
   position: relative;
   border-radius: 12px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
+  max-width: 800px !important;
   width: 90%;
   box-sizing: border-box; 
   margin-top: 130px !important;
@@ -1007,6 +1009,7 @@ padding: 10px !important;
 
 .modal-content {
   border: none !important;
+
 }
 
 
@@ -1035,6 +1038,40 @@ padding: 10px !important;
 .btn-close:focus {
   outline: none !important;
   box-shadow: none !important;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 85vh;
+  border-radius: 5px;
+  object-fit: contain;
+}
+
+.closing {
+  animation: zoomOut 0.3s ease-out !important;
+}
+
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.8);
+    opacity: 0;
+  }
 }
 
 /* ========== ESTILOS DEL ADMIN ========== */

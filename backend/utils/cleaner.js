@@ -1,35 +1,44 @@
-// utils/cleaner.js
-const ContentRegistry = require("../models/ContentRegistry");
 const fs = require("fs");
 const path = require("path");
-const Device = require("../models/Device");
+const SavedItem = require("../models/SavedItem");
 
 const cleanOrphanFiles = async () => {
   try {
-    // Eliminar imágenes sin referencias
-    const usedImages = await Device.distinct("clipboardContent");
-    const allImages = await ContentRegistry.find({});
+    console.log("Iniciando limpieza de archivos huérfanos...");
+
+    const uploadDir = path.resolve(__dirname, "..", "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      console.log("La carpeta 'uploads' no existe. No hay nada que limpiar.");
+      return;
+    }
+
+    // Obtener lista de archivos en 'uploads'
+    const filesInUploads = fs.readdirSync(uploadDir);
+    console.log(`Archivos en 'uploads':`, filesInUploads);
+
+    // Obtener lista de archivos guardados en `SavedItem`
+    const savedItems = await SavedItem.find({}, "filePath");
+    const savedFilePaths = new Set(savedItems.map(item => item.filePath));
+
+    console.log("Archivos referenciados en 'SavedItem':", savedFilePaths);
+
+    for (const file of filesInUploads) {
+      const filePath = `/uploads/${file}`;
+
+      if (!savedFilePaths.has(filePath)) {
+        // No está referenciado en `SavedItem`, lo eliminamos
+        const fullPath = path.join(uploadDir, file);
+        try {
+          fs.unlinkSync(fullPath);
+          console.log(`Archivo eliminado: ${fullPath}`);
+        } catch (unlinkErr) {
+          console.error(`Error eliminando ${fullPath}:`, unlinkErr);
+        }
+      }
+    }
     
-    allImages.forEach(async (image) => {
-      if (!usedImages.includes(image.filePath)) {
-        const fullPath = path.join(__dirname, "..", image.filePath);
-        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
-        await ContentRegistry.deleteOne({ _id: image._id });
-      }
-    });
-
-    // Eliminar archivos temporales antiguos (más de 1 hora)
-    const tempFiles = fs.readdirSync("uploads");
-    tempFiles.forEach(file => {
-      const filePath = path.join("uploads", file);
-      const stats = fs.statSync(filePath);
-      if (Date.now() - stats.mtimeMs > 3600000) {
-        fs.unlinkSync(filePath);
-      }
-    });
-
   } catch (err) {
-    console.error("Error en limpieza:", err);
+    console.error("Error en la limpieza de archivos huérfanos:", err);
   }
 };
 

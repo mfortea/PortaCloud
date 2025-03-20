@@ -25,8 +25,25 @@ export default function Guardados() {
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+  const [refreshing, setRefreshing] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
+  const [closing, setClosing] = useState(false);
+
+  const verImagen = (imageUrl) => {
+    setModalImage(imageUrl);
+    setClosing(false);
+  };
+
+  const cerrarModal = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setModalImage(null);
+      setClosing(false);
+    }, 100);
+  };
 
   const fetchGuardados = async () => {
+    setRefreshing(true);
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
 
@@ -43,7 +60,7 @@ export default function Guardados() {
     setOsOptions([...osSet]);
     setBrowserOptions([...browserSet]);
     setDeviceTypeOptions([...deviceTypeSet]);
-
+    setTimeout(() => setRefreshing(false), 1000);
   };
 
 
@@ -135,17 +152,25 @@ export default function Guardados() {
     }
   };
 
-  const descargarContenido = (item) => {
+  const descargarContenido = async (item) => {
     const link = document.createElement("a");
+
     if (item.type === "image") {
-      link.href = `${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`);
+      const blob = await response.blob();
+      const objectURL = URL.createObjectURL(blob);
+
+      link.href = objectURL;
       link.download = `guardado_${new Date(item.createdAt).toISOString()}.png`;
     } else {
       const blob = new Blob([item.content], { type: "text/plain" });
       link.href = URL.createObjectURL(blob);
       link.download = `guardado_${new Date(item.createdAt).toISOString()}.txt`;
     }
+
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   const filteredItems = savedItems.filter(
@@ -214,6 +239,30 @@ export default function Guardados() {
 
   return (
     <div className="container py-5">
+      {modalImage && (
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={cerrarModal}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
+              <div className="modal-header">
+                <h3 className="modal-title text-center">
+                  <i className="fa fa-eye me-2"></i> Vista previa
+                </h3>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={cerrarModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <img src={modalImage} alt="Vista previa" onClick={cerrarModal} className="modal-image" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      )}
+
+
       <h1 className="text-center mb-4">
         <i className="fa fa-star"></i> Mis guardados
       </h1>
@@ -258,6 +307,19 @@ export default function Guardados() {
           <option value="list">Lista</option>
         </select>
       </div>
+      <div className="mt-3 mb-3 text-center">
+        <button
+          className="btn boton_aux btn-primary"
+          onClick={fetchGuardados}
+          disabled={refreshing}
+        >
+          {refreshing ? (
+            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+          ) : (
+            <i className="fa fa-refresh" aria-hidden="true"></i>
+          )}
+        </button>
+      </div>
       {currentItems.length === 0 ? (
         <h3 className="text-center">No hay elementos guardados que coincidan.</h3>
       ) : (
@@ -284,7 +346,6 @@ export default function Guardados() {
                           alt={item.os}
                           style={{ width: 40, height: 40 }}
                         />
-                        {/* Icono del navegador */}
                         <img
                           src={getDeviceLogo("browser", item.browser)}
                           alt={item.browser}
@@ -293,10 +354,19 @@ export default function Guardados() {
                       </div>
                       <p className="mt-3">Guardado el {new Date(item.createdAt).toLocaleString()}</p>
                       <div>
-                        <button className="btn boton_aux btn-success m-2" onClick={() => descargarContenido(item)}>
+                        {item.type === "image" && (
+                          <button
+                            className="btn boton_aux btn-primary m-2"
+                            onClick={() => verImagen(`${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`)}
+                            title="Vista previa de la imagen"
+                          >
+                            <i className="fa fa-eye"></i>
+                          </button>
+                        )}
+                        <button className="btn boton_aux btn-success m-2" title="Descargar a un archivo" onClick={() => descargarContenido(item)}>
                           <i className="fa fa-download"></i>
                         </button>
-                        <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
+                        <button className="btn boton_aux btn-danger" title="Eliminar" onClick={() => borrarContenido(item._id)}>
                           <i className="fa fa-remove"></i>
                         </button>
                       </div>
@@ -314,36 +384,40 @@ export default function Guardados() {
             </div>
           ) : (
             <div className="table-responsive">
-            <table className="saved-table">
-              <thead>
-                <tr>
-                  <th>Contenido</th>
-                  <th>Plataforma</th>
-                  <th>Fecha</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.map((item) => (
-                  <tr key={item._id}>
-                    <td className="saved-clipboard" onClick={() => copiarContenido(item.content)} style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }} title="Copiar contenido">
-                      {item.content}
-                    </td>
-                    <td className="text-center"><img className="me-2" src={getDeviceLogo("os", item.os)} alt={item.os} style={{ width: 30 }} /><img src={getDeviceLogo("browser", item.browser)} alt={item.browser} style={{ width: 30 }} /></td>
-
-                    <td>{new Date(item.createdAt).toLocaleString()}</td>
-                    <td>
-                      <button className="btn boton_aux btn-success mx-1" onClick={() => descargarContenido(item)}>
-                        <i className="fa fa-download"></i>
-                      </button>
-                      <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    </td>
+              <table className="saved-table">
+                <thead>
+                  <tr>
+                    <th>Contenido</th>
+                    <th>Plataforma</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {currentItems.map((item) => (
+                    <tr key={item._id}>
+                      <td className="saved-clipboard" onClick={() => copiarContenido(item.content)} style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }} title="Copiar contenido">
+                        {item.type === "image" ? (
+                          <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`} alt="Guardado" className="img-fluid mb-3" />
+                        ) : (
+                          <p className="text-break text-wrap" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>{item.content}</p>
+                        )}
+                      </td>
+                      <td className="text-center"><img className="me-2" src={getDeviceLogo("os", item.os)} alt={item.os} style={{ width: 30 }} /><img src={getDeviceLogo("browser", item.browser)} alt={item.browser} style={{ width: 30 }} /></td>
+
+                      <td>{new Date(item.createdAt).toLocaleString()}</td>
+                      <td>
+                        <button className="btn boton_aux btn-success mx-1" onClick={() => descargarContenido(item)}>
+                          <i className="fa fa-download"></i>
+                        </button>
+                        <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
+                          <i className="fa fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </>
