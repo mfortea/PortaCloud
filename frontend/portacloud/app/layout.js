@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthProvider } from "../context/AuthContext";
 import ClientLayout from "../components/ClientLayout";
 import ThemeColor from "../components/ThemeColor";
+import Head from 'next/head';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
