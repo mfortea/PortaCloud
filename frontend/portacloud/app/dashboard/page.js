@@ -40,6 +40,18 @@ export default function Dashboard() {
   const MAX_CONTENT_SIZE_BYTES = 10 * 1024 * 1024;
   const TEXT_PREVIEW_LENGTH = 500;
 
+  useEffect(() => {
+    document.title = 'Dashboard | PortaCloud';
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    metaDescription.content = 'Página principal';
+    document.head.appendChild(metaDescription);
+    
+    return () => {
+      document.head.removeChild(metaDescription);
+    };
+  }, []);
+
 
   const actualizarPortapapeles = async () => {
     try {

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../context/AuthContext";
+import { useEffect } from 'react';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -13,6 +14,18 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
+
+  useEffect(() => {
+    document.title = 'Registro | PortaCloud';
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    metaDescription.content = 'Crea tu cuenta en PortaCloud';
+    document.head.appendChild(metaDescription);
+    
+    return () => {
+      document.head.removeChild(metaDescription);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,6 +107,7 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="login-landing-page">

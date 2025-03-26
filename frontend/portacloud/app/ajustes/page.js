@@ -38,6 +38,17 @@ export default function Ajustes() {
     }, 100);
   };
   
+  useEffect(() => {
+    document.title = 'Ajustes | PortaCloud';
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    metaDescription.content = 'Ajustes del usuario';
+    document.head.appendChild(metaDescription);
+    
+    return () => {
+      document.head.removeChild(metaDescription);
+    };
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");

@@ -32,6 +32,19 @@ export default function Guardados() {
   const TEXT_PREVIEW_LENGTH = 500;
   const [expandedItems, setExpandedItems] = useState({});
 
+  useEffect(() => {
+    document.title = 'Guardados | PortaCloud';
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    metaDescription.content = 'Elementos guardados por el usuario';
+    document.head.appendChild(metaDescription);
+    
+    return () => {
+      document.head.removeChild(metaDescription);
+    };
+  }, []);
+
+
   const verImagen = (imageUrl) => {
     setModalImage(imageUrl);
     setClosing(false);

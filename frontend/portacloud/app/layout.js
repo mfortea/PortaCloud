@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "PortaCloud",
-  description: "Tu plataforma en la nube",
+  description: "Gestor de Portapapeles Multiplataforma con Sincronización en la Nube",
 };
 
 export default function RootLayout({ children }) {

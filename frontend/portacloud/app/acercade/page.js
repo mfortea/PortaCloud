@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import { FaGithub } from "react-icons/fa";
 
+export const metadata = {
+    title: 'Acerca de | PortaCloud',
+    description: 'Información sobre este proyecto',
+  };
+
 export default function AcercaDe() {
     return (
         <div className="container py-5">

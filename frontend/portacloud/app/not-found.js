@@ -1,4 +1,7 @@
-import Link from 'next/link'
+
+export const metadata = {
+    title: 'Error 404 | PortaCloud',
+  };
 
 export default function NotFound() {
 

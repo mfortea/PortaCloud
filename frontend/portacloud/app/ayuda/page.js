@@ -1,12 +1,13 @@
-"use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 import { MdUpdate } from "react-icons/md";
 
-export default function NotSupported() {
-    const router = useRouter();
+export const metadata = {
+    title: 'Ayuda | PortaCloud',
+    description: 'Manual de uso de PortaCloud',
+  };
 
+export default function NotSupported() {
     return (
         <div className="container py-5 text-center mt-2">
             <h1><i className="fa-solid fa-circle-question"></i> Ayuda</h1>
