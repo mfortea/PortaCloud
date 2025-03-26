@@ -618,7 +618,7 @@ export default function Dashboard() {
               </p>
               {clipboardContent.content?.length > TEXT_PREVIEW_LENGTH && (
                 <button
-                  className="boton_aux boton_mostrar p-0"
+                  className="boton_aux boton_mostrar"
                   onClick={() => setExpandedText(!expandedText)}
                   title="Mostrar/Ocultar el texto completo"
                 >

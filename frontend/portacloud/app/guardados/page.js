@@ -29,6 +29,8 @@ export default function Guardados() {
   const [refreshing, setRefreshing] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const [closing, setClosing] = useState(false);
+  const TEXT_PREVIEW_LENGTH = 500;
+  const [expandedItems, setExpandedItems] = useState({});
 
   const verImagen = (imageUrl) => {
     setModalImage(imageUrl);
@@ -240,6 +242,13 @@ export default function Guardados() {
     return logos.default;
   };
 
+  const toggleExpand = (itemId) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
+  };
+
   return (
     <div className="container py-5">
       {modalImage && (
@@ -372,6 +381,20 @@ export default function Guardados() {
                             <i className="fa fa-eye"></i>
                           </button>
                         )}
+                        {item.type === "text" && item.content?.length > TEXT_PREVIEW_LENGTH && (
+                          <div className="text-center mt-2">
+                            <button
+                              className="boton_aux boton_mostrar p-0 text-decoration-none"
+                              title="Mostrar/Ocultar el texto completo"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleExpand(item._id);
+                              }}
+                            >
+                              <i class="fa-solid fa-eye pe-1"></i> {expandedItems[item._id] ? "Mostrar menos" : "Mostrar más"}
+                            </button>
+                          </div>
+                        )}
                         <button className="btn boton_aux btn-success m-2" title="Descargar a un archivo" onClick={() => descargarContenido(item)}>
                           <i className="fa fa-download"></i>
                         </button>
@@ -379,11 +402,21 @@ export default function Guardados() {
                           <i className="fa fa-remove"></i>
                         </button>
                       </div>
-                      <div className="clipboard-box-saved p-3 m-3 text-break text-wrap" onClick={() => copiarContenido(item.content)} title="Copiar contenido" style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }}>
+                      <div className="clipboard-box-saved p-3 m-3 text-break text-wrap"
+                        onClick={() => copiarContenido(item.content)}
+                        title="Copiar contenido"
+                        style={{ cursor: "pointer" }}>
                         {item.type === "image" ? (
-                          <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`} alt="Guardado" className="img-fluid mb-3" />
+                          <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`}
+                            alt="Guardado"
+                            className="img-fluid mb-3" />
                         ) : (
-                          <p className="text-break text-wrap" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>{item.content}</p>
+                          <p style={{ wordBreak: "break-word" }}>
+                            {expandedItems[item._id]
+                              ? item.content
+                              : item.content?.slice(0, TEXT_PREVIEW_LENGTH)}
+                            {item.content?.length > TEXT_PREVIEW_LENGTH && !expandedItems[item._id] && "..."}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -405,13 +438,26 @@ export default function Guardados() {
                 <tbody>
                   {currentItems.map((item) => (
                     <tr key={item._id}>
-                      <td className="saved-clipboard" onClick={() => copiarContenido(item.content)} style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "break-word" }} title="Copiar contenido">
-                        {item.type === "image" ? (
-                          <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`} alt="Guardado" className="img-fluid mb-3" />
-                        ) : (
-                          <p className="text-break text-wrap" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>{item.content}</p>
-                        )}
+                      <td className="saved-clipboard"
+                        onClick={() => copiarContenido(item.content)}
+                        style={{ cursor: "pointer", wordBreak: "break-word" }}
+                        title="Copiar contenido">
+                        <div>
+                          {item.type === "image" ? (
+                            <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`}
+                              alt="Guardado"
+                              className="img-fluid mb-3" />
+                          ) : (
+                            <p style={{ wordBreak: "break-word" }}>
+                              {expandedItems[item._id]
+                                ? item.content
+                                : item.content?.slice(0, TEXT_PREVIEW_LENGTH)}
+                              {item.content?.length > TEXT_PREVIEW_LENGTH && !expandedItems[item._id] && "..."}
+                            </p>
+                          )}
+                        </div>
                       </td>
+
                       <td className="text-center"><img className="me-2" src={getDeviceLogo("os", item.os)} alt={item.os} style={{ width: 30 }} /><img src={getDeviceLogo("browser", item.browser)} alt={item.browser} style={{ width: 30 }} /></td>
 
                       <td>{new Date(item.createdAt).toLocaleString()}</td>
@@ -423,6 +469,18 @@ export default function Guardados() {
                             title="Vista previa de la imagen"
                           >
                             <i className="fa fa-eye"></i>
+                          </button>
+                        )}
+                        {item.type === "text" && item.content?.length > TEXT_PREVIEW_LENGTH && (
+                          <button
+                            className="boton_aux boton_mostrar p-0 text-decoration-none"
+                            title="Mostrar/Ocultar el texto completo"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleExpand(item._id);
+                            }}
+                          >
+                            <i class="fa-solid fa-eye pe-1"></i> {expandedItems[item._id] ? "Mostrar menos" : "Mostrar más"}
                           </button>
                         )}
                         <button className="btn boton_aux btn-success mx-1" onClick={() => descargarContenido(item)}>
