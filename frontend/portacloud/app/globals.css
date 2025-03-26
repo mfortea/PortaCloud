@@ -245,6 +245,19 @@ a {
   transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
+.boton_mostrar {
+  background-color: #b4d5ff !important;
+  font-size: medium;
+  width: 150px !important;
+  color: black !important;
+
+
+}
+
+.boton_mostrar:hover {
+  background-color: #78adf1 !important;
+}
+
 /* ========== ESTILOS DE AJUSTES ========== */
 
 .botones_ajustes {

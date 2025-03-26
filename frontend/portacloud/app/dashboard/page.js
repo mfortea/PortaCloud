@@ -33,30 +33,51 @@ export default function Dashboard() {
   const [lastHash, setLastHash] = useState("");
   const token = localStorage.getItem("token");
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  const [expandedText, setExpandedText] = useState(false);
+  // Límites de tamaño
+  const MAX_CONTENT_SIZE_BYTES = 10 * 1024 * 1024;
+  const TEXT_PREVIEW_LENGTH = 500;
+
 
   const actualizarPortapapeles = async () => {
     try {
       if (!navigator.clipboard) return;
 
       let newClipboardContent = null;
+      let contentSize = 0;
 
       if (isSafari) {
         const text = await navigator.clipboard.readText();
+        contentSize = new Blob([text]).size;
         newClipboardContent = { type: "text", content: text };
       } else {
         const clipboardData = await navigator.clipboard.read();
         for (const item of clipboardData) {
           if (item.types.includes("image/png")) {
             const blob = await item.getType("image/png");
+            contentSize = blob.size;
+
+            if (contentSize > MAX_CONTENT_SIZE_BYTES) {
+              toast.error("La imagen supera el límite de 10MB");
+              return;
+            }
+
             const url = URL.createObjectURL(blob);
-            newClipboardContent = { 
-              type: "image", 
+            newClipboardContent = {
+              type: "image",
               content: url,
               blob: blob,
-              raw: blob // Guardamos el blob original para enviar al backend
+              raw: blob
             };
           } else if (item.types.includes("text/plain")) {
             const text = await item.getType("text/plain").then((r) => r.text());
+            contentSize = new Blob([text]).size;
+
+            if (contentSize > MAX_CONTENT_SIZE_BYTES) {
+              toast.error("El texto supera el límite de 10MB");
+              return;
+            }
+
             newClipboardContent = { type: "text", content: text };
           }
         }
@@ -102,31 +123,31 @@ export default function Dashboard() {
       toast.error("No hay contenido para guardar");
       return;
     }
-  
+
     setSaving(true);
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
-  
+
     try {
       const formData = new FormData();
-  
+
       formData.append("os", os);
       formData.append("browser", browser);
       formData.append("deviceType", deviceType);
       formData.append("type", type);
-  
+
       if (type === "image") {
         if (content.startsWith("blob:")) {
           const response = await fetch(content);
           const blob = await response.blob();
           formData.append("image", blob, "clipboard-image.png");
-        } 
+        }
         else if (content.startsWith("/uploads/")) {
           const cleanPath = content.replace(serverUrl, "");
           const response = await fetch(`${serverUrl}${cleanPath}`);
           const blob = await response.blob();
           formData.append("image", blob, "clipboard-image.png");
-        } 
+        }
         else if (content.startsWith("http") || content.startsWith("/")) {
           const response = await fetch(content);
           if (!response.ok) throw new Error("No se pudo obtener el archivo de la ruta proporcionada");
@@ -136,18 +157,18 @@ export default function Dashboard() {
       } else {
         formData.append("content", content);
       }
-  
+
       const response = await fetch(`${serverUrl}/api/saved`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Error del servidor");
       }
-  
+
       toast.success("Contenido guardado con éxito");
     } catch (error) {
       toast.error(`Error al guardar: ${error.message}`);
@@ -156,7 +177,7 @@ export default function Dashboard() {
       setSaving(false);
     }
   };
-  
+
 
   const actualizarDispositivos = async (token) => {
     setLoadingDevices(true); // Activar el estado de carga
@@ -209,6 +230,14 @@ export default function Dashboard() {
 
     return { os, browser, deviceType };
   };
+
+  useEffect(() => {
+    return () => {
+      if (clipboardContent?.type === "image") {
+        URL.revokeObjectURL(clipboardContent.content);
+      }
+    };
+  }, [clipboardContent]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -346,6 +375,7 @@ export default function Dashboard() {
       </div>
     );
   }
+  
 
   const getDeviceLogo = (deviceType, deviceName) => {
     const logos = {
@@ -410,11 +440,11 @@ export default function Dashboard() {
 
   const descargarContenido = async () => {
     if (!clipboardContent) return;
-  
+
     try {
       const now = new Date();
       const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
-  
+
       if (clipboardContent.type === "image") {
         if (clipboardContent.raw instanceof Blob) {
           const link = document.createElement("a");
@@ -429,7 +459,7 @@ export default function Dashboard() {
             headers: { Authorization: `Bearer ${token}` },
           });
           const blob = await response.blob();
-          
+
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
           link.download = `${fileName}.png`;
@@ -454,18 +484,18 @@ export default function Dashboard() {
 
   const descargarContenidoDispositivo = async (content, type) => {
     if (!content) return;
-  
+
     try {
       const now = new Date();
       const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
       const link = document.createElement("a");
-  
+
       if (content.startsWith("/uploads/")) {
         const response = await fetch(`${serverUrl}${content}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const blob = await response.blob();
-        
+
         link.href = URL.createObjectURL(blob);
         link.download = `${fileName}.png`;
       } else {
@@ -473,7 +503,7 @@ export default function Dashboard() {
         link.href = URL.createObjectURL(blob);
         link.download = `${fileName}.txt`;
       }
-  
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -564,27 +594,43 @@ export default function Dashboard() {
         </div>
       )}
 
-<div className="clipboard-display mb-4 text-center">
-  {clipboardContent ? (
-    clipboardContent.type === "image" ? (
-      <img
-        src={clipboardContent.content}
-        alt="Imagen del portapapeles"
-        className="img-fluid clipboard-image"
-      />
-    ) : clipboardContent.content?.startsWith("/uploads/") ? (
-      <img
-        src={`${serverUrl}${clipboardContent.content}`}
-        alt="Imagen del portapapeles"
-        className="img-fluid"
-      />
-    ) : (
-      <p>{clipboardContent.content}</p>
-    )
-  ) : (
-    <p>No hay contenido en el portapapeles</p>
-  )}
-</div>
+      <div className="clipboard-display mb-4 text-center">
+        {clipboardContent ? (
+          clipboardContent.type === "image" ? (
+            <img
+              src={clipboardContent.content}
+              alt="Imagen del portapapeles"
+              className="img-fluid clipboard-image"
+            />
+          ) : clipboardContent.content?.startsWith("/uploads/") ? (
+            <img
+              src={`${serverUrl}${clipboardContent.content}`}
+              alt="Imagen del portapapeles"
+              className="img-fluid"
+            />
+          ) : (
+            <div>
+              <p className="text-break">
+                {expandedText
+                  ? clipboardContent.content
+                  : clipboardContent.content?.slice(0, TEXT_PREVIEW_LENGTH)}
+                {clipboardContent.content?.length > TEXT_PREVIEW_LENGTH && !expandedText && "..."}
+              </p>
+              {clipboardContent.content?.length > TEXT_PREVIEW_LENGTH && (
+                <button
+                  className="boton_aux boton_mostrar p-0"
+                  onClick={() => setExpandedText(!expandedText)}
+                  title="Mostrar/Ocultar el texto completo"
+                >
+                  <i class="fa-solid fa-eye pe-1"></i> {expandedText ? "Mostrar menos" : "Mostrar más"}
+                </button>
+              )}
+            </div>
+          )
+        ) : (
+          <p>No hay contenido en el portapapeles</p>
+        )}
+      </div>
 
 
 
