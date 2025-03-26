@@ -416,17 +416,29 @@ export default function Dashboard() {
       const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
   
       if (clipboardContent.type === "image") {
-        const cleanPath = clipboardContent.content.replace(serverUrl, "");
-        const response = await fetch(`${serverUrl}${cleanPath}`);
-        const blob = await response.blob();
-        
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `${fileName}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        if (clipboardContent.raw instanceof Blob) {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(clipboardContent.raw);
+          link.download = `${fileName}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+        else if (clipboardContent.content.startsWith("/uploads/")) {
+          const response = await fetch(`${serverUrl}${clipboardContent.content}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const blob = await response.blob();
+          
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `${fileName}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
       } else {
+        // Texto plano
         const blob = new Blob([clipboardContent.content], { type: "text/plain" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -440,37 +452,34 @@ export default function Dashboard() {
     }
   };
 
-
-  const descargarContenidoDispositivo = (content, type) => {
+  const descargarContenidoDispositivo = async (content, type) => {
     if (!content) return;
-
-    const now = new Date();
-    const fileName = `${now.getDate().toString().padStart(2, "0")}_${(
-      now.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}_${now.getFullYear()}_${now
-        .getHours()
-        .toString()
-        .padStart(2, "0")}_${now.getMinutes().toString().padStart(2, "0")}_${now
-          .getSeconds()
-          .toString()
-          .padStart(2, "0")}`;
-
-    const link = document.createElement("a");
-
-    if (content.startsWith("/uploads/")) {
-      link.href = `${serverUrl}${content}`;
-      link.download = `portacloud_${fileName}.png`;
-    } else { 
-      const blob = new Blob([content], { type: "text/plain" });
-      link.href = URL.createObjectURL(blob);
-      link.download = `${fileName}.txt`;
+  
+    try {
+      const now = new Date();
+      const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
+      const link = document.createElement("a");
+  
+      if (content.startsWith("/uploads/")) {
+        const response = await fetch(`${serverUrl}${content}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const blob = await response.blob();
+        
+        link.href = URL.createObjectURL(blob);
+        link.download = `${fileName}.png`;
+      } else {
+        const blob = new Blob([content], { type: "text/plain" });
+        link.href = URL.createObjectURL(blob);
+        link.download = `${fileName}.txt`;
+      }
+  
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      toast.error("Error al descargar");
     }
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
 
