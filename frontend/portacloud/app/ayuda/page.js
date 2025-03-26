@@ -12,8 +12,8 @@ export default function NotSupported() {
             <h1><i className="fa-solid fa-circle-question"></i> Ayuda</h1>
             <br></br>
             <div className="table-responsive">
-            <h2>Menú de navegación</h2>
-            <br></br>
+                <h2> <i class="fa-solid fa-bars pe-2"></i>Menú de navegación</h2>
+                <br></br>
                 <table className="tabla_ayuda mx-auto" style={{ maxWidth: '800px' }}>
                     <thead>
                         <tr>
@@ -38,13 +38,13 @@ export default function NotSupported() {
                         </tr>
                         <tr>
                             <td>
-                           <div className="nav-link"><i className="fa-solid fa-star"></i> Guardados</div>
+                                <div className="nav-link"><i className="fa-solid fa-star"></i> Guardados</div>
                             </td>
                             <td>Muestra los elementos que se hayan guardado del portapapeles</td>
                         </tr>
                         <tr>
-                        <td>
-                           <div className="nav-link"><i className="fa-solid fa-gear"></i> Ajustes</div>
+                            <td>
+                                <div className="nav-link"><i className="fa-solid fa-gear"></i> Ajustes</div>
                             </td>
                             <td>Gestiona distintos ajustes del usuario actual</td>
                         </tr>
@@ -52,8 +52,10 @@ export default function NotSupported() {
                     </tbody>
                 </table>
             </div>
-            <br></br><br></br>
-            <h2>Significado de los botones</h2>
+            <br></br>
+            <hr></hr>
+            <br></br>
+            <h2><i class="fa-solid fa-toggle-on pe-2"></i> Significado de los botones</h2>
             <br></br>
             <div className="table-responsive">
                 <table className="tabla_ayuda mx-auto" style={{ maxWidth: '800px' }}>
@@ -97,14 +99,6 @@ export default function NotSupported() {
                             <td>Limpia el contenido del portapapeles.</td>
                         </tr>
                         <tr>
-                            <td>
-                                <button className="btn  btn-primary" >
-                                    <i className="fa fa-clipboard" aria-hidden="true"></i> Leer portapapeles en Safari
-                                </button>
-                            </td>
-                            <td>Lee el contenido del portapapeles manualmente en Safari, ya que este navegador no soporta la actualización automática.</td>
-                        </tr>
-                        <tr>
                             <td className="d-flex justify-content-center">
                                 <button
                                     className="btn boton_aux btn-secondary d-flex align-items-center"
@@ -119,8 +113,23 @@ export default function NotSupported() {
                 </table>
             </div>
             <br></br>
+            <hr></hr>
             <br></br>
-            <h2>Navegadores compatibles</h2>
+            <h2><i class="fa-brands fa-safari pe-2"></i><i class="fa-brands fa-firefox pe-2"></i> Limitaciones de Safari y Firefox</h2>
+
+            <br></br>
+            <p>Estos navegadores no soportan funciones como la actualización automática del portapapeles y el soporte para copiar imágenes al portapapeles. Para leer el contenido del portapapeles deberá utilizar el botón de lectura de portapapeles siguiente: </p>
+
+            <button className="btn boton_aux btn-primary" >
+                <i className="fa-regular fa-clipboard"></i>
+            </button>
+            <p>Una vez pulsado deberemos esperar que el navegador lea el contenido del portapapeles y pulsar en "Pegar" cuando esta opción se habilite, como se muestra en la siguiente imagen:</p>
+            <img src="/pegar.png" alt="Captura del funcionamiento en navegadores no compatibles" className="img-fluid mb-3"
+                style={{ width: 350 }} />*
+            <br></br>
+            <hr></hr>
+            <br></br>
+            <h2><i class="fa-solid fa-circle-check pe-2"></i> Navegadores compatibles</h2>
             <br></br>
             <p>PortaCloud hace uso de la API Clipboard, para que todas las funciones funcionen plenamente se deberán utilizar alguno de los siguientes navegadores</p>
             <div className="mt-2 row justify-content-center">
@@ -130,9 +139,12 @@ export default function NotSupported() {
                     style={{ width: 80 }} />
                 <img src="/safari.png" alt="Apple Safari" className="img-fluid mb-3"
                     style={{ width: 80 }} />*
+                <img src="/firefox.png" alt="Mozilla Firefox" className="img-fluid mb-3"
+                    style={{ width: 80 }} />*
             </div>
             <br></br>
-            <p className="font-italic">* En Safari funciones como la actualización automática del portapapeles y el soporte para imágenes no está soportado. Se deberá copiar manualmente en cada inicio de sesión con el botón "Leer portapapeles desde Safari", desde donde se podrá pegar el contenido actual del portapapeles</p>
+            <p className="cursiva small">* En Safari y Firefox funciones como la actualización automática del portapapeles y el soporte para imágenes no está soportado. Se deberá leer manualmente el contenido del portapaples con el botón indicado anteriormente</p>
+            <p>Para una mejor experiencia se recomienda utilizar Google Chrome o Microsoft Edge</p>
         </div>
     );
 }

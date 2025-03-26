@@ -12,6 +12,7 @@ import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
 import { MdUpdate } from "react-icons/md";
 import { MdUpdateDisabled } from "react-icons/md";
+import { Nav } from "react-bootstrap";
 import CryptoJS from "crypto-js";
 
 export default function Dashboard() {
@@ -28,12 +29,13 @@ export default function Dashboard() {
   const [showAlert, setShowAlert] = useState(false);
   const [clipboardAnimation, setClipboardAnimation] = useState(false);
   const platform = require('platform');
-  const [showSafariModal, setShowSafariModal] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
   const [lastHash, setLastHash] = useState("");
   const token = localStorage.getItem("token");
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
   const [expandedText, setExpandedText] = useState(false);
+  const [isProblematicBrowser, setIsProblematicBrowser] = useState(false);
+  const [showBrowserModal, setShowBrowserModal] = useState(false);
   // Límites de tamaño
   const MAX_CONTENT_SIZE_BYTES = 10 * 1024 * 1024;
   const TEXT_PREVIEW_LENGTH = 500;
@@ -307,13 +309,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
-    const isSafariBrowser =
-      userAgent.includes("safari") && !userAgent.includes("chrome");
-    setIsSafari(isSafariBrowser);
+    const isSafari = userAgent.includes('safari') && !userAgent.includes('chrome');
+    const isFirefox = userAgent.includes('firefox');
+    setIsProblematicBrowser(isSafari || isFirefox);
 
-    if (isSafariBrowser && !localStorage.getItem("safariModalShown")) {
-      setShowSafariModal(true);
-      localStorage.setItem("safariModalShown", "true");
+    if ((isSafari || isFirefox) && !localStorage.getItem('browserModalShown')) {
+      setShowBrowserModal(true);
+      localStorage.setItem('browserModalShown', 'true');
     }
   }, []);
 
@@ -334,15 +336,11 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    actualizarPortapapeles();
-
-    if (autoRefreshClipboard) {
-      const interval = setInterval(() => {
-        actualizarPortapapeles();
-      }, 1000);
+    if (!isProblematicBrowser) { // Ahora verifica ambos navegadores
+      const interval = setInterval(actualizarPortapapeles, 1000);
       return () => clearInterval(interval);
     }
-  }, [autoRefreshClipboard]);
+  }, [autoRefreshClipboard, isProblematicBrowser]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -375,7 +373,7 @@ export default function Dashboard() {
       </div>
     );
   }
-  
+
 
   const getDeviceLogo = (deviceType, deviceName) => {
     const logos = {
@@ -387,6 +385,7 @@ export default function Dashboard() {
       chrome: "/chrome.png",
       safari: "/safari.png",
       edge: "/edge.png",
+      firefox: "/firefox.png",
       equipo: "/equipo.png",
       tablet: "/tablet.png",
       smartphone: "/smartphone.png",
@@ -420,6 +419,8 @@ export default function Dashboard() {
           return logos.safari;
         case "edge":
           return logos.edge;
+        case "firefox":
+          return logos.firefox;
         case "mobile edge":
           return logos.edge;
         default:
@@ -558,26 +559,34 @@ export default function Dashboard() {
         <i className="fa-solid fa-clipboard"></i>&nbsp; Mi portapapeles
       </h1>
 
-      {/* Modal para usuarios de Safari */}
-      {showSafariModal && (
+      {showBrowserModal && (
         <div className="modal show" style={{ display: "block" }}>
           <div className="modal-dialog">
             <div className="modal-content text-center">
               <div className="modal-header">
-                <h5 className="modal-title"><i class="fa-solid fa-triangle-exclamation"></i> Aviso para usuarios de Safari</h5>
-                <button type="button" className="btn-close" onClick={() => setShowSafariModal(false)}></button>
+                <h5 className="modal-title">
+                  <i className="fa-solid fa-triangle-exclamation"></i> Aviso para navegadores
+                </h5>
+                <button type="button" className="btn-close" onClick={() => setShowBrowserModal(false)}></button>
               </div>
-              <div className="modal-body">
-                <img className="mb-3" src="/safari.png" style={{ width: 80 }}></img>
-                <h2>La funcionalidad de portapapeles automático y de imágenes no está disponible en Safari.</h2>
-                <br></br>
-                <p>Safari no soporta la copia automática del contenido del portapapeles ni otro formato que no sea texto plano</p>
-                <p>Por favor, utiliza el botón "Leer portapapeles en Safari" para pegar manualmente.</p>
-                <img className="w-50 mb-3" src="/boton-safari.png"></img>
-                <p>Para poder utilizar todas las funciones de PortaCloud, por favor use el navegador Google Chrome o Microsoft Edge</p>
+              <div className="modal-body justify-content">
+                <div className="d-flex justify-content-center gap-3 mb-4">
+                  <img src="/safari.png" style={{ width: 80 }} alt="Safari" />
+                  <img src="/firefox.png" style={{ width: 80 }} alt="Firefox" />
+                </div>
+                <h2>Limitaciones en Safari y Firefox</h2>
+                <br />
+                <p>Estos navegadores no soportan funciones como la actualización automática del portapapeles y el soporte para copiar imágenes al portapapeles.</p>
+                <p>Para leer el contenido del portapapeles deberá utilizar el botón de lectura de portapapeles. Puede ver más información en el apartado de Ayuda </p>
+                <p>Para una mejor compatibilidad se recomienda usar Google Chrome o Microosft Edge</p>
               </div>
               <div className="modal-footer">
-                <button className="btn w-100 botones_ajustes btn-primary" onClick={() => setShowSafariModal(false)}>Entendido</button>
+              <button className="btn botones_ajustes w-100 btn-success" href="/ayuda">
+                  <i className="fa-solid fa-circle-question pe-2"></i> Ir a Ayuda
+                </button>
+                <button className="btn botones_ajustes w-100 btn-primary" onClick={() => setShowBrowserModal(false)}>
+                  Entendido
+                </button>
               </div>
             </div>
           </div>
@@ -634,23 +643,24 @@ export default function Dashboard() {
 
 
 
-      {isSafari && (
-        <div className="mt-3 text-center">
-          <button className="btn btn-primary" onClick={actualizarPortapapeles}>
-            <i className="fa fa-clipboard" aria-hidden="true"></i> Leer
-            portapapeles en Safari
-          </button>
-        </div>
-      )}
 
       <div className="mt-3 text-center">
         <button
           className="btn boton_aux btn-primary"
           onClick={actualizarPortapapeles}
           disabled={refreshing}
+          title={
+            isProblematicBrowser
+              ? "Lee el portapapeles de forma manual en navegadores no compatibles"
+              : "Actualizar portapapeles ahora"
+          }
         >
           {refreshing ? (
             <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+          ) : isProblematicBrowser ? (
+            <>
+              <i className="fa-regular fa-clipboard"></i>
+            </>
           ) : (
             <i className="fa fa-refresh" aria-hidden="true"></i>
           )}
@@ -693,6 +703,12 @@ export default function Dashboard() {
         >
           <i className="fa fa-remove" aria-hidden="true"></i>
         </button>
+
+        {isProblematicBrowser && (
+          <p className="texto_aviso mt-3 small">
+            {isSafari ? "Safari" : "Firefox"} requiere actualización manual
+          </p>
+        )}
       </div>
 
       <br></br><br></br>

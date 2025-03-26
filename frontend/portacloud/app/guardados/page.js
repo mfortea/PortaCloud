@@ -200,6 +200,7 @@ export default function Guardados() {
       chrome: "/chrome.png",
       safari: "/safari.png",
       edge: "/edge.png",
+      firefox: "firefox.png",
       equipo: "/equipo.png",
       tablet: "/tablet.png",
       smartphone: "/smartphone.png",
@@ -233,6 +234,8 @@ export default function Guardados() {
           return logos.safari;
         case "edge":
           return logos.edge;
+        case "firefox":
+          return logos.firefox;
         case "mobile edge":
           return logos.edge;
         default:

@@ -72,15 +72,6 @@ export default function Login() {
     }
   };
 
-    useEffect(() => {
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isFirefox = userAgent.includes("firefox");
-  
-      if (isFirefox) {
-        router.push("/no-soportado");
-        return;
-      }
-    });
 
   return (
     <div className="login-landing-page">

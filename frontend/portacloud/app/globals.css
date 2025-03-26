@@ -111,6 +111,18 @@ a {
   outline: none !important;
 }
 
+.negrita {
+  font-weight: bold !important;
+}
+
+.cursiva {
+  font-style: italic !important;
+}
+
+.texto-aviso {
+  color: rgba(33, 37, 41, 0.75) !important;
+}
+
 
 /* ========== ESTILOS DEL LOGO ========== */
 .logo_div {
@@ -136,10 +148,6 @@ a {
   font-family: Helvetica, sans-serif;
   font-size: 20px;
   color: #2c2c2c;
-}
-
-.negrita {
-  font-weight: bold !important;
 }
 
 /* ========== ESTILOS DEL DASHBOARD ========== */
@@ -1524,4 +1532,7 @@ padding: 10px !important;
     color: white !important;
   }
 
+  .texto_aviso {
+    color: rgb(189, 189, 189) !important;
+  }
 }
