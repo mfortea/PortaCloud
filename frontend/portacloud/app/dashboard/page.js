@@ -41,6 +41,12 @@ export default function Dashboard() {
   const TEXT_PREVIEW_LENGTH = 500;
 
   useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  useEffect(() => {
     document.title = 'Dashboard | PortaCloud';
     const metaDescription = document.createElement('meta');
     metaDescription.name = 'description';

@@ -1,6 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const SavedItem = require('../models/SavedItem');
+const bcrypt = require("bcrypt");
+const User = require("../models/User");
 const ContentRegistry = require('../models/ContentRegistry');
 const router = express.Router();
 const multer = require("multer");
@@ -82,7 +84,7 @@ router.post("/",
   }
 );
 
-// Ruta GET con autenticación
+
 router.get('/', 
   passport.authenticate('jwt', { session: false }), 
   async (req, res) => {
@@ -96,14 +98,13 @@ router.get('/',
   }
 );
 
-// Ruta DELETE con autenticación y validación de propiedad
 router.delete("/:id", 
   passport.authenticate('jwt', { session: false }), 
   async (req, res) => {
     try {
       const item = await SavedItem.findOne({
         _id: req.params.id,
-        userId: req.user.userId // Verificar propiedad
+        userId: req.user.userId 
       });
 
       if (!item) return res.status(404).json({ message: "Elemento no encontrado" });
@@ -125,6 +126,43 @@ router.delete("/:id",
 
     } catch (err) {
       res.status(500).json({ error: "Error al eliminar" });
+    }
+  }
+);
+
+router.post(
+  "/deleteAll",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const userId = req.user.userId; 
+      const { password } = req.body;
+
+      if (!password) {
+        return res.status(400).json({ message: "La contraseña es requerida" });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "La contraseña es incorrecta" });
+      }
+
+      await Promise.all([
+        SavedItem.deleteMany({ userId }),
+      ]);
+
+      res.json({ message: "Todos los datos de guardados han sido eliminados correctamente" });
+    } catch (error) {
+      console.error("Error al eliminar los guardados:", error);
+      res.status(500).json({
+        message: "Error al eliminar los guardados",
+        error: error.message,
+      });
     }
   }
 );

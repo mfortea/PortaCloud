@@ -126,7 +126,7 @@ export default function NotSupported() {
             </button>
             <p>Una vez pulsado deberemos esperar que el navegador lea el contenido del portapapeles y pulsar en "Pegar" cuando esta opción se habilite, como se muestra en la siguiente imagen:</p>
             <img src="/pegar.png" alt="Captura del funcionamiento en navegadores no compatibles" className="img-fluid mb-3"
-                style={{ width: 350 }} />*
+                style={{ width: 350 }} />
             <br></br>
             <hr></hr>
             <br></br>

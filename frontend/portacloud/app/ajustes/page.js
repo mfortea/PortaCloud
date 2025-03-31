@@ -18,13 +18,14 @@ export default function Ajustes() {
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteSavedModal, setShowDeleteSavedModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [closing, setClosing] = useState(false);
   const [modalImage, setModalImage] = useState(null);
-  
+
   const cerrarModal = (modalType) => {
     setClosing(true);
-    
+
     setTimeout(() => {
       if (modalType === "username") {
         setShowUsernameModal(false);
@@ -33,18 +34,21 @@ export default function Ajustes() {
       } else if (modalType === "delete") {
         setShowDeleteModal(false);
       }
-      
+      else if (modalType === "deleteSaved") {
+        setShowDeleteSavedModal(false);
+      }
+
       setClosing(false);
     }, 100);
   };
-  
+
   useEffect(() => {
     document.title = 'Ajustes | PortaCloud';
     const metaDescription = document.createElement('meta');
     metaDescription.name = 'description';
     metaDescription.content = 'Ajustes del usuario';
     document.head.appendChild(metaDescription);
-    
+
     return () => {
       document.head.removeChild(metaDescription);
     };
@@ -169,6 +173,40 @@ export default function Ajustes() {
     }
   };
 
+  const handleDeleteSaved = async () => {
+    if (!deletePassword) {
+      toast.error("Ingresa tu contraseña para confirmar");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+
+      const response = await fetch(`${serverUrl}/api/saved/deleteAll`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: deletePassword }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Todos los guardados han sido eliminados correctamente");
+        setDeletePassword("");
+        setShowDeleteSavedModal(false);
+      } else {
+        toast.error(data.message || "Error al eliminar los guardados");
+      }
+    } catch (error) {
+      console.error("Error en handleDeleteSaved:", error);
+      toast.error("Error de conexión");
+    }
+  };
+
 
   if (loading) {
     return (
@@ -203,6 +241,14 @@ export default function Ajustes() {
 
         <button
           className="btn botones_ajustes btn-danger"
+          onClick={() => setShowDeleteSavedModal(true)}
+        >
+          <i className="fa-solid fa-star-half-stroke pe-2"></i>
+          Eliminar todos los guardados
+        </button>
+
+        <button
+          className="btn botones_ajustes btn-danger"
           onClick={() => setShowDeleteModal(true)}
         >
           <i className="fa fa-trash me-2"></i>
@@ -215,7 +261,6 @@ export default function Ajustes() {
         </Link>
       </div>
 
-      {/* Modales */}
       {/* Modales */}
       {showUsernameModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("username")}>
@@ -317,9 +362,55 @@ export default function Ajustes() {
         </div>
       )}
 
+      {showDeleteSavedModal && (
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("deleteSaved")}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
+              <div className="modal-header bg-danger text-white">
+                <h3 className="modal-title">
+                  <i className="fa fa-exclamation-triangle me-2"></i>
+                  Eliminar todos los guardados
+                </h3>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => cerrarModal("deleteSaved")}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p className="text-danger">
+                  ¡Esta acción no se puede deshacer! Todos el contenido que tienes en guardados será eliminado (tanto imágenes como texto)
+                </p>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Ingresa tu contraseña para confirmar"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn botones_ajustes w-100 btn-danger"
+                  onClick={handleDeleteSaved}
+                >
+                  Eliminar todos mis guardados
+                </button>
+                <button
+                  className="btn botones_ajustes w-100 btn-primary"
+                  onClick={() => cerrarModal("deleteSaved")}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showDeleteModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("delete")}>
-          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header bg-danger text-white">
                 <h3 className="modal-title">
@@ -329,7 +420,7 @@ export default function Ajustes() {
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={cerrarModal}
+                  onClick={() => cerrarModal("delete")}
                 ></button>
               </div>
               <div className="modal-body">
@@ -349,11 +440,11 @@ export default function Ajustes() {
                   className="btn botones_ajustes w-100 btn-danger"
                   onClick={handleDeleteAccount}
                 >
-                  Eliminar definitivamente
+                  Eliminar cuenta definitivamente
                 </button>
                 <button
                   className="btn botones_ajustes w-100 btn-primary"
-                  onClick={cerrarModal}
+                  onClick={() => cerrarModal("delete")}
                 >
                   Cancelar
                 </button>

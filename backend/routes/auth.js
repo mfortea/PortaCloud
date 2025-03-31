@@ -10,7 +10,6 @@ const getDeviceInfo = require('../utils/deviceInfo');
 const Log = require('../models/Log');
 const router = express.Router();
 const SavedItem = require('../models/SavedItem')
-const TempImage = require("../models/TempImage");
 const multer = require("multer");
 const ContentRegistry = require("../models/ContentRegistry");
 const crypto = require("crypto");
