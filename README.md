@@ -11,6 +11,18 @@ Trabajo de Fin de Grado para el Grado en Ingeniería Informática. Universidad d
 - Control de versiones: Git
 - Base de datos: Mongodb (Mongodb Atlas)
 
+## 🌳 Estructura del proyecto
+- `backend/`: Contiene el código del servidor.
+  - `models/`: Modelos de datos de MongoDB.
+  - `routes/`: Rutas de la API.
+  - `controllers/`: Lógica de las rutas.
+  - `utils/`: Funciones auxiliares.
+
+- `frontend/portacloud/`: Contiene el código del cliente.
+  - `app/`: Páginas principales de la aplicación.
+  - `components/`: Componentes reutilizables.
+  - `context/`: Manejo del estado global.
+  
 ## 🚀Despliegue local
 
 ### ⚙️ Backend

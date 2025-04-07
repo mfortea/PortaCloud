@@ -1,3 +1,4 @@
 node_modules/
-backend/uploads/*.png
+backend/uploads/*
+!backend/uploads/.gitkeep   
 .DS_Store
