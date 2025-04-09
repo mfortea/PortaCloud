@@ -112,6 +112,8 @@ export default function NotSupported() {
                         </tr>
                     </tbody>
                 </table>
+                <br></br>
+            <hr></hr>
             <br></br>
             <h2><i class="fa-solid fa-clipboard pe-2"></i> Copiado directo al portapapeles</h2>
             <p>Si queremos copiar el contenido de otro dispositivo conectado (también aplica a algo que tengamos en Guardados) simplemente debemos hacer clic sobre el contenido y éste se copiará a nuestro portapapeles local</p>
