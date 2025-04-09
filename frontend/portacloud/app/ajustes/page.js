@@ -264,7 +264,7 @@ export default function Ajustes() {
       {/* Modales */}
       {showUsernameModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("username")}>
-          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header">
                 <h3 className="modal-title">
@@ -274,7 +274,7 @@ export default function Ajustes() {
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={cerrarModal}
+                  onClick={() => cerrarModal("username")}
                 ></button>
               </div>
               <div className="modal-body">
@@ -295,7 +295,7 @@ export default function Ajustes() {
                 </button>
                 <button
                   className="btn botones_ajustes w-100 btn-primary"
-                  onClick={cerrarModal}
+                  onClick={() => cerrarModal("username")}
                 >
                   Cancelar
                 </button>
@@ -307,7 +307,7 @@ export default function Ajustes() {
 
       {showPasswordModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("password")}>
-          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
+          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header">
                 <h3 className="modal-title">
@@ -317,7 +317,7 @@ export default function Ajustes() {
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={cerrarModal}
+                  onClick={() => cerrarModal("password")}
                 ></button>
               </div>
               <div className="modal-body">
@@ -352,7 +352,7 @@ export default function Ajustes() {
                 </button>
                 <button
                   className="btn botones_ajustes w-100 btn-primary"
-                  onClick={cerrarModal}
+                  onClick={() => cerrarModal("password")}
                 >
                   Cancelar
                 </button>
