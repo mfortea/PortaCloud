@@ -36,18 +36,16 @@ export default function Login() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("deviceId", data.deviceId);
   
-        // Asegúrate de pasar el userId al hacer login
         login({
           username: data.username,
           role: data.role,
           token: data.token,
           deviceId: data.deviceId,
-          userId: data.userId, // Añadir esta línea
+          userId: data.userId,
         });
   
         router.push("/");
       } else {
-        // Notificación de error
         toast.error("Usuario o contraseña no válidos", {
           position: "top-right",
           autoClose: 3000,
@@ -58,7 +56,6 @@ export default function Login() {
         });
       }
     } catch (error) {
-      // Notificación de error en caso de excepción
       toast.error("Error al conectar con el servidor", {
         position: "top-right",
         autoClose: 3000,
@@ -68,19 +65,18 @@ export default function Login() {
         draggable: true,
       });
     } finally {
-      setIsLoading(false); // Desactivar el estado de carga
+      setIsLoading(false);
     }
   };
 
-
   return (
     <div className="login-landing-page">
-
       <div className="hero-section">
-        <div className="hero-content">
-          <img src="/logo.png" alt="Logo" className="logo" />
-          <h1>Bienvenido a PortaCloud</h1>
-          <p>Gestor de Portapapeles Multiplataforma con Sincronización en la Nube</p>
+        <div className="hero-content zoom-al_cargar">
+          <img src="/logo.png" alt="Logo" className="logo pe-3" />
+              <span className="letras_login">
+                <span className="negrita">PORTA</span>CLOUD
+              </span>
         </div>
       </div>
 
@@ -90,29 +86,27 @@ export default function Login() {
           <h2>Iniciar Sesión</h2>
 
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="username">Nombre de usuario</label>
+            <div className="form-group mt-4">
+              <label htmlFor="username">Usuario</label>
               <input
                 id="username"
                 type="text"
-                placeholder="Introduce tu usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password">Contraseña</label>
+            <label htmlFor="username">Contraseña</label>
               <input
                 id="password"
                 type="password"
-                placeholder="Introduce tu contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
-            <button type="submit" className="login-button" disabled={isLoading}>
+            <button type="submit" className="login-button mt-3" disabled={isLoading}>
               {isLoading ? (
                 <div className="text-center text-white fa cargando fa-circle-notch"></div>
               ) : (
@@ -126,27 +120,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-
-      {/* Estilos para el spinner */}
-      <style jsx>{`
-        .spinner {
-          border: 4px solid rgba(0, 0, 0, 0.1);
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          border-left-color: #09f;
-          animation: spin 1s ease infinite;
-        }
-
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

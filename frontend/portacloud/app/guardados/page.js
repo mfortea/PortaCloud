@@ -298,31 +298,31 @@ export default function Guardados() {
       <div className="mb-4 d-flex flex-column text-center flex-md-row gap-2">
         <input
           type="text"
-          className="form-control"
+          className="form-control input_guardados"
           placeholder="Buscar ..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <select className="form-control" value={contentTypeFilter} onChange={(e) => setContentTypeFilter(e.target.value)}>
-          <option value="">▼ Todos los tipos</option>
+        <select className="form-control select_guardados" value={contentTypeFilter} onChange={(e) => setContentTypeFilter(e.target.value)}>
+          <option value="">▼ Tipos</option>
           <option value="image">Imagen</option>
           <option value="text">Texto</option>
         </select>
 
-        <select className="form-control" value={osFilter} onChange={(e) => setOsFilter(e.target.value)}>
-          <option value="">▼ Todos los SO </option>
+        <select className="form-control select_guardados" value={osFilter} onChange={(e) => setOsFilter(e.target.value)}>
+          <option value="">▼ S. Operativos </option>
           {osOptions.map((os) => (
             <option key={os} value={os}>{os}</option>
           ))}
         </select>
-        <select className="form-control" value={browserFilter} onChange={(e) => setBrowserFilter(e.target.value)}>
-          <option value="">▼ Todos los Navegadores  </option>
+        <select className="form-control select_guardados" value={browserFilter} onChange={(e) => setBrowserFilter(e.target.value)}>
+          <option value="">▼ Navegadores  </option>
           {browserOptions.map((browser) => (
             <option key={browser} value={browser}>{browser}</option>
           ))}
         </select>
-        <select className="form-control" value={deviceTypeFilter} onChange={(e) => setDeviceTypeFilter(e.target.value)}>
-          <option value="">▼ Todos los dispositivos  </option>
+        <select className="form-control  select_guardados" value={deviceTypeFilter} onChange={(e) => setDeviceTypeFilter(e.target.value)}>
+          <option value="">▼ Dispositivos  </option>
           {deviceTypeOptions.map((device) => (
             <option key={device} value={device}>
               {device === "smartphone"
@@ -335,7 +335,7 @@ export default function Guardados() {
             </option>
           ))}
         </select>
-        <select className="form-control" value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
+        <select className="form-control select_guardados" value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
           <option value="list">▼ Tipo de vista  </option>
           <option value="grid">Tarjetas</option>
           <option value="list">Lista</option>

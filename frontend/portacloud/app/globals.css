@@ -123,6 +123,36 @@ a {
   color: rgba(33, 37, 41, 0.75) !important;
 }
 
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.zoom-al_cargar {
+  animation: zoomIn 0.5s ease-out forwards;
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.deslizar {
+  animation: slideDown 0.8s ease-out forwards;
+}
+
 
 /* ========== ESTILOS DEL LOGO ========== */
 .logo_div {
@@ -273,6 +303,7 @@ a {
   width: 100%;
   font-size: 20px !important;
   transition: all 0.5 ease;
+  border-radius: 30px !important;
 }
 
 .botones_ajustes.btn-primary {
@@ -398,14 +429,14 @@ a {
 
 /* ========== ESTILOS DE INPUT ========== */
 input {
-  margin: 10px;
-  border-radius: 5px;
-  border-style: none;
-  background-color: #dbdbdb;
+  border-radius: 30px !important;
+  border-style: none !important;
+  background-color: #e4f4ff;
   height: 40px;
-  text-align: center;
+  text-align: left;
   transition: all 1s;
   font-size: 15px;
+  padding: 0 30px !important;
 }
 
 input:hover {
@@ -836,7 +867,13 @@ padding: 10px !important;
   background-color: #545454 !important;
 }
 
+
 /* ========== ESTILOS DEL LOGIN ========== */
+
+.letras_login{
+font-size: 40px;
+}
+
 /* Estilos generales para la landing page */
 .login-landing-page {
   display: flex;
@@ -855,7 +892,7 @@ padding: 10px !important;
   background: linear-gradient(180deg, #f8f9fa, #7590be 43%, #003288);
   background-size: 400% 400%;
   color: #0e0e0e;
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
   box-shadow: 1px 31px 60px -42px rgb(0 0 0 / 34%);
 }
@@ -883,14 +920,6 @@ padding: 10px !important;
   margin-bottom: 1rem;
 }
 
-.hero-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.hero-content p {
-  font-size: 1.2rem;
-}
 
 /* Sección del formulario de login */
 .login-section {
@@ -903,7 +932,7 @@ padding: 10px !important;
 .login-card {
   background: white;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 30px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
@@ -936,7 +965,7 @@ padding: 10px !important;
   background-color: #006eff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 30px;
   cursor: pointer;
   background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
   box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
@@ -1166,6 +1195,17 @@ padding: 10px !important;
 }
 
 /* ========== ESTILOS SECCIÓN GUARDADOS ========== */
+
+.select_guardados {
+  border-radius: 30px !important;
+  background-color: #dbdbdb !important;
+  font-size: 1rem !important;
+}
+
+.input_guardados {
+  background-color: #e4f4ff !important;
+}
+
 .saved-table {
   width: 100%;
   table-layout: fixed; 
@@ -1320,7 +1360,7 @@ padding: 10px !important;
   input {
     border-style: none !important;
     color: rgb(255, 255, 255) !important;
-    background-color: #3b3b3bbf !important;
+    background-color: #5b5b5bbf !important;
   }
 
   input:hover {
