@@ -1041,12 +1041,7 @@ input:hover {
   .hero-section {
     flex: none !important;
   }
-
-  .login-section {
-    flex: none !important;
-    margin-top: 35px;
-  }
-
+  
   .login-card {
     margin: 20px;
   }
