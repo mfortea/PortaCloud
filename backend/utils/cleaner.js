@@ -12,21 +12,26 @@ const cleanOrphanFiles = async () => {
       return;
     }
 
-    // Obtener lista de archivos en 'uploads'
+    // Lista de archivos en la carpeta 'uploads'
     const filesInUploads = fs.readdirSync(uploadDir);
     console.log(`Archivos en 'uploads':`, filesInUploads);
 
-    // Obtener lista de archivos guardados en `SavedItem`
+    // Obtener lista de archivos guardados
     const savedItems = await SavedItem.find({}, "filePath");
     const savedFilePaths = new Set(savedItems.map(item => item.filePath));
 
     console.log("Archivos referenciados en 'SavedItem':", savedFilePaths);
 
     for (const file of filesInUploads) {
+      // Evitar eliminar .gitkeep
+      if (file === ".gitkeep") {
+        continue;
+      }
+
       const filePath = `/uploads/${file}`;
 
       if (!savedFilePaths.has(filePath)) {
-        // No está referenciado en `SavedItem`, lo eliminamos
+        // Se elimina si no está referenciado
         const fullPath = path.join(uploadDir, file);
         try {
           fs.unlinkSync(fullPath);
