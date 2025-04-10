@@ -219,10 +219,37 @@ export default function Ajustes() {
   return (
     <div className="container py-5">
       <h1 className="text-center mb-4">
-        <i className="fa fa-gear"></i> Ajustes
+        <i className="fa fa-gear pe-2"></i> Ajustes
       </h1>
-
-      <div className="d-flex flex-column align-items-center">
+      <div className="d-flex flex-column align-items-center mb-4">        
+        <div>
+          <div className="mb-2">
+            <strong><i className="fa fa-user me-2"></i>Nombre de usuario:</strong>
+            <span className="ms-2">{user?.username || 'No disponible'}</span>
+          </div>
+          
+          <div className="mb-2">
+            <strong><i className="fa fa-envelope me-2"></i>Correo electrónico:</strong>
+            <span className="ms-2">{user?.email || 'No registrado'}</span>
+          </div>
+          
+          <div>
+            <strong><i className="fa fa-calendar me-2"></i>Cuenta creada:</strong>
+            <span className="ms-2">
+              {user?.createdAt 
+                ? new Date(user.createdAt).toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })
+                : 'Fecha no disponible'}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="d-flex flex-column align-items-center mt-4">
         <button
           className="btn botones_ajustes btn-primary"
           onClick={() => setShowUsernameModal(true)}

@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 
 export default function Register() {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +63,7 @@ export default function Register() {
       const res = await fetch(`${serverUrl}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       if (res.ok) {
@@ -78,6 +79,7 @@ export default function Register() {
         });
         login({
           username: data.username,
+          email: data.email,
           role: data.role,
           token: data.token,
           userId: data.userId
@@ -131,6 +133,17 @@ export default function Register() {
                 placeholder="Introduce tu usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">Correo electrónico</label>
+              <input
+                id="email"
+                type="text"
+                placeholder="Introduce tu correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>

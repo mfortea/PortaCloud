@@ -14,6 +14,7 @@ const multer = require("multer");
 const ContentRegistry = require("../models/ContentRegistry");
 const crypto = require("crypto");
 const fs = require("fs");
+const nodemailer = require('nodemailer');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -87,15 +88,21 @@ router.post("/set-socket", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  const userExists = await User.findOne({ username });
+  const { username, email, password } = req.body;
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: "Formato de email inválido" });
+  }
+
+  const userExists = await User.findOne({ $or: [{ username }, { email }] });
 
   if (userExists) {
     return res.status(400).json({ message: "El nombre de usuario ya está en uso" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = new User({ username, password: hashedPassword });
+  const newUser = new User({ username, email, password: hashedPassword });
 
   try {
     await newUser.save();
@@ -128,73 +135,102 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username });
+  const { login, password } = req.body; 
+  
+  try {
+    const user = await User.findOne({
+      $or: [
+        { username: login },
+        { email: login }
+      ]
+    });
 
-  if (!user) {
-    return res.status(400).json({ message: "Usuario no encontrado" });
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: "Credenciales incorrectas" });
-  }
-
-  const token = jwt.sign(
-    { userId: user._id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-
-  const { os, browser, deviceType } = getDeviceInfo(req.headers["user-agent"]);
-
-  user.lastLogin = new Date();
-  await user.save();
-
-  const deviceId = uuidv4();
-  const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  const newLog = new Log({
-    userId: user._id,
-    action: 'login',
-    ipAddress: ipAddress,
-    userAgent: req.headers['user-agent'],
-    details: {
-      deviceId: deviceId,
-      os: os,
-      browser: browser
+    if (!user) {
+      return res.status(400).json({ message: "Usuario/email no encontrado" });
     }
-  });
-  await newLog.save();
 
-  const newDevice = await Device.create({
-    userId: user._id,
-    deviceId,
-    os,
-    browser,
-    deviceType,
-    lastActive: new Date(),
-  });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Credenciales incorrectas" });
+    }
 
-  if (io) {
-    io.emit("updateDevices", await Device.find({ userId: user._id }));
-    io.emit("newConnection", { message: "Nuevo cliente conectado", userId: user._id });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const { os, browser, deviceType } = getDeviceInfo(req.headers["user-agent"]);
+
+    user.lastLogin = new Date();
+    await user.save();
+
+    const deviceId = uuidv4();
+    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    
+    // Registrar log
+    const newLog = new Log({
+      userId: user._id,
+      action: 'login',
+      ipAddress: ipAddress,
+      userAgent: req.headers['user-agent'],
+      details: {
+        deviceId: deviceId,
+        os: os,
+        browser: browser,
+        loginMethod: login.includes('@') ? 'email' : 'username' 
+      }
+    });
+    await newLog.save();
+
+    // Registrar dispositivo
+    const newDevice = await Device.create({
+      userId: user._id,
+      deviceId,
+      os,
+      browser,
+      deviceType,
+      lastActive: new Date(),
+    });
+
+    // Emitir eventos de socket.io
+    if (io) {
+      io.emit("updateDevices", await Device.find({ userId: user._id }));
+      io.emit("newConnection", { message: "Nuevo cliente conectado", userId: user._id });
+    }
+
+    res.json({ 
+      token, 
+      deviceId, 
+      username: user.username,
+      email: user.email, // Nuevo campo en la respuesta
+      role: user.role, 
+      userId: user._id 
+    });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Error en el servidor" });
   }
-
-  res.json({ token, deviceId, username: user.username, role: user.role, userId: user._id });
 });
+
 
 router.get("/profile", passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
+    const user = await User.findById(req.user.userId).select("-password");
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
+
     res.json({
-      username: user.username,
-      role: user.role,
       userId: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      resetPasswordToken: user.resetPasswordToken,
+      resetPasswordExpires: user.resetPasswordExpires,
       createdAt: user.createdAt,
-      lastLogin: user.lastLogin,
+      lastLogin: user.lastLogin
     });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener el perfil", error });
@@ -375,6 +411,64 @@ router.delete("/delete-account", async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar la cuenta", error: error.message });
+  }
+});
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS 
+  }
+});
+
+// Ruta para solicitar reseteo
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body; 
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    // Generar token y expiración
+    const token = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
+    await user.save();
+
+    // Enviar correo
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
+    await transporter.sendMail({
+      to: username, // Asume que el username es el email
+      subject: "Recuperación de contraseña",
+      html: `Haz clic <a href="${resetLink}">aquí</a> para restablecer tu contraseña.`
+    });
+
+    res.json({ message: "Correo enviado" });
+  } catch (error) {
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+});
+
+// Ruta para cambiar contraseña
+router.post('/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) return res.status(400).json({ message: "Token inválido o expirado" });
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Contraseña actualizada" });
+  } catch (error) {
+    res.status(500).json({ message: "Error en el servidor" });
   }
 });
 

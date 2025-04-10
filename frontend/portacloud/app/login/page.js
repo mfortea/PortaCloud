@@ -7,56 +7,50 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { user, login } = useAuth();
+  const {login: authLogin } = useAuth();
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
-  useEffect(() => {
-    if (user) {
-      router.push("/dashboard"); 
-    }
-  }, [user, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); 
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-  
+    setIsLoading(true);
+    
     try {
       const res = await fetch(`${serverUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ login, password }),
       });
   
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("deviceId", data.deviceId);
-  
-        login({
-          username: data.username,
-          role: data.role,
-          token: data.token,
-          deviceId: data.deviceId,
-          userId: data.userId,
-        });
-  
-        router.push("/");
-      } else {
-        toast.error("Usuario o contraseña no válidos", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+      const data = await res.json(); 
+      
+      if (!res.ok) {
+        throw new Error(data.message || "Error en la autenticación");
       }
+  
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("deviceId", data.deviceId);
+      
+
+      await authLogin({
+        username: data.username,
+        email: data.email,
+        role: data.role,
+        token: data.token,
+        deviceId: data.deviceId,
+        userId: data.userId,
+      });
+  
+      router.push("/dashboard");
+      router.refresh();
+  
     } catch (error) {
-      toast.error("Error al conectar con el servidor", {
+      console.error("Error completo:", error);
+      toast.error(error.message || "Error al contactar con el servidor", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -87,17 +81,17 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div className="form-group mt-4">
-              <label htmlFor="username">Usuario</label>
+              <label htmlFor="login">Usuario o Email</label>
               <input
-                id="username"
+                id="login"
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
                 required
               />
             </div>
             <div className="form-group">
-            <label htmlFor="username">Contraseña</label>
+            <label htmlFor="password">Contraseña</label>
               <input
                 id="password"
                 type="password"
@@ -117,6 +111,7 @@ export default function Login() {
 
           <div className="register-link">
             <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p>
+            <a href="/forgot-password">He olvidado mi contraseña</a>
           </div>
         </div>
       </div>

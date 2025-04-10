@@ -1,4 +1,3 @@
-// AuthContext.js
 "use client";
 
 import React, { createContext, useState, useContext, useEffect } from "react";
@@ -13,7 +12,12 @@ export const AuthProvider = ({ children }) => {
     setUser({
       userId: userData.userId,
       username: userData.username,
-      role: userData.role
+      email: userData.email,
+      role: userData.role,
+      resetPasswordToken: userData.resetPasswordToken,
+      resetPasswordExpires: userData.resetPasswordExpires,
+      createdAt: userData.createdAt,
+      lastLogin: userData.lastLogin
     });
     localStorage.setItem("token", userData.token);
   };
@@ -24,9 +28,17 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("deviceId");
   };
 
-  // Función para actualizar la información del usuario
   const updateUser = (updatedUser) => {
-    setUser(updatedUser);
+    setUser({
+      userId: updatedUser.userId,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      resetPasswordToken: updatedUser.resetPasswordToken,
+      resetPasswordExpires: updatedUser.resetPasswordExpires,
+      createdAt: updatedUser.createdAt,
+      lastLogin: updatedUser.lastLogin
+    });
   };
 
   useEffect(() => {
@@ -47,7 +59,12 @@ export const AuthProvider = ({ children }) => {
           setUser({
             userId: data.userId,
             username: data.username,
-            role: data.role
+            email: data.email,
+            role: data.role,
+            resetPasswordToken: data.resetPasswordToken,
+            resetPasswordExpires: data.resetPasswordExpires,
+            createdAt: data.createdAt,
+            lastLogin: data.lastLogin
           });
         }
       } catch (error) {
@@ -62,9 +79,11 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout, updateUser, authChecked }}>
-      {authChecked ? children : <div className="loading-spinner">
-        <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
-      </div>}
+      {authChecked ? children : (
+        <div className="loading-spinner">
+          <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };
