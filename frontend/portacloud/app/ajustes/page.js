@@ -224,7 +224,7 @@ export default function Ajustes() {
       <div className="info_ajustes d-flex flex-column align-items-center mb-4">        
         <div>
           <div className="mb-2">
-            <strong><i className="fa fa-envelope me-2"></i>Correo electrónico:</strong>
+            <strong><i className="fa fa-envelope me-2"></i>Email:</strong>
             <span className="ms-2">{user?.email || 'No registrado'}</span>
           </div>
           
