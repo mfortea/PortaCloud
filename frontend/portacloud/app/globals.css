@@ -136,7 +136,7 @@ a {
 }
 
 .zoom-al_cargar {
-  animation: zoomIn 0.s ease-out forwards;
+  animation: zoomIn 0.3s ease-out forwards;
 }
 
 @keyframes slideDown {
@@ -353,6 +353,12 @@ a {
   .botones_ajustes {
     width: 350px !important;
   }
+}
+
+.info_ajustes {
+  padding: 2rem;
+  border-radius: 30px;
+  font-size: 20px;
 }
 
 
@@ -897,7 +903,7 @@ input:hover {
 .login-landing-page {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   min-height: 100vh;
   background-color: #f8f9fa;
 }
@@ -944,13 +950,10 @@ input:hover {
 
 /* Sección del formulario de login */
 .login-section {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: none; 
-  padding: 1rem 0;
-  margin-bottom: 0; 
-  margin-top: 30px;
 }
 
 .login-card {
@@ -1021,6 +1024,7 @@ input:hover {
 }
 
 .register-link a {
+  transition: all 0.3s ease;
   color: #277eff;
   text-decoration: none;
 }
@@ -1041,28 +1045,14 @@ input:hover {
 
 @media (max-width: 500px) {
   .letras_login {
-    font-size: 30px;
-  }
-
-  .hero-section {
-    flex: none !important;
+    font-size: 32px;
   }
 
   .hero-content .logo {
-    width: 80px;
+    width: 85px;
   }
 }
 
-@media (max-width: 500px) {
-  .hero-section {
-    min-height: 20vh;
-  }
-  
-  .login-card {
-    margin: 0.5rem;
-    margin-top: 3rem;
-  }
-}
 
 @media (max-width: 350px) {
   .letras_login {
@@ -1074,16 +1064,49 @@ input:hover {
   }
 }
 
+.boton_registrar {
+  margin-bottom: 10px;
+  font-size: 15px !important;
+  transition: all 0.5 ease;
+  border-radius: 30px !important;
+  background-color: rgb(100, 204, 100) !important;
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+  padding: 1rem !important;
+  color: rgb(255, 255, 255) !important;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.boton_registrar:hover {
+  opacity: 0.9;
+  filter: brightness(1.1);
+  transition: all 0.3s ease;
+  text-decoration: none !important;
+}
+
+.boton_registrar:active {
+  filter: brightness(0.5);
+}
+
 /* ========== ESTILO 404/ NO SOPORTADO========== */
 .logo_404 {
   width: 150px;
   filter: hue-rotate(150deg);
+  animation: zoomIn 0.5s ease-out !important;
 }
 
 .no_soportado {
   color: rgb(200, 2, 2);
   font-size: 40px;
 }
+
+.texto_404 {
+  font-family: monospace;
+  color: rgb(200, 2, 2);
+  font-weight: bold;
+}
+
+
 
 /* ========== ESTILO DE LAS VENTANAS MODALES ========== */
 .modal-overlay {
@@ -1554,7 +1577,7 @@ input:hover {
   .login-landing-page {
     background-color: #161616 !important;
     color: white !important;
-    justify-content: space-between; 
+    justify-content: space-between;
   }
 
   .modal-header,
@@ -1666,5 +1689,17 @@ input:hover {
 
   .texto_aviso {
     color: rgb(189, 189, 189) !important;
+  }
+
+  .boton_registrar {
+    background-color: rgb(62, 126, 62) !important;
+  }
+
+  .boton_registrar:hover {
+    filter: brightness(1.5);
+  }
+
+  .boton_registrar:active {
+    filter: brightness(0.5);
   }
 }

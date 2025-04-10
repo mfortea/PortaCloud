@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function AcercaDe() {
     return (
-        <div className="container py-5">
+        <div className="container py-5 zoom-al_cargar">
             <h1 className="text-center mb-4"><i className="fa-solid fa-circle-question"></i> Acerca de este proyecto</h1>
             <img src="/logo.png" alt="Logo" className="logo_acercade" />
             <p>

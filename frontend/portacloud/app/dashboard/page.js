@@ -572,7 +572,7 @@ export default function Dashboard() {
   return (
 
 
-    <div className="container py-5">
+    <div className="container py-5 zoom-al_cargar">
       <h1 className="text-center mb-4">
         <i className="fa-solid fa-clipboard"></i>&nbsp; Mi portapapeles
       </h1>
@@ -599,9 +599,9 @@ export default function Dashboard() {
                 <p>Para una mejor compatibilidad se recomienda usar Google Chrome o Microosft Edge</p>
               </div>
               <div className="modal-footer">
-              <button className="btn botones_ajustes w-100 btn-success" href="/ayuda">
+              <a className="btn text-center botones_ajustes w-100 btn-success" href="/ayuda">
                   <i className="fa-solid fa-circle-question pe-2"></i> Ir a Ayuda
-                </button>
+                </a>
                 <button className="btn botones_ajustes w-100 btn-primary" onClick={() => setShowBrowserModal(false)}>
                   Entendido
                 </button>

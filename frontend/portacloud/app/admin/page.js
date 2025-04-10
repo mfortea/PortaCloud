@@ -265,7 +265,7 @@ export default function AdminPage() {
           <tbody>
             {users.map((userItem) => (
               <tr key={userItem._id}>
-                <td className="bold">{userItem.username}</td>
+                <td><span className="bold">{userItem.username}</span><br></br>{userItem.email}</td>
                 <td>{userItem.role}</td>
                 <td>
                   {format(new Date(userItem.createdAt), 'dd MMM yyyy HH:mm:ss', { locale: es })}

@@ -217,17 +217,12 @@ export default function Ajustes() {
   }
 
   return (
-    <div className="container py-5">
+    <div className="container py-5 zoom-al_cargar">
       <h1 className="text-center mb-4">
-        <i className="fa fa-gear pe-2"></i> Ajustes
+        <i className="fa fa-gear pe-2"></i> Ajustes de {user?.username || 'No disponible'}
       </h1>
-      <div className="d-flex flex-column align-items-center mb-4">        
+      <div className="info_ajustes d-flex flex-column align-items-center mb-4">        
         <div>
-          <div className="mb-2">
-            <strong><i className="fa fa-user me-2"></i>Nombre de usuario:</strong>
-            <span className="ms-2">{user?.username || 'No disponible'}</span>
-          </div>
-          
           <div className="mb-2">
             <strong><i className="fa fa-envelope me-2"></i>Correo electrónico:</strong>
             <span className="ms-2">{user?.email || 'No registrado'}</span>

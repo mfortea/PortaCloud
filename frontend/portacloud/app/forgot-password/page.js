@@ -43,7 +43,7 @@ export default function ForgotPassword() {
             <div className="form-group">
               <h2><i className="fa-solid fa-key pe-2"></i> Recuperar contraseña</h2>
               <br></br>
-              <p>Introduce el correo electrónico asociado a tu cuenta. Te enviaremos un correo para restablecer tu contraseña</p>
+              <p className='mb-4'>Introduce el correo electrónico asociado a tu cuenta. Te enviaremos un correo para restablecer tu contraseña. Deberás revisar la bandeja de entrada y tu carpeta de SPAM</p>
               <input
                 type="email"
                 placeholder="Ingresa tu correo"
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
               />
             </div>
             <div className="form-group">
-              <button className="login-button mt-4" type="submit">Enviar correo</button>
+              <button className="login-button mt-3" type="submit">Enviar correo</button>
             </div>
           </form>
           <div className="register-link">

@@ -169,8 +169,8 @@ export default function Register() {
                 required
               />
             </div>
-            <p>La contraseña debe tener al menos 8 caracteres, incluyendo letras y números.</p>
-            <button type="submit" className="login-button" disabled={isLoading}>
+            <p className='mt-4 text-center'>La contraseña debe tener al menos 8 caracteres, incluyendo letras y números.</p>
+            <button type="submit" className="login-button mt-3 mb-2" disabled={isLoading}>
               {isLoading ? (
                 <div className="text-center text-white fa cargando fa-circle-notch"></div>
               ) : (
@@ -180,7 +180,7 @@ export default function Register() {
           </form>
 
           <div className="register-link">
-            <p>¿Ya tienes una cuenta? <a href="/login">Inicia sesión aquí</a></p>
+            <p>¿Ya tienes una cuenta? <br></br><a href="/login">Inicia sesión aquí</a></p>
           </div>
         </div>
       </div>

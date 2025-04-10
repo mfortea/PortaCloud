@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function NotSupported() {
     return (
-        <div className="container py-5 text-center mt-2">
+        <div className="container py-5 text-center mt-2 zoom-al_cargar">
             <h1><i className="fa-solid fa-circle-question"></i> Ayuda</h1>
             <br></br>
             <div className="table-responsive">

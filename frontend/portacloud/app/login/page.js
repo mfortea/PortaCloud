@@ -109,8 +109,8 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="register-link">
-            <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p>
+          <div className="mt-4 register-link">
+            <p>¿No tienes una cuenta?<br></br><a  className="boton_registrar btn" href="/register"><i className="fa-solid fa-user-plus pe-2"></i> Registrarse</a></p>
             <a href="/forgot-password">He olvidado mi contraseña</a>
           </div>
         </div>

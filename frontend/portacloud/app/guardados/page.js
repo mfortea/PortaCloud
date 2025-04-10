@@ -362,7 +362,7 @@ export default function Guardados() {
             <div className="row">
               {currentItems.map((item) => (
                 <div key={item._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4">
-                  <div className="device-card shadow-lg">
+                  <div className="device-card shadow-lg zoom-al_cargar">
                     <div className="card-body text-center">
                       <div className="d-flex justify-content-center align-items-center mt-3 gap-2 mb-3">
                         <div>
@@ -374,7 +374,6 @@ export default function Guardados() {
                                 ? <BsTabletLandscape size={40} />
                                 : <MdDevices size={40} />}
                         </div>
-                        {/* Icono del SO */}
                         <img
                           src={getDeviceLogo("os", item.os)}
                           alt={item.os}
