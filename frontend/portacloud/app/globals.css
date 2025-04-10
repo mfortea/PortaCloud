@@ -185,6 +185,7 @@ a {
 /* ========== ESTILOS DEL DASHBOARD ========== */
 .footer {
   margin-top: auto;
+  padding: 1rem 0;
 }
 
 .clipboard-display {
@@ -896,13 +897,14 @@ input:hover {
 .login-landing-page {
   display: flex;
   flex-direction: column;
+  justify-content: flex-start; 
   min-height: 100vh;
   background-color: #f8f9fa;
 }
 
 /* Sección del héroe (fondo y contenido principal) */
 .hero-section {
-  flex: 1 1;
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -910,9 +912,10 @@ input:hover {
   background: linear-gradient(180deg, #f8f9fa, #7590be 43%, #003288);
   background-size: 400% 400%;
   color: #0e0e0e;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   text-align: center;
   box-shadow: 1px 31px 60px -42px rgb(0 0 0 / 34%);
+  min-height: 20vh;
 }
 
 @keyframes gradientAnimation {
@@ -941,10 +944,13 @@ input:hover {
 
 /* Sección del formulario de login */
 .login-section {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1; 
+  padding: 1rem 0;
+  margin-bottom: 0; 
+  margin-top: 40px;
 }
 
 .login-card {
@@ -1044,6 +1050,17 @@ input:hover {
 
   .hero-content .logo {
     width: 80px;
+  }
+}
+
+@media (max-width: 500px) {
+  .hero-section {
+    min-height: 20vh;
+  }
+  
+  .login-card {
+    margin: 0.5rem;
+    margin-top: 3rem;
   }
 }
 
@@ -1537,6 +1554,7 @@ input:hover {
   .login-landing-page {
     background-color: #161616 !important;
     color: white !important;
+    justify-content: space-between; 
   }
 
   .modal-header,
