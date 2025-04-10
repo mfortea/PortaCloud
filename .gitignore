@@ -2,3 +2,4 @@ node_modules/
 backend/uploads/*
 !backend/uploads/.gitkeep   
 .DS_Store
+.env

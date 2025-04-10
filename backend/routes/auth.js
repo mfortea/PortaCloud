@@ -89,7 +89,7 @@ router.post("/set-socket", (req, res) => {
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-  
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ message: "Formato de email inválido" });
@@ -135,8 +135,8 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { login, password } = req.body; 
-  
+  const { login, password } = req.body;
+
   try {
     const user = await User.findOne({
       $or: [
@@ -167,7 +167,7 @@ router.post("/login", async (req, res) => {
 
     const deviceId = uuidv4();
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    
+
     // Registrar log
     const newLog = new Log({
       userId: user._id,
@@ -178,7 +178,7 @@ router.post("/login", async (req, res) => {
         deviceId: deviceId,
         os: os,
         browser: browser,
-        loginMethod: login.includes('@') ? 'email' : 'username' 
+        loginMethod: login.includes('@') ? 'email' : 'username'
       }
     });
     await newLog.save();
@@ -199,13 +199,13 @@ router.post("/login", async (req, res) => {
       io.emit("newConnection", { message: "Nuevo cliente conectado", userId: user._id });
     }
 
-    res.json({ 
-      token, 
-      deviceId, 
+    res.json({
+      token,
+      deviceId,
       username: user.username,
       email: user.email, // Nuevo campo en la respuesta
-      role: user.role, 
-      userId: user._id 
+      role: user.role,
+      userId: user._id
     });
 
   } catch (error) {
@@ -418,57 +418,96 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS 
+    pass: process.env.GMAIL_PASS
   }
 });
 
 // Ruta para solicitar reseteo
 router.post('/forgot-password', async (req, res) => {
-  const { email } = req.body; 
+  const { email } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // Generar token y expiración
     const token = crypto.randomBytes(20).toString('hex');
     user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
+    user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
-
-    // Enviar correo
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
-    await transporter.sendMail({
-      to: username, // Asume que el username es el email
-      subject: "Recuperación de contraseña",
-      html: `Haz clic <a href="${resetLink}">aquí</a> para restablecer tu contraseña.`
-    });
+    const mailOptions = {
+      to: email,
+      subject: "PortaCloud - Recuperación de contraseña",
+      html: `
+        <div style="font-family: 'Arial', sans-serif; background-color: #f4f4f9; padding: 30px; text-align: center;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 40px; text-align: center;">
+    
+            <img src="https://portacloud.vercel.app/logo.png" alt="PortaCloud" style="max-width: 100px !important; margin-bottom: 20px;">
+            
+            <h1 style="color: #333; font-size: 28px; font-weight: 600; margin-bottom: 20px;">Recuperación de Contraseña</h1>
+            
+            <p style="color: #555; font-size: 16px; margin-bottom: 20px;">Hemos recibido una solicitud para restablecer tu contraseña en PortaCloud.</p>
+    
+            <a href="${resetLink}" style="display: inline-block; background-color: #007BFF; color: #fff; padding: 14px 40px; font-size: 16px; font-weight: bold; border-radius: 4px; text-decoration: none; transition: background-color 0.3s; margin-bottom: 20px;">
+              Restablecer mi Contraseña
+            </a>
+    
+            <p style="color: #888; font-size: 14px;">Este enlace expirará en 24 horas.</p>
+            
+            <div style="margin-top: 30px;">
+              <p style="color: #888; font-size: 14px;">Si no solicitaste este correo, puedes ignorarlo.</p>
+            </div>
+          </div>
+        </div>
+      `
+    };
 
-    res.json({ message: "Correo enviado" });
+    console.log("Enviando correo a:", email);
+    console.log("resetLink:", resetLink);
+
+    await transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error al enviar correo:", error);
+        return res.status(500).json({ message: "Error al enviar el correo", error: error.message });
+      } else {
+        console.log("Correo enviado:", info.response);
+        return res.json({ message: "Correo enviado" });
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error en el servidor" });
+    console.error("Error en forgot-password:", error);
+    res.status(500).json({ message: "Error en el servidor", error: error.message });
   }
 });
 
-// Ruta para cambiar contraseña
 router.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
-  const { password } = req.body;
+  const { newPassword } = req.body;
+
   try {
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() }
     });
 
-    if (!user) return res.status(400).json({ message: "Token inválido o expirado" });
+    if (!user) {
+      return res.status(400).json({
+        message: "El enlace de recuperación es inválido o ha expirado"
+      });
+    }
 
-    user.password = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
 
-    res.json({ message: "Contraseña actualizada" });
+    res.json({ message: "Contraseña actualizada correctamente" });
   } catch (error) {
-    res.status(500).json({ message: "Error en el servidor" });
+    console.error("Reset password error:", error);
+    res.status(500).json({
+      message: "Error al restablecer la contraseña",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
