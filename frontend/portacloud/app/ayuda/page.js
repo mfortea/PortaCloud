@@ -63,6 +63,7 @@ export default function NotSupported() {
                     <thead>
                         <tr>
                             <th>Botón</th>
+                            <th>Ubicación</th>
                             <th>Descripción</th>
                         </tr>
                     </thead>
@@ -73,7 +74,8 @@ export default function NotSupported() {
                                     <i className="fa fa-refresh" aria-hidden="true"></i>
                                 </button>
                             </td>
-                            <td>Actualiza el contenido del portapapeles manualmente.</td>
+                            <td>Dashboard, Guardados</td>
+                            <td>Actualiza el contenido.</td>
                         </tr>
                         <tr>
                             <td>
@@ -81,7 +83,8 @@ export default function NotSupported() {
                                     <i className="fa fa-download" aria-hidden="true"></i>
                                 </button>
                             </td>
-                            <td>Descarga el contenido del portapapeles a un archivo.</td>
+                            <td>Dashboard</td>
+                            <td>Descarga el contenido a un archivo.</td>
                         </tr>
                         <tr>
                             <td>
@@ -89,6 +92,7 @@ export default function NotSupported() {
                                     <i className="fa fa-star" aria-hidden="true"></i>
                                 </button>
                             </td>
+                            <td>Dashboard</td>
                             <td>Guarda el contenido actual del portapapeles para acceder a él más tarde.</td>
                         </tr>
                         <tr>
@@ -97,7 +101,8 @@ export default function NotSupported() {
                                     <i className="fa fa-remove" aria-hidden="true"></i>
                                 </button>
                             </td>
-                            <td>Limpia el contenido del portapapeles.</td>
+                            <td>Dashboard, Guardados</td>    
+                            <td>Limpia el contenido del portapapeles / Borra un elemento guardado.</td>
                         </tr>
                         <tr>
                             <td className="d-flex justify-content-center">
@@ -108,7 +113,31 @@ export default function NotSupported() {
                                     <MdUpdate size={30} />
                                 </button>
                             </td>
+                            <td>Dashboard</td>
                             <td>Activa o desactiva la actualización automática del portapapeles.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                            <button
+                            className="boton_aux boton_mostrar p-0 text-decoration-none"
+                            title="Mostrar/Ocultar el texto completo"
+                          ><i className="fa fa-eye pe-2"></i>Mostrar más</button>
+                                                      <button
+                            className="boton_aux boton_mostrar p-0 text-decoration-none"
+                            title="Mostrar/Ocultar el texto completo"
+                          ><i className="fa fa-eye pe-2"></i>Mostrar menos</button>
+                            </td>
+                            <td>Dashboard, Guardados</td>
+                            <td>Se muestra cuando el texto guardado supera los 500 caracteres. Pliega/despliega la totalidad del texto.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button className="btn boton_aux btn-primary" >
+                                    <i className="fa fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                            <td>Guardados</td>
+                            <td>Muestra una vista previa del contenido si éste es una imagen</td>
                         </tr>
                     </tbody>
                 </table>
