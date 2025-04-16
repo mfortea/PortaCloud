@@ -1109,6 +1109,7 @@ input:hover {
 
 
 /* ========== ESTILO DE LAS VENTANAS MODALES ========== */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1123,10 +1124,12 @@ input:hover {
 }
 
 .modal-dialog,
-.modal-content,
-.modal-dialog {
-  background-color: #ffffff57 !important;
-  backdrop-filter: blur(40px) !important;
+.modal-content {
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(50px) !important;
+  -webkit-backdrop-filter: blur(50px) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   border: solid !important;
   border-width: 2px !important;
   border-color: rgb(220, 220, 220) !important;
@@ -1141,6 +1144,9 @@ input:hover {
   width: 90%;
   box-sizing: border-box;
   margin-top: 130px !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(50px) !important;
+  -webkit-backdrop-filter: blur(50px) !important;
 }
 
 @media (max-width: 768px) {
