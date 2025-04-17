@@ -18,6 +18,7 @@ export default function AdminPage() {
   // Estados para el formulario de creación de usuarios
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState("user");
 
   // Estados para controlar modales
@@ -214,6 +215,7 @@ export default function AdminPage() {
           body: JSON.stringify({
             username: newUsername,
             password: newPassword,
+            email: newEmail,
             role: newRole,
           }),
         }
@@ -310,6 +312,15 @@ export default function AdminPage() {
             type="text"
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Correo electrónico:</label>
+          <input
+            type="text"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
             required
           />
         </div>
