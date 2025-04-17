@@ -221,24 +221,24 @@ export default function Ajustes() {
       <h1 className="text-center mb-4">
         <i className="fa fa-gear pe-2"></i> Ajustes de {user?.username || 'No disponible'}
       </h1>
-      <div className="info_ajustes d-flex flex-column align-items-center mb-4">        
+      <div className="info_ajustes d-flex flex-column align-items-center mb-4">
         <div>
           <div className="mb-2">
             <strong><i className="fa fa-envelope me-2"></i>Email:</strong>
             <span className="ms-2">{user?.email || 'No registrado'}</span>
           </div>
-          
+
           <div>
             <strong><i className="fa fa-calendar me-2"></i>Cuenta creada:</strong>
             <span className="ms-2">
-              {user?.createdAt 
+              {user?.createdAt
                 ? new Date(user.createdAt).toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })
                 : 'Fecha no disponible'}
             </span>
           </div>
@@ -286,6 +286,7 @@ export default function Ajustes() {
       {/* Modales */}
       {showUsernameModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("username")}>
+          <div className="modal-backdrop-blur" />
           <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header">
@@ -329,6 +330,7 @@ export default function Ajustes() {
 
       {showPasswordModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("password")}>
+          <div className="modal-backdrop-blur" />
           <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header">
@@ -386,6 +388,7 @@ export default function Ajustes() {
 
       {showDeleteSavedModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("deleteSaved")}>
+          <div className="modal-backdrop-blur" />
           <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header bg-danger text-white">
@@ -432,6 +435,7 @@ export default function Ajustes() {
 
       {showDeleteModal && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("delete")}>
+          <div className="modal-backdrop-blur" />
           <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className={`modal-content ${closing ? "closing" : ""}`}>
               <div className="modal-header bg-danger text-white">
