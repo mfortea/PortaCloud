@@ -1132,6 +1132,13 @@ input:hover {
   border-width: 2px !important;
   border-color: rgb(220, 220, 220) !important;
   animation: zoomIn 0.3s ease-out !important;
+  position: relative;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 800px !important;
+  width: 90%;
+  box-sizing: border-box;
+  margin-top: 130px !important;
 }
 
 .modal-content {
