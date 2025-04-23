@@ -1,19 +1,11 @@
-import nextPWA from 'next-pwa';
+import nextPWA from "next-pwa";
 
+/** @type {import('next').NextConfig} */
 const withPWA = nextPWA({
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  swcMinify: true,
   dest: "public",
-  fallbacks: {
-    image: "/logo.png",
-    document: "/offline", 
-  },
-  workboxOptions: {
-    disableDevLogs: true,
-  },
-
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
 });
 
 export default {
