@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sin Conexión</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            color: #171717;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-landing-page {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background: linear-gradient(180deg, #f8f9fa, #7590be 43%, #003288);
+            color: #ffffff;
+            box-shadow: 1px 31px 60px -42px rgb(0 0 0 / 34%);
+        }
+
+        .hero-content {
+            text-align: center;
+        }
+
+        .hero-content .logo {
+            width: 100px;
+            margin-bottom: 1rem;
+        }
+
+        .login-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            margin: 2rem;
+            text-align: center;
+        }
+
+        .login-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #006eff;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            background-image: linear-gradient(90deg, rgba(0, 123, 255, 0.6), rgba(0, 255, 255, 0.301), rgba(0, 123, 255, 0.6));
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: all 0.5s ease;
+        }
+
+        .login-button:hover {
+            filter: brightness(1.2);
+            transition: all 0.5s ease;
+        }
+
+        .login-button:active {
+            background-color: #032a6e;
+        }    
+
+        .register-link {
+            margin-top: 1rem;
+        }
+
+        .register-link a {
+            color: #277eff;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .negrita {
+            font-weight: bold !important;
+        }
+
+        .letras_login {
+            font-size: 40px;
+        }
+
+        .footer {
+            background-color: rgb(241, 241, 241) !important;
+            color: black !important;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @keyframes zoomIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .zoom-al_cargar {
+            animation: zoomIn 0.3s ease-out forwards;
+        }
+
+        .cargando {
+            font-size: 50px !important;
+            animation: cargando-animacion 1.5s infinite linear;
+            color: #007BFF;
+        }
+
+        @keyframes cargando-animacion {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(180deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-landing-page">
+        <div class="hero-section">
+            <div class="hero-content zoom-al_cargar">
+                <img src="/logo.png" alt="Logo" class="logo" />
+                <br>
+                <span class="letras_login">
+                    <span class="negrita">PORTA</span>CLOUD
+                </span>
+                <h2>No hay conexión a internet</h2>
+            </div>
+        </div>
+
+        <div class="login-section">
+            <div class="login-card">
+                <h1>🦖 No hay conexión</h1>
+                <p>Se te redirigirá automáticamente cuando se restablezca la conexión</p>
+                <p>Esperando conexión...</p>
+                <p class="cargando">⏳</p>
+                <button class="login-button" onclick="goToLogin()">Recarga manualmente</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer py-4 mt-auto text-center">
+        <div class="container">
+            <p class="mb-0 text-center">
+                © PortaCloud
+            </p>
+
+        </div>
+    </footer>
+
+    <script>
+        function goToLogin() {
+            window.location.href = "/login";
+        }
+
+        window.addEventListener("online", () => {
+            window.location.href = "/login";
+        });
+        window.addEventListener("offline", () => {
+            console.log("No hay conexión");
+        });
+    </script>
+</body>
+
+</html>

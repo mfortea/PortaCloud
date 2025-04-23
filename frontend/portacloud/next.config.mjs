@@ -1,11 +1,15 @@
 import nextPWA from "next-pwa";
+import runtimeCaching from "next-pwa/cache.js";
 
-/** @type {import('next').NextConfig} */
 const withPWA = nextPWA({
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === "development",
+  disable: false,
+  runtimeCaching,
+  fallbacks: {
+    document: "/offline.html", 
+  },
 });
 
 export default {
