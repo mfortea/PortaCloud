@@ -1,15 +1,19 @@
-import nextPWA from "next-pwa";
-import runtimeCaching from "next-pwa/cache.js";
+import nextPWA from 'next-pwa';
 
 const withPWA = nextPWA({
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  swcMinify: true,
   dest: "public",
-  register: true,
-  skipWaiting: true,
-  disable: false,
-  runtimeCaching,
   fallbacks: {
-    document: "/offline.html", 
+    image: "/logo.png",
+    document: "/offline", 
   },
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+
 });
 
 export default {
