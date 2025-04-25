@@ -5,6 +5,9 @@ import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import { format } from 'date-fns';
 
 export default function Ajustes() {
   const router = useRouter();
@@ -19,6 +22,7 @@ export default function Ajustes() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSavedModal, setShowDeleteSavedModal] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [closing, setClosing] = useState(false);
   const [modalImage, setModalImage] = useState(null);
@@ -37,7 +41,9 @@ export default function Ajustes() {
       else if (modalType === "deleteSaved") {
         setShowDeleteSavedModal(false);
       }
-
+      else if (modalType === "backup") {
+        setShowBackupModal(false);
+      }
       setClosing(false);
     }, 100);
   };
@@ -207,6 +213,41 @@ export default function Ajustes() {
     }
   };
 
+  const descargarBackup = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/saved`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const items = await response.json();
+      
+      const zip = new JSZip();
+      const folder = zip.folder("portacloud_backup_" + user?.username);
+  
+      for (const item of items) {
+        const date = new Date(item.createdAt);
+        const filename = `portacloud_${format(date, 'dd-MM-yyyy_HH-mm-ss')}`;
+        
+        if (item.type === "text") {
+          folder.file(`${filename}.txt`, item.content);
+        } else if (item.type === "image") {
+          const imgResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`
+          );
+          const blob = await imgResponse.blob();
+          folder.file(`${filename}.png`, blob);
+        }
+      }
+  
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `portacloud_backup_${format(new Date(), 'dd-MM-yyyy')}.zip`);
+      cerrarModal("backup");
+    } catch (error) {
+      toast.error("Error al generar la copia de seguridad. Detalles: " + error);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -216,6 +257,7 @@ export default function Ajustes() {
     );
   }
 
+  
   return (
     <div className="container py-5 zoom-al_cargar">
       <h1 className="text-center mb-4">
@@ -259,6 +301,14 @@ export default function Ajustes() {
         >
           <i className="fa fa-lock me-2"></i>
           Cambiar contraseña
+        </button>
+
+        <button
+          className="btn botones_ajustes btn-success"
+          onClick={() => setShowBackupModal(true)}
+        >
+          <i className="fa fa-download me-2"></i>
+          Descargar todos los guardados
         </button>
 
         <button
@@ -424,6 +474,45 @@ export default function Ajustes() {
                 <button
                   className="btn botones_ajustes w-100 btn-primary"
                   onClick={() => cerrarModal("deleteSaved")}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showBackupModal && (
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => cerrarModal("backup")}>
+          <div className="modal-backdrop-blur" />
+          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
+              <div className="modal-header">
+                <h3 className="modal-title">
+                  <i className="fa fa-download me-2"></i>
+                  Realizar una copia de seguridad
+                </h3>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => cerrarModal("backup")}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>Se descargará un copia de seguridad completa de todos los guardados del usuario, tanto el texto como imágenes en un fichero ZIP</p>
+
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn botones_ajustes w-100 btn-success"
+                  onClick={descargarBackup}
+                >
+                  <i className="fa fa-download me-2"></i> Descargar ZIP
+                </button>
+                <button
+                  className="btn botones_ajustes w-100 btn-primary"
+                  onClick={() => cerrarModal("backup")}
                 >
                   Cancelar
                 </button>
