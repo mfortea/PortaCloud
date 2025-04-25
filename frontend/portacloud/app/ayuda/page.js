@@ -13,7 +13,7 @@ export default function NotSupported() {
             <h1><i className="fa-solid fa-circle-question"></i> Ayuda</h1>
             <br></br>
             <div className="table-responsive">
-                <h2> <i class="fa-solid fa-bars pe-2"></i>Menú de navegación</h2>
+                <h2> <i className="fa-solid fa-bars pe-2"></i>Menú de navegación</h2>
                 <br></br>
                 <table className="tabla_ayuda mx-auto" style={{ maxWidth: '800px' }}>
                     <thead>
@@ -56,7 +56,7 @@ export default function NotSupported() {
             <br></br>
             <hr></hr>
             <br></br>
-            <h2><i class="fa-solid fa-toggle-on pe-2"></i> Significado de los botones</h2>
+            <h2><i className="fa-solid fa-toggle-on pe-2"></i> Significado de los botones</h2>
             <br></br>
             <div className="table-responsive">
                 <table className="tabla_ayuda mx-auto" style={{ maxWidth: '800px' }}>
@@ -144,7 +144,7 @@ export default function NotSupported() {
                 <br></br>
             <hr></hr>
             <br></br>
-            <h2><i class="fa-solid fa-clipboard pe-2"></i> Copiado directo al portapapeles</h2>
+            <h2><i className="fa-solid fa-clipboard pe-2"></i> Copiado directo al portapapeles</h2>
             <p>Si queremos copiar el contenido de otro dispositivo conectado (también aplica a algo que tengamos en Guardados) simplemente debemos hacer clic sobre el contenido y éste se copiará a nuestro portapapeles local</p>
             <img src="/copiar.png" alt="Captura del funcionamiento del copiado al portapapeles local de otro portapapeles" className="img-fluid mb-3"
                 style={{ width: 350 }} />
@@ -152,7 +152,7 @@ export default function NotSupported() {
             <br></br>
             <hr></hr>
             <br></br>
-            <h2><i class="fa-brands fa-safari pe-2"></i><i class="fa-brands fa-firefox pe-2"></i> Limitaciones de Safari y Firefox</h2>
+            <h2><i className="fa-brands fa-safari pe-2"></i><i className="fa-brands fa-firefox pe-2"></i> Limitaciones de Safari y Firefox</h2>
 
             <br></br>
             <p>Estos navegadores no soportan funciones como la actualización automática del portapapeles y el soporte para copiar imágenes al portapapeles. Para leer el contenido del portapapeles deberá utilizar el botón de lectura de portapapeles siguiente: </p>
@@ -166,7 +166,7 @@ export default function NotSupported() {
             <br></br>
             <hr></hr>
             <br></br>
-            <h2><i class="fa-solid fa-circle-check pe-2"></i> Navegadores compatibles</h2>
+            <h2><i className="fa-solid fa-circle-check pe-2"></i> Navegadores compatibles</h2>
             <br></br>
             <p>PortaCloud hace uso de la API Clipboard, para que todas las funciones funcionen plenamente se deberán utilizar alguno de los siguientes navegadores</p>
             <div className="mt-2 row justify-content-center">

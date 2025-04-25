@@ -23,9 +23,7 @@ export default function AdminPage() {
 
   // Estados para controlar modales
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // modalType puede ser: 'editRole', 'deleteUser', 'createUser'
   const [modalType, setModalType] = useState(null);
-  // Para identificar el usuario seleccionado al editar/eliminar
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   const [logs, setLogs] = useState([]);
@@ -34,28 +32,42 @@ export default function AdminPage() {
   const [isRefreshingLogs, setIsRefreshingLogs] = useState(false);
   const [closing, setClosing] = useState(false);
 
-    const closeModal = (modalType) => {
-      setClosing(true);
-      setTimeout(() => {
-        setIsModalOpen(false);
-        setModalType(null);
-        setSelectedUserId(null);
-        setClosing(false);
-      }, 100);
+  // Estados para los modales de descarga
+  const [showDownloadUsersModal, setShowDownloadUsersModal] = useState(false);
+  const [showDownloadLogsModal, setShowDownloadLogsModal] = useState(false);
+  const [downloadFormat, setDownloadFormat] = useState("json");
+
+  const closeModal = (modalType) => {
+    setClosing(true);
+    setTimeout(() => {
+      setIsModalOpen(false);
+      setModalType(null);
+      setSelectedUserId(null);
+      setClosing(false);
+    }, 100);
+  };
+
+  const closeDownloadModal = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setShowDownloadUsersModal(false);
+      setShowDownloadLogsModal(false);
+      setClosing(false);
+    }, 100);
+  };
+
+  useEffect(() => {
+    document.title = 'Administración | PortaCloud';
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    metaDescription.content = 'Funciones para los Administradores';
+    document.head.appendChild(metaDescription);
+
+    return () => {
+      document.head.removeChild(metaDescription);
     };
-    
-    useEffect(() => {
-      document.title = 'Administración | PortaCloud';
-      const metaDescription = document.createElement('meta');
-      metaDescription.name = 'description';
-      metaDescription.content = 'Funciones para los Administradores';
-      document.head.appendChild(metaDescription);
-      
-      return () => {
-        document.head.removeChild(metaDescription);
-      };
-    }, []);
-  
+  }, []);
+
   useEffect(() => {
     const checkAuth = async () => {
       setIsCheckingAuth(true);
@@ -73,7 +85,6 @@ export default function AdminPage() {
     checkAuth();
   }, [user, router]);
 
-  // Obtener la lista de usuarios
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -97,7 +108,6 @@ export default function AdminPage() {
     }
   };
 
-  // Función para obtener logs
   const fetchLogs = async () => {
     setIsRefreshingLogs(true);
     try {
@@ -111,6 +121,7 @@ export default function AdminPage() {
         const data = await response.json();
         setLogs(data);
       } else {
+        toast.error("Error al obtener los logs");
       }
     } catch (error) {
       toast.error("Error de conexión");
@@ -119,18 +130,107 @@ export default function AdminPage() {
     }
   };
 
-  // Calcular los logs a mostrar
+  const downloadUsers = () => {
+    let content;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `usuarios-portacloud-${timestamp}.${downloadFormat}`;
+
+    if (downloadFormat === "json") {
+      content = JSON.stringify(users, null, 2);
+      const blob = new Blob([content], { type: "application/json" });
+      downloadFile(blob, filename);
+    } else if (downloadFormat === "csv") {
+      // Convertir a CSV
+      const headers = ["Username", "Email", "Role", "Created At", "Last Login"];
+      const rows = users.map(user => [
+        `"${user.username}"`,
+        `"${user.email}"`,
+        `"${user.role}"`,
+        `"${format(new Date(user.createdAt), 'dd MMM yyyy HH:mm:ss', { locale: es })}"`,
+        user.lastLogin ? `"${format(new Date(user.lastLogin), 'dd MMM yyyy HH:mm:ss', { locale: es })}"` : '"Nunca"'
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      downloadFile(blob, filename);
+    }
+
+    toast.success("Lista de usuarios descargada");
+    setShowDownloadUsersModal(false);
+  };
+
+  const downloadLogs = () => {
+    let content;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `logs-portacloud-${timestamp}.${downloadFormat}`;
+
+    if (downloadFormat === "json") {
+      content = JSON.stringify(logs, null, 2);
+      const blob = new Blob([content], { type: "application/json" });
+      downloadFile(blob, filename);
+    } else if (downloadFormat === "csv") {
+      // Convertir a CSV
+      const headers = ["Timestamp", "User", "Action", "IP Address", "Details"];
+      const rows = logs.map(log => [
+        `"${format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}"`,
+        `"${log.userId?.username || 'Sistema'}"`,
+        `"${getActionDescription(log.action, log.details)}"`,
+        `"${log.ipAddress}"`,
+        log.details ? `"${log.details.os} · ${log.details.browser}"` : '""'
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      downloadFile(blob, filename);
+    }
+
+    toast.success("Lista de logs descargada");
+    setShowDownloadLogsModal(false);
+  };
+
+  const getActionDescription = (action, details) => {
+    switch (action) {
+      case 'login': return 'Inicio de sesión';
+      case 'logout': return 'Cierre de sesión';
+      case 'register': return 'Registro nuevo';
+      case 'user_created': return `Usuario creado: ${details?.createdUser}`;
+      case 'role_changed': return `Rol cambiado: ${details?.targetUser} (${details?.newRole})`;
+      case 'user_deleted': return `Usuario eliminado: ${details?.deletedUser}`;
+      case 'username_changed': return `Nombre de usuario cambiado: ${details?.oldUsername} → ${details?.newUsername}`;
+      case 'password_changed': return 'Contraseña actualizada';
+      case 'account_deleted': return 'Cuenta eliminada';
+      default: return action;
+    }
+  };
+
+  const downloadFile = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const indexOfLastLog = currentPage * logsPerPage;
   const indexOfFirstLog = indexOfLastLog - logsPerPage;
   const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
 
-  // Cambiar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Funciones para abrir modales
   const openEditRoleModal = (userId, currentRole) => {
     setSelectedUserId(userId);
-    setNewRole(currentRole); // Preselecciona el rol actual
+    setNewRole(currentRole);
     setModalType("editRole");
     setIsModalOpen(true);
   };
@@ -141,7 +241,6 @@ export default function AdminPage() {
     setIsModalOpen(true);
   };
 
-  // Función para enviar el cambio de rol
   const submitEditRole = async () => {
     if (newRole !== "user" && newRole !== "admin") {
       toast.error("Rol no válido");
@@ -174,7 +273,6 @@ export default function AdminPage() {
     closeModal();
   };
 
-  // Función para eliminar usuario
   const submitDeleteUser = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -199,7 +297,6 @@ export default function AdminPage() {
     closeModal();
   };
 
-  // Función para crear usuario 
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
@@ -250,7 +347,6 @@ export default function AdminPage() {
       <h2>
         <i className="mb-3 fa-solid fa-users"></i> Lista de usuarios
       </h2>
-
       {loading ? (
         <p>Cargando usuarios...</p>
       ) : (
@@ -409,8 +505,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-
-        {/* Paginación */}
         <div className="pagination mt-3">
           {Array.from({ length: Math.ceil(logs.length / logsPerPage) }, (_, i) => (
             <button
@@ -424,7 +518,130 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Modal */}
+      <br />
+      <br />
+      <h2>
+        <i className="mb-3 fa-solid fa-rotate"></i> Copias de seguridad
+      </h2>
+      <h4>Realizar copia de seguridad a fichero de los usuarios y logs</h4>
+      <br></br>
+      <button 
+        className="btn botones_ajustes btn-success"
+        onClick={() => setShowDownloadUsersModal(true)}
+      >
+        <i className="fa-solid fa-users pe-2"></i>
+        Lista de usuarios
+      </button>
+      <br></br>
+      <button 
+        className="btn botones_ajustes btn-success"
+        onClick={() => setShowDownloadLogsModal(true)}
+      >
+        <i className="fa-solid fa-scroll pe-2"></i>
+        Lista de Logs
+      </button>
+
+      {/* Modal para descargar usuarios */}
+      {showDownloadUsersModal && (
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => closeDownloadModal()}>
+          <div className="modal-backdrop-blur" />
+          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
+              <div className="modal-header">
+                <h3 className="modal-title">
+                  <i className="fa-solid fa-users me-2"></i>
+                  Descargar lista de usuarios
+                </h3>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => closeDownloadModal()}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <h3>Selecciona el formato para descargar la lista de usuarios:</h3>
+                <br></br>
+                <div className="form-group">
+                  <select 
+                    className="form-control"
+                    value={downloadFormat}
+                    onChange={(e) => setDownloadFormat(e.target.value)}
+                  >
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV (Excel)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn botones_ajustes w-100 btn-success"
+                  onClick={downloadUsers}
+                >
+                  <i className="fa fa-download me-2"></i> Descargar
+                </button>
+                <button
+                  className="btn botones_ajustes w-100 btn-primary"
+                  onClick={() => closeDownloadModal()}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para descargar logs */}
+      {showDownloadLogsModal && (
+        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => closeDownloadModal()}>
+          <div className="modal-backdrop-blur" />
+          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`modal-content ${closing ? "closing" : ""}`}>
+              <div className="modal-header">
+                <h3 className="modal-title">
+                  <i className="fa-solid fa-scroll me-2"></i>
+                  Descargar listado de logs
+                </h3>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => closeDownloadModal()}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <h3>Selecciona el formato para descargar el registro de actividades:</h3>
+                <br></br>
+                <div className="form-group">
+                  <select 
+                    className="form-control"
+                    value={downloadFormat}
+                    onChange={(e) => setDownloadFormat(e.target.value)}
+                  >
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV (Excel)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn botones_ajustes w-100 btn-success"
+                  onClick={downloadLogs}
+                >
+                  <i className="fa fa-download me-2"></i> Descargar
+                </button>
+                <button
+                  className="btn botones_ajustes w-100 btn-primary"
+                  onClick={() => closeDownloadModal()}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para editar/eliminar usuarios */}
       {isModalOpen && (
         <div className={`modal show d-block ${closing ? "closing" : ""}`}>
           <div className={`modal-dialog ${closing ? "closing" : ""}`}>
