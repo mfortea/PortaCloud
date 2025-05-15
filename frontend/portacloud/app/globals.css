@@ -729,13 +729,11 @@ input:hover {
 }
 
 .boton_logo:hover {
-  background-color: #0000002d;
-  opacity: 0.9;
-  transform: scale(1.05);
+  filter: brightness(1.2);
 }
 
 .boton_logo:active {
-  background-color: rgb(106, 106, 106) !important;
+  filter: brightness(0.5);
 }
 
 .bg-light {

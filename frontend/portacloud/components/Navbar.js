@@ -61,6 +61,9 @@ export default function AppNavbar() {
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="flex-column">
+              <Nav.Link href="/dashboard">
+              <i className="fa-solid fa-gauge pe-1"></i> Dashboard
+            </Nav.Link>
                 {user.role === "admin" && (
                   <Nav.Link className="nav-link" href="/admin">
                     <i className="fa-solid fa-user-shield"></i> Administración
@@ -102,6 +105,9 @@ export default function AppNavbar() {
             </Navbar.Brand>
           </div>
           <Nav className="me-auto">
+          <Nav.Link href="/dashboard">
+              <i className="fa-solid fa-gauge"></i> Dashboard
+            </Nav.Link>
             {user.role === "admin" && (
               <Nav.Link href="/admin">
                 <i className="fa-solid fa-user-shield"></i> Administración
