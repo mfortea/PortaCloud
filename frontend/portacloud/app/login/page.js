@@ -11,9 +11,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const {login: authLogin } = useAuth();
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  const { login: authLogin, user, authChecked } = useAuth();
 
+  useEffect(() => {
+    if (authChecked && user) {
+      router.replace("/dashboard"); 
+    }
+  }, [authChecked, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
