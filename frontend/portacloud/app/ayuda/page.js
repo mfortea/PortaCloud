@@ -31,6 +31,10 @@ export default function NotSupported() {
                                     <span className="logo_letras">
                                         <span className="negrita">PORTA</span>CLOUD
                                     </span>
+                                    <br></br>
+                                    <br></br>
+                                    <div className="nav-link"><i className="fa-solid fa-gauge"></i> Dashboard</div>
+
 
 
                                 </div>
