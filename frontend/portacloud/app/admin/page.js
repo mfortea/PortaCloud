@@ -337,7 +337,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container py-5">
+    <div className="container py-5 zoom-al_cargar">
       <ToastContainer />
       <h1 className="text-center">
         <i className="fa-solid fa-user-shield"></i> Administración de Usuarios
