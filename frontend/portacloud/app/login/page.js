@@ -5,20 +5,15 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PublicPage from "../../components/PublicPage";
 
-export default function Login() {
+function Login() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
   const { login: authLogin, user, authChecked } = useAuth();
-
-  useEffect(() => {
-    if (authChecked && user) {
-      router.replace("/dashboard"); 
-    }
-  }, [authChecked, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,3 +118,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default PublicPage(Login);

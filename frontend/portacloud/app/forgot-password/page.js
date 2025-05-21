@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import PublicPage from "../../components/PublicPage";
 
-export default function ForgotPassword() {
+function ForgotPassword() {
   const [email, setEmail] = useState('');
   const router = useRouter();
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
@@ -64,3 +65,5 @@ export default function ForgotPassword() {
     </div>
   );
 }
+
+export default PublicPage(ForgotPassword);

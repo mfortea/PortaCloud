@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../context/AuthContext";
+import PublicPage from "../../components/PublicPage";
 import { useEffect } from 'react';
 
-export default function Register() {
+function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -188,3 +189,5 @@ export default function Register() {
     </div>
   );
 }
+
+export default PublicPage(Register);
