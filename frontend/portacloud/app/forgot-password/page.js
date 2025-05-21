@@ -8,9 +8,11 @@ function ForgotPassword() {
   const [email, setEmail] = useState('');
   const router = useRouter();
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await fetch(`${serverUrl}/api/auth/forgot-password`, {
         method: 'POST',
@@ -26,6 +28,8 @@ function ForgotPassword() {
       }
     } catch (error) {
       toast.error('Error de conexión');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -54,7 +58,13 @@ function ForgotPassword() {
               />
             </div>
             <div className="form-group">
-              <button className="login-button mt-3" type="submit">Enviar correo</button>
+              <button type="submit" className="login-button mt-3" disabled={isLoading}>
+                {isLoading ? (
+                  <div className="text-center text-white fa cargando fa-circle-notch"></div>
+                ) : (
+                  "Enviar correo"
+                )}
+              </button>
             </div>
           </form>
           <div className="register-link">
