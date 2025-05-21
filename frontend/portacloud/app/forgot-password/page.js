@@ -24,7 +24,7 @@ function ForgotPassword() {
         toast.success('Correo enviado. Revisa tu bandeja de entrada');
         router.push('/login');
       } else {
-        toast.error('Error al enviar el correo');
+        toast.error('Error al enviar el correo. Verifica que el correo sea correcto o esté asociado a una cuenta existente');
       }
     } catch (error) {
       toast.error('Error de conexión');
