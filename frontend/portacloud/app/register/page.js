@@ -61,7 +61,7 @@ function Register() {
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
     try {
-      const res = await fetch(`${serverUrl}/api/auth/register`, {
+      const res = await fetch(`${serverUrl}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),

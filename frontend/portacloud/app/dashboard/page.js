@@ -123,7 +123,7 @@ export default function Dashboard() {
 
         formData.append("deviceId", deviceId);
 
-        const response = await fetch(`${serverUrl}/api/auth/updateClipboard`, {
+        const response = await fetch(`${serverUrl}/device/updateClipboard`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: formData,
@@ -178,7 +178,7 @@ export default function Dashboard() {
         formData.append("content", content);
       }
 
-      const response = await fetch(`${serverUrl}/api/saved`, {
+      const response = await fetch(`${serverUrl}/saved`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -203,7 +203,7 @@ export default function Dashboard() {
     setLoadingDevices(true); // Activar el estado de carga
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     try {
-      const response = await fetch(`${serverUrl}/api/auth/devices`, {
+      const response = await fetch(`${serverUrl}/device/devices`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       let devices = await response.json();
@@ -265,7 +265,7 @@ export default function Dashboard() {
 
     const handleLogout = async () => {
       try {
-        await fetch(`${serverUrl}/api/auth/logout`, {
+        await fetch(`${serverUrl}/auth/logout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

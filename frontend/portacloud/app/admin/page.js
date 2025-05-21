@@ -89,7 +89,7 @@ export default function AdminPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/admin/users`,
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/users`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -113,7 +113,7 @@ export default function AdminPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/admin/logs`,
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/logs`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -249,7 +249,7 @@ export default function AdminPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/admin/users/${selectedUserId}/role`,
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/users/${selectedUserId}/role`,
         {
           method: "PUT",
           headers: {
@@ -277,7 +277,7 @@ export default function AdminPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/admin/users/${selectedUserId}`,
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/users/${selectedUserId}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -302,7 +302,7 @@ export default function AdminPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/auth/register`,
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/auth/register`,
         {
           method: "POST",
           headers: {

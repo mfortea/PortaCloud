@@ -63,7 +63,7 @@ export default function Guardados() {
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`${serverUrl}/api/saved`, {
+    const res = await fetch(`${serverUrl}/saved`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -143,7 +143,7 @@ export default function Guardados() {
     const token = localStorage.getItem("token");
 
     try {
-      await fetch(`${serverUrl}/api/saved/${id}`, {
+      await fetch(`${serverUrl}/saved/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

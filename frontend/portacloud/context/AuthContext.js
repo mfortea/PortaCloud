@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}/api/auth/profile`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}/user/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

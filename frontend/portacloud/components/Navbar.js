@@ -15,7 +15,7 @@ export default function AppNavbar() {
     const deviceId = localStorage.getItem("deviceId");
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
-    fetch(`${serverUrl}/api/auth/logout`, {
+    fetch(`${serverUrl}/auth/logout`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

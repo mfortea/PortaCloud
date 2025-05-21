@@ -4,9 +4,11 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const authRoutes = require("./routes/auth");
-const savedRoutes = require("./routes/saved");
-const adminRoutes = require("./routes/admin");
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const savedRoutes = require('./routes/savedRoutes');
+const deviceRoutes = require('./routes/deviceRoutes');
 const passport = require('./config/passportConfig');
 const cleanOrphanFiles = require("./utils/cleaner");
 
@@ -23,9 +25,12 @@ app.use(cors());
 mongoose.connect(process.env.MONGO_URI);
 
 // Rutas
-app.use("/api/auth", authRoutes);
-app.use("/api/saved", savedRoutes);
-app.use("/api/admin", adminRoutes);
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
+app.use('/admin', adminRoutes);
+app.use('/saved', savedRoutes);
+app.use('/device', deviceRoutes);
+
 app.use("/uploads", express.static("uploads"));
 
 cleanOrphanFiles();

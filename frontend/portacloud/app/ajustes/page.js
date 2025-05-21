@@ -79,7 +79,7 @@ export default function Ajustes() {
       const token = localStorage.getItem("token");
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
-      const response = await fetch(`${serverUrl}/api/auth/update-username`, {
+      const response = await fetch(`${serverUrl}/user/update-username`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -119,7 +119,7 @@ export default function Ajustes() {
       const token = localStorage.getItem("token");
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
-      const response = await fetch(`${serverUrl}/api/auth/update-password`, {
+      const response = await fetch(`${serverUrl}/user/update-password`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -155,7 +155,7 @@ export default function Ajustes() {
       const token = localStorage.getItem("token");
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
-      const response = await fetch(`${serverUrl}/api/auth/delete-account`, {
+      const response = await fetch(`${serverUrl}/user/delete-account`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -189,7 +189,7 @@ export default function Ajustes() {
       const token = localStorage.getItem("token");
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
-      const response = await fetch(`${serverUrl}/api/saved/deleteAll`, {
+      const response = await fetch(`${serverUrl}/saved/deleteAll`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -217,7 +217,7 @@ export default function Ajustes() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/api/saved`,
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/saved`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const items = await response.json();

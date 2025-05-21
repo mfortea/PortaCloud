@@ -20,7 +20,7 @@ function Login() {
     setIsLoading(true);
     
     try {
-      const res = await fetch(`${serverUrl}/api/auth/login`, {
+      const res = await fetch(`${serverUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login, password }),
