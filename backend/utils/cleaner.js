@@ -1,53 +1,53 @@
 const fs = require("fs");
 const path = require("path");
-const SavedItem = require("../models/SavedItem");
+const Device = require("../models/Device");
 
 const cleanOrphanFiles = async () => {
   try {
     console.log("Iniciando limpieza de archivos huérfanos...");
 
-    const uploadDir = path.resolve(__dirname, "..", "uploads");
-    if (!fs.existsSync(uploadDir)) {
-      console.log("La carpeta 'uploads' no existe. No hay nada que limpiar.");
+    // Limpiar archivos huérfanos en temp_uploads
+    const tempDir = path.resolve(__dirname, "..", "temp_uploads");
+    if (!fs.existsSync(tempDir)) {
+      console.log("La carpeta 'temp_uploads' no existe. No hay nada que limpiar.");
       return;
     }
 
-    // Lista de archivos en la carpeta 'uploads'
-    const filesInUploads = fs.readdirSync(uploadDir);
-    console.log(`Archivos en 'uploads':`, filesInUploads);
+    const deviceDirs = fs.readdirSync(tempDir);
+    console.log(`Carpetas en 'temp_uploads':`, deviceDirs);
 
-    // Obtener lista de archivos guardados
-    const savedItems = await SavedItem.find({}, "filePath");
-    const savedFilePaths = new Set(savedItems.map(item => item.filePath));
+    // Obtenemos los dispositivos activos con imágenes asociadas
+    const devicesWithImages = await Device.find({}, "deviceId clipboardContent");
 
-    console.log("Archivos referenciados en 'SavedItem':", savedFilePaths);
+    const devicesWithActiveImages = new Set(
+      devicesWithImages
+        .filter(device => device.clipboardContent && device.clipboardContent.startsWith("/device/temp_image/"))
+        .map(device => device.deviceId)
+    );
 
-    for (const file of filesInUploads) {
-      // Evitar eliminar .gitkeep
-      if (file === ".gitkeep") {
-        continue;
-      }
+    console.log("Dispositivos con imágenes activas:", devicesWithActiveImages);
 
-      const filePath = `/uploads/${file}`;
+    // Limpiar las carpetas de dispositivos que no tienen imágenes activas
+    for (const deviceDir of deviceDirs) {
+      if (deviceDir === ".gitkeep") continue;
 
-      if (!savedFilePaths.has(filePath)) {
-        // Se elimina si no está referenciado
-        const fullPath = path.join(uploadDir, file);
+      const devicePath = path.join(tempDir, deviceDir);
+      if (fs.lstatSync(devicePath).isDirectory() && !devicesWithActiveImages.has(deviceDir)) {
         try {
-          fs.unlinkSync(fullPath);
-          console.log(`Archivo eliminado: ${fullPath}`);
+          // Borrar la carpeta del dispositivo si no tiene imágenes activas
+          fs.rmdirSync(devicePath, { recursive: true });
+          console.log(`Carpeta eliminada: ${devicePath}`);
         } catch (unlinkErr) {
-          console.error(`Error eliminando ${fullPath}:`, unlinkErr);
+          console.error(`Error eliminando la carpeta ${devicePath}:`, unlinkErr);
         }
       }
     }
-    
   } catch (err) {
     console.error("Error en la limpieza de archivos huérfanos:", err);
   }
 };
 
-// Ejecutar cada 24 horas
+// Limpiar archivos huérfanos cada 24 horas
 setInterval(cleanOrphanFiles, 24 * 60 * 60 * 1000);
 
 module.exports = cleanOrphanFiles;

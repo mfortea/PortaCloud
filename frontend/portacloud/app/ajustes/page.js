@@ -9,6 +9,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { format } from 'date-fns';
 
+
 export default function Ajustes() {
   const router = useRouter();
   const { user, logout, updateUser } = useAuth();
@@ -224,7 +225,12 @@ export default function Ajustes() {
       
       const zip = new JSZip();
       const folder = zip.folder("portacloud_backup_" + user?.username);
+      
+      // Cargar imágenes a la caché (como en la página "Guardados")
+      const imageItems = items.filter(item => item.type === "image");
+      const imageCache = await preloadImages(imageItems);  // Aquí se precargan las imágenes
   
+      // Agregar contenido de texto e imágenes al ZIP
       for (const item of items) {
         const date = new Date(item.createdAt);
         const filename = `portacloud_${format(date, 'dd-MM-yyyy_HH-mm-ss')}`;
@@ -232,14 +238,16 @@ export default function Ajustes() {
         if (item.type === "text") {
           folder.file(`${filename}.txt`, item.content);
         } else if (item.type === "image") {
-          const imgResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`
-          );
+          const filename = item.filePath.split('/').pop();
+          const imgUrl = imageCache[filename] || `${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`;
+          
+          const imgResponse = await fetch(imgUrl);
           const blob = await imgResponse.blob();
           folder.file(`${filename}.png`, blob);
         }
       }
   
+      // Crear y guardar el archivo ZIP
       const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, `portacloud_backup_${format(new Date(), 'dd-MM-yyyy')}.zip`);
       cerrarModal("backup");
@@ -247,6 +255,26 @@ export default function Ajustes() {
       toast.error("Error al generar la copia de seguridad. Detalles: " + error);
     }
   };
+  
+  // Pre-carga de imágenes en caché
+  const preloadImages = async (imageItems) => {
+    const imageCache = {};
+    for (const item of imageItems) {
+      const filename = item.filePath?.split('/').pop();
+      if (!filename || imageCache[filename]) continue;
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}/images/${filename}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        imageCache[filename] = url;
+      }
+    }
+    return imageCache;
+  };
+  
 
 
   if (loading) {

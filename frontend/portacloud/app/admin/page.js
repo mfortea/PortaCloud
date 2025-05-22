@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Modal, Button, Form } from "react-bootstrap"; // Importar los componentes de React Bootstrap
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -15,14 +16,12 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // Estados para el formulario de creación de usuarios
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState("user");
 
-  // Estados para controlar modales
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
@@ -30,29 +29,16 @@ export default function AdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [logsPerPage] = useState(20);
   const [isRefreshingLogs, setIsRefreshingLogs] = useState(false);
-  const [closing, setClosing] = useState(false);
 
-  // Estados para los modales de descarga
   const [showDownloadUsersModal, setShowDownloadUsersModal] = useState(false);
   const [showDownloadLogsModal, setShowDownloadLogsModal] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState("json");
 
-  const closeModal = (modalType) => {
-    setClosing(true);
-    setTimeout(() => {
-      setIsModalOpen(false);
-      setModalType(null);
-      setSelectedUserId(null);
-      setClosing(false);
-    }, 100);
-  };
-
+  const closeModal = () => setShowModal(false);
   const closeDownloadModal = () => {
-    setClosing(true);
     setTimeout(() => {
       setShowDownloadUsersModal(false);
       setShowDownloadLogsModal(false);
-      setClosing(false);
     }, 100);
   };
 
@@ -140,7 +126,6 @@ export default function AdminPage() {
       const blob = new Blob([content], { type: "application/json" });
       downloadFile(blob, filename);
     } else if (downloadFormat === "csv") {
-      // Convertir a CSV
       const headers = ["Username", "Email", "Role", "Created At", "Last Login"];
       const rows = users.map(user => [
         `"${user.username}"`,
@@ -173,7 +158,6 @@ export default function AdminPage() {
       const blob = new Blob([content], { type: "application/json" });
       downloadFile(blob, filename);
     } else if (downloadFormat === "csv") {
-      // Convertir a CSV
       const headers = ["Timestamp", "User", "Action", "IP Address", "Details"];
       const rows = logs.map(log => [
         `"${format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}"`,
@@ -228,17 +212,10 @@ export default function AdminPage() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const openEditRoleModal = (userId, currentRole) => {
+  const openModal = (type, userId = null) => {
     setSelectedUserId(userId);
-    setNewRole(currentRole);
-    setModalType("editRole");
-    setIsModalOpen(true);
-  };
-
-  const openDeleteUserModal = (userId) => {
-    setSelectedUserId(userId);
-    setModalType("deleteUser");
-    setIsModalOpen(true);
+    setModalType(type);
+    setShowModal(true);
   };
 
   const submitEditRole = async () => {
@@ -317,7 +294,6 @@ export default function AdminPage() {
           }),
         }
       );
-
       if (response.ok) {
         toast.success("Usuario creado exitosamente");
         await fetchUsers();
@@ -378,14 +354,14 @@ export default function AdminPage() {
                     className="btn boton_aux btn-primary"
                     title="Cambiar rol del usuario"
                     onClick={() =>
-                      openEditRoleModal(userItem._id, userItem.role)
+                      openModal("editRole", userItem._id)
                     }
                   >
                     <i className="fa-solid fa-user-tag"></i>
                   </button>
                   <button
                     className="btn boton_aux  m-2 btn-danger" title="Eliminar usuario"
-                    onClick={() => openDeleteUserModal(userItem._id)}
+                    onClick={() => openModal("deleteUser", userItem._id)}
                   >
                     <i className="fa-solid fa-circle-minus"></i>
                   </button>
@@ -541,153 +517,103 @@ export default function AdminPage() {
         Lista de Logs
       </button>
 
-      {/* Modal para descargar usuarios */}
-      {showDownloadUsersModal && (
-        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => closeDownloadModal()}>
-          <div className="modal-backdrop-blur" />
-          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
-            <div className={`modal-content ${closing ? "closing" : ""}`}>
-              <div className="modal-header">
-                <h3 className="modal-title">
-                  <i className="fa-solid fa-users me-2"></i>
-                  Descargar lista de usuarios
-                </h3>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => closeDownloadModal()}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <h3>Selecciona el formato para descargar la lista de usuarios:</h3>
-                <br></br>
-                <div className="form-group">
-                  <select 
-                    className="form-control"
-                    value={downloadFormat}
-                    onChange={(e) => setDownloadFormat(e.target.value)}
-                  >
-                    <option value="json">JSON</option>
-                    <option value="csv">CSV (Excel)</option>
-                  </select>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  className="btn botones_ajustes w-100 btn-success"
-                  onClick={downloadUsers}
-                >
-                  <i className="fa fa-download me-2"></i> Descargar
-                </button>
-                <button
-                  className="btn botones_ajustes w-100 btn-primary"
-                  onClick={() => closeDownloadModal()}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+{/* Modal para descargar usuarios */}
+{showDownloadUsersModal && (
+  <Modal show={showDownloadUsersModal} onHide={closeDownloadModal} centered>
+    <Modal.Header closeButton>
+      <Modal.Title><i className="fa-solid fa-users pe-2"></i> Descargar lista de usuarios</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <Form.Group controlId="downloadFormat">
+        <Form.Label>Selecciona el formato para descargar la lista de usuarios:</Form.Label>
+        <Form.Control as="select" value={downloadFormat} onChange={(e) => setDownloadFormat(e.target.value)}>
+          <option value="json">JSON</option>
+          <option value="csv">CSV (Excel)</option>
+        </Form.Control>
+      </Form.Group>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="success" className="btn botones_ajustes w-100" onClick={downloadUsers}>
+        <i className="fa fa-download pe-2"></i> Descargar
+      </Button>
+      <Button variant="primary" className="btn botones_ajustes w-100" onClick={closeDownloadModal}>
+        <i className="fa-solid fa-times pe-2"></i> Cancelar
+      </Button>
+    </Modal.Footer>
+  </Modal>
+)}
 
-      {/* Modal para descargar logs */}
-      {showDownloadLogsModal && (
-        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={() => closeDownloadModal()}>
-          <div className="modal-backdrop-blur" />
-          <div className={`modal-dialog ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
-            <div className={`modal-content ${closing ? "closing" : ""}`}>
-              <div className="modal-header">
-                <h3 className="modal-title">
-                  <i className="fa-solid fa-scroll me-2"></i>
-                  Descargar listado de logs
-                </h3>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => closeDownloadModal()}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <h3>Selecciona el formato para descargar el registro de actividades:</h3>
-                <br></br>
-                <div className="form-group">
-                  <select 
-                    className="form-control"
-                    value={downloadFormat}
-                    onChange={(e) => setDownloadFormat(e.target.value)}
-                  >
-                    <option value="json">JSON</option>
-                    <option value="csv">CSV (Excel)</option>
-                  </select>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  className="btn botones_ajustes w-100 btn-success"
-                  onClick={downloadLogs}
-                >
-                  <i className="fa fa-download me-2"></i> Descargar
-                </button>
-                <button
-                  className="btn botones_ajustes w-100 btn-primary"
-                  onClick={() => closeDownloadModal()}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+{/* Modal para descargar logs */}
+{showDownloadLogsModal && (
+  <Modal show={showDownloadLogsModal} onHide={closeDownloadModal} >
+    <Modal.Header closeButton>
+      <Modal.Title><i className="fa-solid fa-scroll pe-2"></i> Descargar listado de logs</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <Form.Group controlId="downloadFormat">
+        <Form.Label>Selecciona el formato para descargar el registro de actividades:</Form.Label>
+        <Form.Control as="select" value={downloadFormat} onChange={(e) => setDownloadFormat(e.target.value)}>
+          <option value="json">JSON</option>
+          <option value="csv">CSV (Excel)</option>
+        </Form.Control>
+      </Form.Group>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="success" className="btn botones_ajustes w-100" onClick={downloadLogs}>
+        <i className="fa fa-download pe-2"></i> Descargar
+      </Button>
+      <Button variant="primary" className="btn botones_ajustes w-100" onClick={closeDownloadModal}>
+        <i className="fa-solid fa-times pe-2"></i> Cancelar
+      </Button>
+    </Modal.Footer>
+  </Modal>
+)}
 
-      {/* Modal para editar/eliminar usuarios */}
-      {isModalOpen && (
-        <div className={`modal show d-block ${closing ? "closing" : ""}`}>
-          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
-            <div className={`modal-content ${closing ? "closing" : ""}`}>
-              <div className="modal-header">
-                {modalType === "editRole" && (
-                  <h2 className="modal-title"><i className="fa-solid fa-user-tag"></i> Cambiar Rol</h2>
-                )}
-                {modalType === "deleteUser" && (
-                  <h2 className="modal-title"><i className="fa-solid fa-user-xmark"></i> Confirmar Eliminación</h2>
-                )}
-                <button type="button" className="btn-close" onClick={closeModal}></button>
-              </div>
-              <div className="modal-body">
-                {modalType === "editRole" && (
-                  <>
-                    <h3>Selecciona un rol para aplicar</h3>
-                    <select className="w-100 mt-2 text-center" value={newRole} onChange={(e) => setNewRole(e.target.value)}>
-                      <option value="user">Usuario</option>
-                      <option value="admin">Administrador</option>
-                    </select>
-                  </>
-                )}
-                {modalType === "deleteUser" && (
-                  <h3>¿Estás seguro de que deseas eliminar este usuario?</h3>
-                )}
-              </div>
-              <div className="modal-footer">
-                {modalType === "editRole" && (
-                  <button className="btn w-100 botones_ajustes btn-success" onClick={submitEditRole}>
-                    Confirmar
-                  </button>
-                )}
-                {modalType === "deleteUser" && (
-                  <button className="btn w-100 botones_ajustes btn-danger" onClick={submitDeleteUser}>
-                    Sí, Eliminar
-                  </button>
-                )}
-                <button className="btn w-100 botones_ajustes btn-primary" onClick={closeModal}>
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+{/* Modal para editar/eliminar usuarios */}
+{showModal && (
+  <Modal show={showModal} onHide={closeModal} centered>
+    <Modal.Header closeButton>
+      <Modal.Title>
+        {modalType === "editRole" ? (
+          <><i className="fa-solid fa-user-tag pe-2"></i> Cambiar Rol</>
+        ) : (
+          <><i className="fa-solid fa-user-xmark pe-2"></i> Confirmar Eliminación</>
+        )}
+      </Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      {modalType === "editRole" && (
+        <Form.Group controlId="newRole">
+          <Form.Label>Selecciona un rol para aplicar</Form.Label>
+          <Form.Control as="select" value={newRole} onChange={(e) => setNewRole(e.target.value)}>
+            <option value="user">Usuario</option>
+            <option value="admin">Administrador</option>
+          </Form.Control>
+        </Form.Group>
       )}
+      {modalType === "deleteUser" && (
+        <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+      )}
+    </Modal.Body>
+    <Modal.Footer>
+      {modalType === "editRole" && (
+        <Button variant="success" className="btn botones_ajustes w-100" onClick={submitEditRole}>
+          <i className="fa-solid fa-check pe-2"></i> Confirmar
+        </Button>
+      )}
+      {modalType === "deleteUser" && (
+        <Button variant="danger" className="btn botones_ajustes w-100" onClick={submitDeleteUser}>
+          <i className="fa-solid fa-trash pe-2"></i> Sí, Eliminar
+        </Button>
+      )}
+      <Button variant="primary" className="btn botones_ajustes w-100" onClick={closeModal}>
+        <i className="fa-solid fa-times pe-2"></i> Cancelar
+      </Button>
+    </Modal.Footer>
+  </Modal>
+)}
+
+
     </div>
   );
 }

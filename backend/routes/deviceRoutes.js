@@ -7,7 +7,7 @@ const deviceController = require('../controllers/deviceController');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "temp_uploads/");
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -15,6 +15,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
 
 router.post('/updateClipboard', 
   upload.single("image"), 

@@ -25,6 +25,10 @@ const savedItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  iv: {            
+    type: String,
+    required: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

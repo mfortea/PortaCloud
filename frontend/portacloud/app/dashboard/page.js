@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [lastHash, setLastHash] = useState("");
   const token = localStorage.getItem("token");
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  const deviceId = localStorage.getItem("deviceId");
   const [expandedText, setExpandedText] = useState(false);
   const [isProblematicBrowser, setIsProblematicBrowser] = useState(false);
   const [showBrowserModal, setShowBrowserModal] = useState(false);
@@ -52,7 +53,7 @@ export default function Dashboard() {
     metaDescription.name = 'description';
     metaDescription.content = 'Página principal';
     document.head.appendChild(metaDescription);
-    
+
     return () => {
       document.head.removeChild(metaDescription);
     };
@@ -541,6 +542,25 @@ export default function Dashboard() {
     }
   };
 
+  function ImagenPublica({ deviceId, filename, serverUrl }) {
+    if (!deviceId || !filename) return null;
+
+    const imageUrl = `${serverUrl}/device/temp_image/${deviceId}/${filename}`;
+
+    return (
+      <img
+        src={imageUrl}
+        alt="Imagen temporal"
+        className="img-fluid"
+        onError={(e) => {
+          e.target.onerror = null; // evita bucle infinito
+          e.target.src = imageUrl; // imagen fallback
+        }}
+      />
+    );
+  }
+
+
   const copiarContenido = async (content) => {
     try {
       await navigator.clipboard.writeText(content);
@@ -599,7 +619,7 @@ export default function Dashboard() {
                 <p>Para una mejor compatibilidad se recomienda usar Google Chrome o Microosft Edge</p>
               </div>
               <div className="modal-footer">
-              <a className="btn text-center botones_ajustes w-100 btn-success" href="/ayuda">
+                <a className="btn text-center botones_ajustes w-100 btn-success" href="/ayuda">
                   <i className="fa-solid fa-circle-question pe-2"></i> Ir a Ayuda
                 </a>
                 <button className="btn botones_ajustes w-100 btn-primary" onClick={() => setShowBrowserModal(false)}>
@@ -625,16 +645,12 @@ export default function Dashboard() {
         {clipboardContent ? (
           clipboardContent.type === "image" ? (
             <img
-              src={clipboardContent.content}
-              alt="Imagen del portapapeles"
-              className="img-fluid clipboard-image"
-            />
-          ) : clipboardContent.content?.startsWith("/uploads/") ? (
-            <img
-              src={`${serverUrl}${clipboardContent.content}`}
+              src={`${clipboardContent.content}`}
               alt="Imagen del portapapeles"
               className="img-fluid"
             />
+
+
           ) : (
             <div>
               <p className="text-break">
@@ -649,7 +665,7 @@ export default function Dashboard() {
                   onClick={() => setExpandedText(!expandedText)}
                   title="Mostrar/Ocultar el texto completo"
                 >
-                  <i class="fa-solid fa-eye pe-1"></i> {expandedText ? "Mostrar menos" : "Mostrar más"}
+                  <i className="fa-solid fa-eye pe-1"></i> {expandedText ? "Mostrar menos" : "Mostrar más"}
                 </button>
               )}
             </div>
@@ -658,9 +674,6 @@ export default function Dashboard() {
           <p>No hay contenido en el portapapeles</p>
         )}
       </div>
-
-
-
 
       <div className="mt-3 text-center">
         <button
@@ -791,8 +804,10 @@ export default function Dashboard() {
                   style={{ cursor: "pointer" }}
                 >
                   {device.clipboardContent?.startsWith("/uploads/") ? (
-                    <img
-                      src={`${serverUrl}${device.clipboardContent}`}
+                    <ImagenPrivada
+                      filename={device.clipboardContent.split('/').pop()}
+                      serverUrl={serverUrl}
+                      token={localStorage.getItem('token')}
                       alt="Imagen del portapapeles"
                       className="img-fluid"
                     />

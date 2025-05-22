@@ -10,7 +10,9 @@ const adminRoutes = require('./routes/adminRoutes');
 const savedRoutes = require('./routes/savedRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 const passport = require('./config/passportConfig');
+const imageRoutes = require('./routes/imageRoutes');
 const cleanOrphanFiles = require("./utils/cleaner");
+const path = require("path");
 
 const app = express();
 const server = createServer(app);
@@ -30,8 +32,8 @@ app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/saved', savedRoutes);
 app.use('/device', deviceRoutes);
-
-app.use("/uploads", express.static("uploads"));
+app.use('/images', imageRoutes);
+app.use("/device/temp_image", express.static(path.join(__dirname, "temp_uploads")));
 
 cleanOrphanFiles();
 

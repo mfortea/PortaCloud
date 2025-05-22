@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import { MdOutlinePhoneIphone } from "react-icons/md";
 import { IoMdDesktop } from "react-icons/io";
 import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
-
+import { Modal, Button } from 'react-bootstrap'; 
 
 export default function Guardados() {
   const router = useRouter();
@@ -31,6 +31,8 @@ export default function Guardados() {
   const [closing, setClosing] = useState(false);
   const TEXT_PREVIEW_LENGTH = 500;
   const [expandedItems, setExpandedItems] = useState({});
+  const [imageCache, setImageCache] = useState({});
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
   useEffect(() => {
     document.title = 'Guardados | PortaCloud';
@@ -38,12 +40,68 @@ export default function Guardados() {
     metaDescription.name = 'description';
     metaDescription.content = 'Elementos guardados por el usuario';
     document.head.appendChild(metaDescription);
-    
+
     return () => {
       document.head.removeChild(metaDescription);
     };
   }, []);
 
+  useEffect(() => {
+    const fetchGuardados = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`${serverUrl}/saved`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setSavedItems(data);
+        const imageItems = data.filter(item => item.type === "image");
+        await preloadImages(imageItems);
+      } catch (error) {
+        console.error("Error fetching saved items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuardados();
+  }, []);
+
+  const preloadImages = async (imageItems) => {
+    const token = localStorage.getItem("token");
+    const newCache = { ...imageCache };
+
+    for (const item of imageItems) {
+      const filename = item.filePath?.split('/').pop();
+      if (!filename || newCache[filename]) continue;
+
+      try {
+        const response = await fetch(`${serverUrl}/images/${filename}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          newCache[filename] = url;
+        }
+      } catch (error) {
+        console.error(`Error preloading image ${filename}:`, error);
+      }
+    }
+
+    setImageCache(newCache);
+  };
+
+  const renderImage = (filename) => {
+    const cachedUrl = imageCache[filename];
+
+    if (!cachedUrl) {
+      return <i className="fa fa-circle-notch fa-spin cargando" aria-hidden="true"></i>;
+    }
+
+    return <img src={cachedUrl} alt="Imagen guardada" className="img-fluid" />;
+  };
 
   const verImagen = (imageUrl) => {
     setModalImage(imageUrl);
@@ -58,43 +116,38 @@ export default function Guardados() {
     }, 100);
   };
 
-  const fetchGuardados = async () => {
+  const fetchGuardados = useCallback(async () => {
     setRefreshing(true);
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`${serverUrl}/saved`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    setSavedItems(data);
+    try {
+      const res = await fetch(`${serverUrl}/saved`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setSavedItems(data);
 
-    const osSet = new Set(data.map((item) => item.os));
-    const browserSet = new Set(data.map((item) => item.browser));
-    const deviceTypeSet = new Set(data.map((item) => item.deviceType));
+      const osSet = new Set(data.map((item) => item.os));
+      const browserSet = new Set(data.map((item) => item.browser));
+      const deviceTypeSet = new Set(data.map((item) => item.deviceType));
 
-    setOsOptions([...osSet]);
-    setBrowserOptions([...browserSet]);
-    setDeviceTypeOptions([...deviceTypeSet]);
-    setTimeout(() => setRefreshing(false), 1000);
-  };
+      setOsOptions([...osSet]);
+      setBrowserOptions([...browserSet]);
+      setDeviceTypeOptions([...deviceTypeSet]);
 
+      const imageItems = data.filter(item => item.type === "image");
+      await preloadImages(imageItems);
+    } catch (error) {
+      console.error("Error fetching saved items:", error);
+      toast.error("Error al cargar los elementos guardados");
+    } finally {
+      setRefreshing(false);
+    }
+  }, [serverUrl]);
 
   useEffect(() => {
     fetchGuardados();
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    } else if (!user) {
-      setLoading(true);
-    } else {
-      setLoading(false);
-      fetchGuardados();
-    }
-  }, [user, router]);
+  }, [fetchGuardados]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -105,15 +158,105 @@ export default function Guardados() {
     } else {
       setLoading(false);
     }
-  }, [user, router]);
+  }, [user, router, fetchGuardados]);
 
-  if (loading) {
+  const ImagenPrivada = ({ filename }) => {
+    const [imgUrl, setImgUrl] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isInView, setIsInView] = useState(false);
+
+    useEffect(() => {
+      if (!filename || isInView) {
+        setLoading(false);
+        return;
+      }
+
+      if (imageCache[filename]) {
+        setImgUrl(imageCache[filename]);
+        setLoading(false);
+        return;
+      }
+
+      const fetchImage = async () => {
+        const token = localStorage.getItem('token');
+        try {
+          const response = await fetch(`${serverUrl}/images/${filename}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Image not found');
+          }
+
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setImageCache(prev => ({ ...prev, [filename]: url }));
+          setImgUrl(url);
+        } catch (error) {
+          console.error('Error loading image:', error);
+          setImgUrl(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchImage();
+    }, [filename, imageCache, isInView]);
+
+    const observer = useRef(null);
+    const imgRef = useRef(null);
+
+    useEffect(() => {
+      const onIntersect = (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            observer.current.disconnect();
+          }
+        });
+      };
+
+      if (imgRef.current) {
+        observer.current = new IntersectionObserver(onIntersect, {
+          rootMargin: "200px",
+        });
+
+        observer.current.observe(imgRef.current);
+      }
+
+      return () => {
+        if (observer.current) {
+          observer.current.disconnect();
+        }
+      };
+    }, []);
+
+    if (loading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center" style={{ height: '100px' }}>
+          <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+        </div>
+      );
+    }
+
+    if (!imgUrl) {
+      return <p className="text-center py-3">Imagen no disponible</p>;
+    }
+
     return (
-      <div className="loading-spinner">
-        <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
+      <div className="d-flex justify-content-center">
+        <img
+          ref={imgRef}
+          src={imgUrl}
+          alt="Imagen guardada"
+          className="img-fluid"
+          style={{ maxHeight: '200px', objectFit: 'contain' }}
+        />
       </div>
     );
-  }
+  };
 
   const copiarContenido = async (content) => {
     try {
@@ -139,7 +282,6 @@ export default function Guardados() {
   };
 
   const borrarContenido = async (id) => {
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
     const token = localStorage.getItem("token");
 
     try {
@@ -170,23 +312,46 @@ export default function Guardados() {
 
   const descargarContenido = async (item) => {
     const link = document.createElement("a");
+    const token = localStorage.getItem("token");
 
-    if (item.type === "image") {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`);
-      const blob = await response.blob();
-      const objectURL = URL.createObjectURL(blob);
+    try {
+      if (item.type === "image") {
+        const filename = item.filePath?.split('/').pop();
+        const cachedUrl = imageCache[filename];
 
-      link.href = objectURL;
-      link.download = `guardado_${new Date(item.createdAt).toISOString()}.png`;
-    } else {
-      const blob = new Blob([item.content], { type: "text/plain" });
-      link.href = URL.createObjectURL(blob);
-      link.download = `guardado_${new Date(item.createdAt).toISOString()}.txt`;
+        if (cachedUrl) {
+          link.href = cachedUrl;
+          link.download = `guardado_${item._id}.png`;
+        } else {
+          const response = await fetch(`${serverUrl}/images/${filename}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (!response.ok) {
+            throw new Error('Image not found');
+          }
+
+          const blob = await response.blob();
+          const objectURL = URL.createObjectURL(blob);
+          link.href = objectURL;
+          link.download = `guardado_${item._id}.png`;
+
+          link.onload = () => URL.revokeObjectURL(objectURL);
+        }
+      } else {
+        const blob = new Blob([item.content], { type: "text/plain" });
+        link.href = URL.createObjectURL(blob);
+        link.download = `guardado_${item._id}.txt`;
+        link.onload = () => URL.revokeObjectURL(link.href);
+      }
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading content:", error);
+      toast.error("Error al descargar el contenido");
     }
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const filteredItems = savedItems.filter(
@@ -197,7 +362,6 @@ export default function Guardados() {
       (deviceTypeFilter === "" || item.deviceType === deviceTypeFilter) &&
       (contentTypeFilter === "" || item.type === contentTypeFilter)
   );
-
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -265,36 +429,47 @@ export default function Guardados() {
     }));
   };
 
+  if (loading) {
+    return (
+      <div className="loading-spinner">
+        <i className="fa fa-circle-notch fa-spin cargando" aria-hidden="true"></i>
+      </div>
+    );
+  }
+
   return (
-    <div className="container py-5">
-      {modalImage && (
-        <div className={`modal show d-block ${closing ? "closing" : ""}`} onClick={cerrarModal}>
-          <div className={`modal-dialog ${closing ? "closing" : ""}`}>
-            <div className={`modal-content ${closing ? "closing" : ""}`}>
-              <div className="modal-header">
-                <h3 className="modal-title text-center">
-                  <i className="fa fa-eye me-2"></i> Vista previa
-                </h3>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={cerrarModal}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <img src={modalImage} alt="Vista previa" onClick={cerrarModal} className="modal-image" />
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="container py-5 zoom-al_cargar">
+<Modal
+  show={modalImage !== null}  // Usando show en lugar de isOpen para react-bootstrap
+  onHide={cerrarModal}  // onHide es la función que cierra el modal
+>
+  {/* Modal Header */}
+  <Modal.Header closeButton>
+    <Modal.Title>
+      <i className="fa fa-eye pe-2"></i> Vista previa
+    </Modal.Title>
+  </Modal.Header>
 
-      )}
+  {/* Modal Body */}
+  <Modal.Body>
+    <img
+      src={modalImage}
+      alt="Vista previa"
+      className="img-fluid"
+      style={{ maxHeight: '70vh', maxWidth: '100%' }}
+    />
+  </Modal.Body>
 
+  {/* Modal Footer */}
+  <Modal.Footer>
+  </Modal.Footer>
+</Modal>
 
       <h1 className="text-center mb-4">
         <i className="fa fa-star"></i> Mis guardados
       </h1>
 
+      {/* Form filters and controls */}
       <div className="mb-4 d-flex flex-column text-center flex-md-row gap-2">
         <input
           type="text"
@@ -362,7 +537,7 @@ export default function Guardados() {
             <div className="row">
               {currentItems.map((item) => (
                 <div key={item._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4">
-                  <div className="device-card shadow-lg zoom-al_cargar">
+                  <div className="device-card shadow-lg">
                     <div className="card-body text-center">
                       <div className="d-flex justify-content-center align-items-center mt-3 gap-2 mb-3">
                         <div>
@@ -390,7 +565,7 @@ export default function Guardados() {
                         {item.type === "image" && (
                           <button
                             className="btn boton_aux btn-primary m-2"
-                            onClick={() => verImagen(`${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`)}
+                            onClick={() => verImagen(imageCache[item.filePath?.split('/').pop()] || `${serverUrl}/images/${item.filePath?.split('/').pop()}`)}
                             title="Vista previa de la imagen"
                           >
                             <i className="fa fa-eye"></i>
@@ -406,7 +581,7 @@ export default function Guardados() {
                                 toggleExpand(item._id);
                               }}
                             >
-                              <i class="fa-solid fa-eye pe-1"></i> {expandedItems[item._id] ? "Mostrar menos" : "Mostrar más"}
+                              <i className="fa-solid fa-eye pe-1"></i> {expandedItems[item._id] ? "Mostrar menos" : "Mostrar más"}
                             </button>
                           </div>
                         )}
@@ -417,14 +592,14 @@ export default function Guardados() {
                           <i className="fa fa-remove"></i>
                         </button>
                       </div>
-                      <div className="clipboard-box-saved p-3 m-3 text-break text-wrap"
+                      <div
+                        className="clipboard-box-saved p-3 m-3 text-break text-wrap"
                         onClick={() => copiarContenido(item.content)}
                         title="Copiar contenido"
-                        style={{ cursor: "pointer" }}>
+                        style={{ cursor: "pointer" }}
+                      >
                         {item.type === "image" ? (
-                          <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`}
-                            alt="Guardado"
-                            className="img-fluid mb-3" />
+                          renderImage(item.filePath?.split('/').pop())
                         ) : (
                           <p style={{ wordBreak: "break-word" }}>
                             {expandedItems[item._id]
@@ -453,15 +628,15 @@ export default function Guardados() {
                 <tbody>
                   {currentItems.map((item) => (
                     <tr key={item._id}>
-                      <td className="saved-clipboard"
+                      <td
+                        className="saved-clipboard"
                         onClick={() => copiarContenido(item.content)}
                         style={{ cursor: "pointer", wordBreak: "break-word" }}
-                        title="Copiar contenido">
+                        title="Copiar contenido"
+                      >
                         <div>
                           {item.type === "image" ? (
-                            <img src={`${process.env.NEXT_PUBLIC_SERVER_IP}${item.content}`}
-                              alt="Guardado"
-                              className="img-fluid mb-3" />
+                            <ImagenPrivada filename={item.filePath?.split('/').pop()} />
                           ) : (
                             <p style={{ wordBreak: "break-word" }}>
                               {expandedItems[item._id]
@@ -473,14 +648,17 @@ export default function Guardados() {
                         </div>
                       </td>
 
-                      <td className="text-center"><img className="me-2" src={getDeviceLogo("os", item.os)} alt={item.os} style={{ width: 30 }} /><img src={getDeviceLogo("browser", item.browser)} alt={item.browser} style={{ width: 30 }} /></td>
+                      <td className="text-center">
+                        <img className="me-2" src={getDeviceLogo("os", item.os)} alt={item.os} style={{ width: 30 }} />
+                        <img src={getDeviceLogo("browser", item.browser)} alt={item.browser} style={{ width: 30 }} />
+                      </td>
 
                       <td>{new Date(item.createdAt).toLocaleString()}</td>
                       <td>
                         {item.type === "image" && (
                           <button
                             className="btn boton_aux btn-primary m-2"
-                            onClick={() => verImagen(`${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`)}
+                            onClick={() => verImagen(imageCache[item.filePath?.split('/').pop()] || `${serverUrl}/images/${item.filePath?.split('/').pop()}`)}
                             title="Vista previa de la imagen"
                           >
                             <i className="fa fa-eye"></i>
@@ -495,7 +673,7 @@ export default function Guardados() {
                               toggleExpand(item._id);
                             }}
                           >
-                            <i class="fa-solid fa-eye pe-1"></i> {expandedItems[item._id] ? "Mostrar menos" : "Mostrar más"}
+                            <i className="fa-solid fa-eye pe-1"></i> {expandedItems[item._id] ? "Mostrar menos" : "Mostrar más"}
                           </button>
                         )}
                         <button className="btn boton_aux btn-success mx-1" onClick={() => descargarContenido(item)}>
@@ -515,11 +693,19 @@ export default function Guardados() {
       )}
       <h5 className="mt-3 text-center">{filteredItems.length} elementos guardados</h5>
       <div className="pagination-controls text-center mt-3">
-        <button className="btn me-3 boton_aux btn-secondary mx-2" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+        <button
+          className="btn me-3 boton_aux btn-secondary mx-2"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
           <i className="fa fa-arrow-left"></i>
         </button>
         <span className="me-2">Página {currentPage} de {Math.ceil(filteredItems.length / itemsPerPage)}</span>
-        <button className="btn boton_aux  btn-secondary mx-2" disabled={indexOfLastItem >= filteredItems.length} onClick={() => setCurrentPage(currentPage + 1)}>
+        <button
+          className="btn boton_aux btn-secondary mx-2"
+          disabled={indexOfLastItem >= filteredItems.length}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
           <i className="fa fa-arrow-right"></i>
         </button>
       </div>
