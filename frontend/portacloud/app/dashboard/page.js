@@ -61,18 +61,6 @@ export default function Dashboard() {
     };
   }, []);
 
-  useEffect(() => {
-    const socket = io.connect(serverUrl);
-  
-    socket.on(`devicesUpdated-${user.id}`, (devices) => {
-      setConnectedDevices(devices);
-    });
-  
-    return () => {
-      socket.disconnect();
-    };
-  }, [user.id]);
-  
 
   const actualizarPortapapeles = async () => {
     try {

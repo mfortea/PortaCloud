@@ -8,7 +8,7 @@ import { MdOutlinePhoneIphone } from "react-icons/md";
 import { IoMdDesktop } from "react-icons/io";
 import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
-import { Modal, Button } from 'react-bootstrap'; 
+import { Modal, Button } from 'react-bootstrap';
 
 export default function Guardados() {
   const router = useRouter();
@@ -33,6 +33,7 @@ export default function Guardados() {
   const [expandedItems, setExpandedItems] = useState({});
   const [imageCache, setImageCache] = useState({});
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     document.title = 'Guardados | PortaCloud';
@@ -283,7 +284,7 @@ export default function Guardados() {
 
   const borrarContenido = async (id) => {
     const token = localStorage.getItem("token");
-
+    setDeleting(true);
     try {
       await fetch(`${serverUrl}/saved/${id}`, {
         method: "DELETE",
@@ -307,6 +308,8 @@ export default function Guardados() {
         pauseOnHover: true,
         draggable: true,
       });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -439,31 +442,31 @@ export default function Guardados() {
 
   return (
     <div className="container py-5 zoom-al_cargar">
-<Modal
-  show={modalImage !== null}  // Usando show en lugar de isOpen para react-bootstrap
-  onHide={cerrarModal}  // onHide es la función que cierra el modal
->
-  {/* Modal Header */}
-  <Modal.Header closeButton>
-    <Modal.Title>
-      <i className="fa fa-eye pe-2"></i> Vista previa
-    </Modal.Title>
-  </Modal.Header>
+      <Modal
+        show={modalImage !== null}  // Usando show en lugar de isOpen para react-bootstrap
+        onHide={cerrarModal}  // onHide es la función que cierra el modal
+      >
+        {/* Modal Header */}
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="fa fa-eye pe-2"></i> Vista previa
+          </Modal.Title>
+        </Modal.Header>
 
-  {/* Modal Body */}
-  <Modal.Body>
-    <img
-      src={modalImage}
-      alt="Vista previa"
-      className="img-fluid"
-      style={{ maxHeight: '70vh', maxWidth: '100%' }}
-    />
-  </Modal.Body>
+        {/* Modal Body */}
+        <Modal.Body>
+          <img
+            src={modalImage}
+            alt="Vista previa"
+            className="img-fluid"
+            style={{ maxHeight: '70vh', maxWidth: '100%' }}
+          />
+        </Modal.Body>
 
-  {/* Modal Footer */}
-  <Modal.Footer>
-  </Modal.Footer>
-</Modal>
+        {/* Modal Footer */}
+        <Modal.Footer>
+        </Modal.Footer>
+      </Modal>
 
       <h1 className="text-center mb-4">
         <i className="fa fa-star"></i> Mis guardados
@@ -588,8 +591,12 @@ export default function Guardados() {
                         <button className="btn boton_aux btn-success m-2" title="Descargar a un archivo" onClick={() => descargarContenido(item)}>
                           <i className="fa fa-download"></i>
                         </button>
-                        <button className="btn boton_aux btn-danger" title="Eliminar" onClick={() => borrarContenido(item._id)}>
-                          <i className="fa fa-remove"></i>
+                        <button className="btn boton_aux btn-danger" title="Eliminar" onClick={() => borrarContenido(item._id)} disabled={deleting}>
+                          {deleting ? (
+                            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+                          ) : (
+                            <i className="fa fa-remove" aria-hidden="true"></i>
+                          )}
                         </button>
                       </div>
                       <div
