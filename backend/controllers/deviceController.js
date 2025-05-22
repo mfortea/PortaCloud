@@ -31,44 +31,35 @@ exports.updateClipboard = async (req, res) => {
     let content;
 
     if (type === 'image' && req.file) {
-      // Carpeta por dispositivo para aislamiento
       const deviceDir = path.resolve(__dirname, '..', 'temp_uploads', deviceId);
-      console.log("Ruta para guardar la imagen:", deviceDir); // Verifica que la ruta es correcta
       if (!fs.existsSync(deviceDir)) {
         fs.mkdirSync(deviceDir, { recursive: true });
       }
 
       const uniqueFileName = generateUniqueFileName(req.file);
       const filePath = path.join(deviceDir, uniqueFileName);
-      
-
-      // Solo mover si no existe ya
       if (!fs.existsSync(filePath)) {
         fs.renameSync(req.file.path, filePath);
       } else {
-        // Eliminar archivo temporal multer si no se usa
         fs.unlinkSync(req.file.path);
       }
 
-      // Guardar ruta relativa con deviceId para que frontend la use
       content = `/device/temp_image/${deviceId}/${uniqueFileName}`;
     } else {
       content = req.body.content;
       if (req.file && req.file.path) {
-        // En caso de recibir archivo pero no imagen, eliminarlo para no acumular basura
         fs.unlinkSync(req.file.path);
       }
     }
 
-    // Actualizamos el contenido en el dispositivo
     await Device.findOneAndUpdate(
       { deviceId },
-      {
-        clipboardContent: content,
-        lastActive: new Date(),
-      },
+      { clipboardContent: content, lastActive: new Date() },
       { new: true }
     );
+
+    // Emitir evento para actualizar los dispositivos
+    io.emit("updateDevices", req.user.userId);
 
     res.json({ message: 'Contenido actualizado', content });
   } catch (error) {
@@ -76,6 +67,7 @@ exports.updateClipboard = async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar el contenido' });
   }
 };
+
 
 exports.getDevices = async (req, res) => {
   try {

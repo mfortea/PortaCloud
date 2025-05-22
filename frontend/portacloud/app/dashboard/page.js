@@ -12,6 +12,8 @@ import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
 import { MdUpdate } from "react-icons/md";
 import { MdUpdateDisabled } from "react-icons/md";
+import io from "socket.io-client";  
+
 import { Nav } from "react-bootstrap";
 import CryptoJS from "crypto-js";
 
@@ -59,6 +61,18 @@ export default function Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    const socket = io.connect(serverUrl);
+  
+    socket.on(`devicesUpdated-${user.id}`, (devices) => {
+      setConnectedDevices(devices);
+    });
+  
+    return () => {
+      socket.disconnect();
+    };
+  }, [user.id]);
+  
 
   const actualizarPortapapeles = async () => {
     try {
@@ -163,7 +177,7 @@ export default function Dashboard() {
           const blob = await response.blob();
           formData.append("image", blob, "clipboard-image.png");
         }
-        else if (content.startsWith("/uploads/")) {
+        else if (content.startsWith("/device/temp_image/")) {
           const cleanPath = content.replace(serverUrl, "");
           const response = await fetch(`${serverUrl}${cleanPath}`);
           const blob = await response.blob();
@@ -474,7 +488,7 @@ export default function Dashboard() {
           link.click();
           document.body.removeChild(link);
         }
-        else if (clipboardContent.content.startsWith("/uploads/")) {
+        else if (clipboardContent.content.startsWith("/device/temp_image/")) {
           const response = await fetch(`${serverUrl}${clipboardContent.content}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -510,7 +524,7 @@ export default function Dashboard() {
       const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
       const link = document.createElement("a");
 
-      if (content.startsWith("/uploads/")) {
+      if (content.startsWith("/device/temp_image/")) {
         const response = await fetch(`${serverUrl}${content}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -803,11 +817,9 @@ export default function Dashboard() {
                   title="Copiar contenido"
                   style={{ cursor: "pointer" }}
                 >
-                  {device.clipboardContent?.startsWith("/uploads/") ? (
-                    <ImagenPrivada
-                      filename={device.clipboardContent.split('/').pop()}
-                      serverUrl={serverUrl}
-                      token={localStorage.getItem('token')}
+                  {device.clipboardContent?.startsWith("/device/temp_image") ? (
+                    <img
+                      src={`${serverUrl + device.clipboardContent}`}
                       alt="Imagen del portapapeles"
                       className="img-fluid"
                     />
@@ -819,7 +831,7 @@ export default function Dashboard() {
                 <button
                   className="btn boton_aux btn-warning mt-3"
                   onClick={() =>
-                    guardarContenido(device.clipboardContent, device.clipboardContent?.startsWith("/uploads/") ? "image" : "text", device.os, device.browser, device.deviceType)
+                    guardarContenido(device.clipboardContent, device.clipboardContent?.startsWith("/device/temp_image/") ? "image" : "text", device.os, device.browser, device.deviceType)
                   }
                   disabled={saving || !device.clipboardContent}
                 >
