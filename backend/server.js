@@ -39,15 +39,3 @@ cleanOrphanFiles();
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
-
-// WebSockets: Notificar cambios en dispositivos
-io.on("connection", (socket) => {
-  console.log("Nuevo cliente conectado");
-  
-  socket.on("updateDevices", async (userId) => {
-    const devices = await Device.find({ userId }).select("-_id browser os lastActive");
-    io.emit(`devicesUpdated-${userId}`, devices);
-  });
-
-  socket.on("disconnect", () => console.log("Cliente desconectado"));
-});
