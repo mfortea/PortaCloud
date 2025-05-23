@@ -1,7 +1,7 @@
 
 export const metadata = {
     title: 'Error 404 | PortaCloud',
-  };
+};
 
 export default function NotFound() {
 
@@ -13,6 +13,13 @@ export default function NotFound() {
                     Error 404
                 </h1>
                 <h3 className="text-center">¡Vaya! Parece que la página que buscas no existe</h3>
+                <br></br>
+                <a href="/dashboard"
+                    className="btn a_boton botones_ajustes btn-primary"
+                >
+                    <i className="fa fa-circle-left me-2"></i>
+                    Volver
+                </a>
             </div>
 
 
