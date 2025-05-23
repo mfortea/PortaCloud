@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Modal, Button, Form } from "react-bootstrap"; 
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -307,9 +308,7 @@ export default function AdminPage() {
   };
 
   if (isCheckingAuth || (!user && typeof window !== "undefined")) {
-    return <div className="loading-spinner">
-      <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
-    </div>;
+    return <LoadingSpinner loading={loading} />;
   }
 
   return (

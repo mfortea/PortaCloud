@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { format } from 'date-fns';
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 
 export default function Ajustes() {
@@ -222,31 +223,31 @@ export default function Ajustes() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const items = await response.json();
-      
+
       const zip = new JSZip();
       const folder = zip.folder("portacloud_backup_" + user?.username);
-      
+
       // Cargar imágenes a la caché (como en la página "Guardados")
       const imageItems = items.filter(item => item.type === "image");
       const imageCache = await preloadImages(imageItems);  // Aquí se precargan las imágenes
-  
+
       // Agregar contenido de texto e imágenes al ZIP
       for (const item of items) {
         const date = new Date(item.createdAt);
         const filename = `portacloud_${format(date, 'dd-MM-yyyy_HH-mm-ss')}`;
-        
+
         if (item.type === "text") {
           folder.file(`${filename}.txt`, item.content);
         } else if (item.type === "image") {
           const filename = item.filePath.split('/').pop();
           const imgUrl = imageCache[filename] || `${process.env.NEXT_PUBLIC_SERVER_IP}${item.filePath}`;
-          
+
           const imgResponse = await fetch(imgUrl);
           const blob = await imgResponse.blob();
           folder.file(`${filename}.png`, blob);
         }
       }
-  
+
       // Crear y guardar el archivo ZIP
       const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, `portacloud_backup_${format(new Date(), 'dd-MM-yyyy')}.zip`);
@@ -255,14 +256,14 @@ export default function Ajustes() {
       toast.error("Error al generar la copia de seguridad. Detalles: " + error);
     }
   };
-  
+
   // Pre-carga de imágenes en caché
   const preloadImages = async (imageItems) => {
     const imageCache = {};
     for (const item of imageItems) {
       const filename = item.filePath?.split('/').pop();
       if (!filename || imageCache[filename]) continue;
-  
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}/images/${filename}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -274,18 +275,14 @@ export default function Ajustes() {
     }
     return imageCache;
   };
-  
+
 
 
   if (loading) {
-    return (
-      <div className="loading-spinner">
-        <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
-      </div>
-    );
+    return <LoadingSpinner loading={loading} />;
   }
 
-  
+
   return (
     <div className="container py-5 zoom-al_cargar">
       <h1 className="text-center mb-4">

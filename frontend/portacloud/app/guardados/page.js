@@ -9,6 +9,7 @@ import { IoMdDesktop } from "react-icons/io";
 import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
 import { Modal, Button } from 'react-bootstrap';
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Guardados() {
   const router = useRouter();
@@ -433,11 +434,7 @@ export default function Guardados() {
   };
 
   if (loading) {
-    return (
-      <div className="loading-spinner">
-        <i className="fa fa-circle-notch fa-spin cargando" aria-hidden="true"></i>
-      </div>
-    );
+    return <LoadingSpinner loading={loading} />;
   }
 
   return (

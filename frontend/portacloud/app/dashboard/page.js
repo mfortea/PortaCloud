@@ -12,6 +12,7 @@ import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
 import { MdUpdate } from "react-icons/md";
 import { MdUpdateDisabled } from "react-icons/md";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import io from "socket.io-client";  
 
 import { Nav } from "react-bootstrap";
@@ -235,7 +236,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error al obtener los dispositivos:", error);
     } finally {
-      setLoadingDevices(false); // Desactivar el estado de carga
+      setLoadingDevices(false); 
     }
   };
 
@@ -386,15 +387,6 @@ export default function Dashboard() {
       setLoading(false);
     }
   }, [user, router]);
-
-  if (loading) {
-    return (
-      <div className="loading-spinner">
-        <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
-      </div>
-    );
-  }
-
 
   const getDeviceLogo = (deviceType, deviceName) => {
     const logos = {
@@ -588,8 +580,9 @@ export default function Dashboard() {
 
 
   if (loading) {
-    return <p>Cargando...</p>;
+    return <LoadingSpinner loading={loading} />;
   }
+
 
   return (
 

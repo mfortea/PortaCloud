@@ -673,24 +673,21 @@ input:hover {
 }
 
 /* ========== ESTILOS DEL SPINNER DE CARGA ========== */
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 1000;
+
+.spinner {
+  border: 4px solid rgba(0,0,0,0.1);
+  border-left-color: #4A90E2;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 1s linear infinite;
+  margin: auto;
 }
 
-.cargando {
-  font-size: 80px;
-  animation: cargando-animacion 1.5s infinite linear;
-  color: #007BFF;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
+
 
 @keyframes cargando-animacion {
   0% {

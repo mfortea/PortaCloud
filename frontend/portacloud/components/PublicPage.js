@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function publicPage(Component) {
   return function PublicRouteWrapper(props) {
@@ -16,11 +17,7 @@ export default function publicPage(Component) {
     }, [authChecked, user]);
 
     if (!authChecked) {
-      return (
-        <div className="loading-spinner">
-          <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
-        </div>
-      );
+      return <LoadingSpinner loading={loading} />;
     }
 
     return <Component {...props} />;
