@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useState, useContext, useEffect } from "react";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const AuthContext = createContext();
 
@@ -80,9 +81,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{ user, login, logout, updateUser, authChecked }}>
       {authChecked ? children : (
-        <div className="loading-spinner">
-          <i className="fa fa-circle-notch cargando" aria-hidden="true"></i>
-        </div>
+        <LoadingSpinner />
       )}
     </AuthContext.Provider>
   );

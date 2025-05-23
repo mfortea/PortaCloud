@@ -1,7 +1,7 @@
 // components/LoadingSpinner.js
 "use client"; // Asegúrate que es componente cliente
 
-import { DotLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 
 const spinnerStyle = {
   display: "flex",
@@ -12,7 +12,6 @@ const spinnerStyle = {
   left: 0,
   width: "100vw",
   height: "100vh",
-  backgroundColor: "rgba(0, 0, 0, 0.39)",
   zIndex: 9999,
 };
 
@@ -24,8 +23,8 @@ export default function LoadingSpinner({ loading = true }) {
       aria-busy={loading}
       aria-label="Cargando contenido"
     >
-      <DotLoader
-        color="#ffffff"
+      <RingLoader
+        color="#007bff"
         loading={loading}
         size={80}
         aria-label="Loading Spinner"

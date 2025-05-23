@@ -673,7 +673,6 @@ input:hover {
 }
 
 /* ========== ESTILOS DEL SPINNER DE CARGA ========== */
-
 .spinner {
   border: 4px solid rgba(0,0,0,0.1);
   border-left-color: #4A90E2;
@@ -688,6 +687,11 @@ input:hover {
   to { transform: rotate(360deg); }
 }
 
+.cargando {
+  font-size: 80px;
+  animation: cargando-animacion 1.5s infinite linear;
+  color: #007bff;
+}
 
 @keyframes cargando-animacion {
   0% {
@@ -1291,6 +1295,28 @@ margin-left: -5px;
   padding: 8px;
 
 }
+
+#comprobar_rol {
+  color: #595959;
+  font-style: italic;
+  animation: cargando-animacion 0.8s ease-in-out;
+}
+
+
+@keyframes cargando-animacion {
+  0% {
+    color: #000000;
+  }
+
+  50% {
+    color: #9b9b9b;
+  }
+
+  100% {
+    color: #000000;
+  }
+}
+
 
 /* ========== ESTILOS DEL APARTADO DE AYUDA ========== */
 .tabla_ayuda {

@@ -308,7 +308,7 @@ export default function AdminPage() {
   };
 
   if (isCheckingAuth || (!user && typeof window !== "undefined")) {
-    return <LoadingSpinner loading={loading} />;
+    return <h3 id="comprobar_rol" className="text-center">Comprobando rol del usuario...</h3>;
   }
 
   return (
