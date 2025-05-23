@@ -16,7 +16,6 @@ const path = require("path");
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
 app.use(passport.initialize())
 
 // Middlewares

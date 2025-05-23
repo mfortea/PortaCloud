@@ -58,9 +58,6 @@ exports.updateClipboard = async (req, res) => {
       { new: true }
     );
 
-    // Emitir evento para actualizar los dispositivos
-    io.emit("updateDevices", req.user.userId);
-
     res.json({ message: 'Contenido actualizado', content });
   } catch (error) {
     console.error(error);

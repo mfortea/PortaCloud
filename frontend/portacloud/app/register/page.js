@@ -44,9 +44,9 @@ function Register() {
       return;
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
     if (!passwordRegex.test(password)) {
-      toast.error('La contraseña debe tener al menos 8 caracteres, incluyendo letras y números', {
+      toast.error('La contraseña no cumple los requisitos mínimos indicados.', {
         position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
@@ -170,7 +170,13 @@ function Register() {
                 required
               />
             </div>
-            <p className='mt-4 text-center'>La contraseña debe tener al menos 8 caracteres, incluyendo letras y números.</p>
+            <p className='mt-4 text-center'>La contraseña debe contener al menos:</p>
+            <ul className='mt-2'>
+              <li>12 caracteres</li>
+              <li>Una letra mayúscula</li>
+              <li>Un número</li>
+              <li>Un símbolo especial (!,#,$, etc)</li>
+            </ul>
             <button type="submit" className="login-button mt-3 mb-2" disabled={isLoading}>
               {isLoading ? (
                 <div className="text-center text-white fa cargando fa-circle-notch"></div>
