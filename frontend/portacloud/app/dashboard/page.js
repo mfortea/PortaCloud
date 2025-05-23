@@ -13,7 +13,7 @@ import { MdDevices } from "react-icons/md";
 import { MdUpdate } from "react-icons/md";
 import { MdUpdateDisabled } from "react-icons/md";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import io from "socket.io-client";  
+import io from "socket.io-client";
 
 import { Nav } from "react-bootstrap";
 import CryptoJS from "crypto-js";
@@ -236,7 +236,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error al obtener los dispositivos:", error);
     } finally {
-      setLoadingDevices(false); 
+      setLoadingDevices(false);
     }
   };
 
@@ -643,7 +643,10 @@ export default function Dashboard() {
               src={`${clipboardContent.content}`}
               alt="Imagen del portapapeles"
               className="img-fluid"
+              loading="lazy"
+              style={{ maxWidth: "100%", maxHeight: "400px" }}
             />
+
 
 
           ) : (
