@@ -524,6 +524,7 @@ export default function Guardados() {
           className="btn boton_aux btn-primary"
           onClick={fetchGuardados}
           disabled={refreshing}
+          title="Actualizar lista"
         >
           {refreshing ? (
             <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
@@ -683,10 +684,10 @@ export default function Guardados() {
                             <i className="fa-solid fa-eye pe-1"></i> {expandedItems[item._id] ? "Mostrar menos" : "Mostrar más"}
                           </button>
                         )}
-                        <button className="btn boton_aux btn-success mx-1" onClick={() => descargarContenido(item)}>
+                        <button className="btn boton_aux btn-success mx-1" title="Descargar elemento a un archivo" onClick={() => descargarContenido(item)}>
                           <i className="fa fa-download"></i>
                         </button>
-                        <button className="btn boton_aux btn-danger" onClick={() => borrarContenido(item._id)}>
+                        <button className="btn boton_aux btn-danger" title="Eliminar elemento" onClick={() => borrarContenido(item._id)}>
                           <i className="fa fa-trash"></i>
                         </button>
                       </td>
@@ -704,6 +705,7 @@ export default function Guardados() {
           className="btn me-3 boton_aux btn-secondary mx-2"
           disabled={currentPage === 1}
           onClick={() => setCurrentPage(currentPage - 1)}
+          title="Página anterior"
         >
           <i className="fa fa-arrow-left"></i>
         </button>
@@ -712,6 +714,7 @@ export default function Guardados() {
           className="btn boton_aux btn-secondary mx-2"
           disabled={indexOfLastItem >= filteredItems.length}
           onClick={() => setCurrentPage(currentPage + 1)}
+          title="Página siguiente"
         >
           <i className="fa fa-arrow-right"></i>
         </button>
