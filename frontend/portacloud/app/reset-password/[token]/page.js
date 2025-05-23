@@ -12,11 +12,12 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { token } = useParams();
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!token) {
       toast.error('Token de recuperación inválido');
       return;
@@ -27,8 +28,8 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (newPassword.length < 8) {
-      toast.error('La contraseña debe tener al menos 8 caracteres');
+    if (!passwordRegex.test(newPassword)) {
+      toast.error('La contraseña no cumple los mínimos establecidos');
       return;
     }
 
@@ -45,8 +46,8 @@ export default function ResetPasswordPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
-          newPassword 
+        body: JSON.stringify({
+          newPassword
         }),
       });
 
@@ -82,12 +83,18 @@ export default function ResetPasswordPage() {
               <h2><i className="fa-solid fa-key pe-2"></i> Nueva contraseña</h2>
               <br />
               <p>Introduce tu nueva contraseña</p>
-              
+              <p className='small'>La contraseña debe contener al menos:</p>
+              <ul className='mt-2 small'>
+                <li>12 caracteres</li>
+                <li>Una letra mayúscula</li>
+                <li>Un número</li>
+                <li>Un símbolo especial (!,#,$, etc)</li>
+              </ul>
               <label htmlFor="new-password">Nueva contraseña</label>
               <input
                 id="new-password"
                 type="password"
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Mínimo 12 caracteres"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
@@ -104,23 +111,23 @@ export default function ResetPasswordPage() {
                 required
               />
             </div>
-            
+
             <div className="form-group">
-              <button 
-                className="login-button mt-4" 
+              <button
+                className="login-button mt-4"
                 type="submit"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <i className="fa fa-spinner fa-spin me-2"></i>
+                    <i className="spinner me-2"></i>
                     Procesando...
                   </>
                 ) : 'Restablecer contraseña'}
               </button>
             </div>
           </form>
-          
+
           <div className="register-link">
             <a href="/login">Volver a Inicio</a>
           </div>

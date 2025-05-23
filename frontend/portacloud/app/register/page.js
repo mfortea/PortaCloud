@@ -205,7 +205,7 @@ function Register() {
 
             <button type="submit" className="login-button mt-3 mb-2" disabled={isLoading || !isTermsAccepted}>
               {isLoading ? (
-                <div className="text-center text-white fa cargando fa-circle-notch"></div>
+                <div className="text-center text-white spinner"></div>
               ) : (
                 'Registrarse'
               )}

@@ -60,7 +60,7 @@ function ForgotPassword() {
             <div className="form-group">
               <button type="submit" className="login-button mt-3" disabled={isLoading}>
                 {isLoading ? (
-                  <div className="text-center text-white fa cargando fa-circle-notch"></div>
+                  <div className="text-center text-white spinner"></div>
                 ) : (
                   "Enviar correo"
                 )}

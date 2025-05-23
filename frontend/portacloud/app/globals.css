@@ -675,7 +675,7 @@ input:hover {
 /* ========== ESTILOS DEL SPINNER DE CARGA ========== */
 .spinner {
   border: 4px solid rgba(0,0,0,0.1);
-  border-left-color: #4A90E2;
+  border-left-color: #ffffff;
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -686,27 +686,6 @@ input:hover {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-.cargando {
-  font-size: 80px;
-  animation: cargando-animacion 1.5s infinite linear;
-  color: #007bff;
-}
-
-@keyframes cargando-animacion {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  50% {
-    transform: rotate(180deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 
 
 /* ========== ESTILOS DEL FOOTER ========== */
