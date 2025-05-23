@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../context/AuthContext";
 import PublicPage from "../../components/PublicPage";
-import { useEffect } from 'react';
+import { Modal, Button } from 'react-bootstrap';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -14,6 +14,8 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // Estado para la aceptación de los términos
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para abrir la modal
   const router = useRouter();
   const { login } = useAuth();
 
@@ -23,7 +25,7 @@ function Register() {
     metaDescription.name = 'description';
     metaDescription.content = 'Crea tu cuenta en PortaCloud';
     document.head.appendChild(metaDescription);
-    
+
     return () => {
       document.head.removeChild(metaDescription);
     };
@@ -31,6 +33,18 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isTermsAccepted) {
+      toast.error('Debes aceptar los términos y condiciones.', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error('Las contraseñas no coinciden', {
@@ -110,7 +124,6 @@ function Register() {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="login-landing-page">
@@ -124,7 +137,7 @@ function Register() {
       <div className="login-section">
         <div className="login-card">
           <h2><i className="fa-solid fa-user-plus"></i> Registrarse</h2>
-          <br></br>
+          <br />
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="username">Nombre de usuario</label>
@@ -177,7 +190,20 @@ function Register() {
               <li>Un número</li>
               <li>Un símbolo especial (!,#,$, etc)</li>
             </ul>
-            <button type="submit" className="login-button mt-3 mb-2" disabled={isLoading}>
+
+            <div className="form-group">
+              <label>
+                <input
+                  id='checkbox_aceptar'
+                  type="checkbox"
+                  checked={isTermsAccepted}
+                  onChange={() => setIsTermsAccepted(!isTermsAccepted)}
+                />
+                Acepto los<a id="a_terminos" href="#" onClick={() => setIsModalOpen(true)}>términos y condiciones.</a>
+              </label>
+            </div>
+
+            <button type="submit" className="login-button mt-3 mb-2" disabled={isLoading || !isTermsAccepted}>
               {isLoading ? (
                 <div className="text-center text-white fa cargando fa-circle-notch"></div>
               ) : (
@@ -187,12 +213,29 @@ function Register() {
           </form>
 
           <div className="register-link">
-            <p>¿Ya tienes una cuenta? <br></br><a href="/login">Inicia sesión aquí</a></p>
+            <p>¿Ya tienes una cuenta? <br /> <a href="/login">Inicia sesión aquí</a></p>
           </div>
         </div>
       </div>
 
-    </div>
+      {/* Modal de aceptación de términos */}
+      <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <><i className="fa-solid fa-scale-balanced pe-2"></i> Términos y condiciones</>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        <p><strong>Recopilación de Datos:</strong></p>
+        <p>Al registrarte en nuestro sitio web, aceptas que recopilamos y procesamos los siguientes datos de forma automática:</p>
+        <ul>
+          <li><strong>Dirección IP:</strong> Usamos tu dirección IP para identificar tu ubicación geográfica y mejorar la seguridad de nuestro sitio en caso de un uso indebido.</li>
+          <li><strong>Tipo de dispositivo, navegador web y sistema operativo utilizado</strong> para acceder a Porta Cloud. Esta información nos ayuda a optimizar la experiencia de usuario y garantizar la compatibilidad con diferentes plataformas así como tener un mecanismo de diferenciación de los dispositivos conectados.</li>
+        </ul>
+        <p>Esta información es utilizada exclusivamente para mejorar la funcionalidad del sitio y la experiencia de usuario, así como para fines de seguridad. Nos comprometemos a proteger tu información personal.</p>
+        </Modal.Body>
+      </Modal>
+    </div >
   );
 }
 

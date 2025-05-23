@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Modal, Button, Form } from "react-bootstrap"; // Importar los componentes de React Bootstrap
+import { Modal, Button, Form } from "react-bootstrap"; 
 
 export default function AdminPage() {
   const { user } = useAuth();

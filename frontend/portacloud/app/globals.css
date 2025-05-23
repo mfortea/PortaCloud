@@ -69,6 +69,10 @@ a {
   text-decoration: none;
 }
 
+a_boton {
+  padding: 12px !important;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -80,6 +84,8 @@ a {
   gap: 5px;
   justify-content: center;
 }
+
+
 
 @media only screen and (max-width: 991px) {
 
@@ -1085,6 +1091,21 @@ input:hover {
 .boton_registrar:active {
   filter: brightness(0.5);
 }
+
+#checkbox_aceptar {
+  width: 20px;
+}
+#a_terminos{
+margin-left: -5px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
 
 /* ========== ESTILO 404/ NO SOPORTADO========== */
 .logo_404 {
