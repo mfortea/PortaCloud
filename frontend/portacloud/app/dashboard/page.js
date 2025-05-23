@@ -43,6 +43,7 @@ export default function Dashboard() {
   // Límites de tamaño
   const MAX_CONTENT_SIZE_BYTES = 10 * 1024 * 1024;
   const TEXT_PREVIEW_LENGTH = 500;
+  const TIEMPO_ACTUALIZACION = 3000;
 
   useEffect(() => {
     if (!user) {
@@ -358,11 +359,36 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!isProblematicBrowser) { // Ahora verifica ambos navegadores
-      const interval = setInterval(actualizarPortapapeles, 1000);
-      return () => clearInterval(interval);
+    if (!isProblematicBrowser && autoRefreshClipboard) {
+      let interval;
+  
+      const update = () => {
+        actualizarPortapapeles();
+      };
+  
+      const visibilityChangeHandler = () => {
+        if (document.visibilityState === "visible") {
+          update();
+          interval = setInterval(update, TIEMPO_ACTUALIZACION);
+        } else {
+          clearInterval(interval);
+        }
+      };
+  
+      document.addEventListener("visibilitychange", visibilityChangeHandler);
+  
+      if (document.visibilityState === "visible") {
+        update();
+        interval = setInterval(update, TIEMPO_ACTUALIZACION);
+      }
+  
+      return () => {
+        clearInterval(interval);
+        document.removeEventListener("visibilitychange", visibilityChangeHandler);
+      };
     }
-  }, [autoRefreshClipboard, isProblematicBrowser]);
+  }, [isProblematicBrowser, autoRefreshClipboard]);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -373,7 +399,7 @@ export default function Dashboard() {
       if (token) {
         actualizarDispositivos(token);
       }
-    }, 2500);
+    }, TIEMPO_ACTUALIZACION);
     return () => clearInterval(interval);
   }, []);
 
