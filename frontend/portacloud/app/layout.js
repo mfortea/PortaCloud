@@ -32,7 +32,6 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#F8F9FA" />
 
         <link
           rel="preload"

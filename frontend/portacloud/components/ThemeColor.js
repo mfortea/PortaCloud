@@ -4,20 +4,27 @@ import { useEffect } from "react";
 
 export default function ThemeColor() {
   useEffect(() => {
-    const metaThemeColor = document.querySelector("meta[name='theme-color']");
+    let metaThemeColor = document.querySelector("meta[name='theme-color']");
+    if (!metaThemeColor) {
+      metaThemeColor = document.createElement("meta");
+      metaThemeColor.setAttribute("name", "theme-color");
+      document.head.appendChild(metaThemeColor);
+    }
 
     const updateThemeColor = () => {
       const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      metaThemeColor?.setAttribute("content", isDarkMode ? "#222222" : "#f8f9fa");
+      metaThemeColor.setAttribute("content", isDarkMode ? "#222222" : "#f8f9fa");
     };
 
-    updateThemeColor(); // Aplicar en la carga inicial
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", updateThemeColor);
+    updateThemeColor();
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", updateThemeColor);
 
     return () => {
-      window.matchMedia("(prefers-color-scheme: dark)").removeEventListener("change", updateThemeColor);
+      mediaQuery.removeEventListener("change", updateThemeColor);
     };
   }, []);
 
-  return null; // No renderiza nada, solo ejecuta el efecto
+  return null;
 }
