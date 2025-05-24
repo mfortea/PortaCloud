@@ -1,56 +1,111 @@
-# PortaCloud: Gestor de Portapapeles Multiplataforma con Sincronización en la Nube
+
+# PortaCloud: Gestor de Portapapeles Multiplataforma con Sincronización en la Nube  
 Trabajo de Fin de Grado para el Grado en Ingeniería Informática. Universidad de Córdoba (UCO)
 
 ![Logo de PortaCloud](frontend/portacloud/public/favicon.ico)
 
+---
 
 ## 📚 Tecnologías utilizadas
 
-- Backend: NodeJS
-- Frontend: React
-- Control de versiones: Git
-- Base de datos: Mongodb (Mongodb Atlas)
+- **Backend:** Node.js, Express.js  
+- **Frontend:** React.js (Next.js)  
+- **Base de datos:** MongoDB (MongoDB Atlas)  
+- **Autenticación:** Passport.js (JWT)  
+- **Control de versiones:** Git  
+- **Despliegue backend:** Render  
+- **Despliegue frontend:** Vercel  
+
+---
 
 ## 🌳 Estructura del proyecto
-- `backend/`: Contiene el código del servidor.
-  - `models/`: Modelos de datos de MongoDB.
-  - `routes/`: Rutas de la API.
-  - `controllers/`: Lógica de las rutas.
-  - `utils/`: Funciones auxiliares.
 
-- `frontend/portacloud/`: Contiene el código del cliente.
-  - `app/`: Páginas principales de la aplicación.
-  - `components/`: Componentes reutilizables.
-  - `context/`: Manejo del estado global.
-  
-## 🚀Despliegue local
+- `backend/`: Código del servidor  
+  - `models/`: Modelos Mongoose para MongoDB (User, Device, SavedItem, Log, etc.)  
+  - `routes/`: Rutas REST para usuarios, dispositivos, autenticación, administración, imágenes, etc.  
+  - `controllers/`: Controladores con la lógica de negocio para cada ruta  
+  - `middleware/`: Middleware personalizado, por ejemplo para gestión de subida de archivos  
+  - `config/`: Configuraciones, como Passport para autenticación  
+  - `utils/`: Funciones auxiliares para autenticación, limpieza, manejo de datos de dispositivos  
+  - `temp_uploads/`: Carpeta temporal para archivos subidos (no versionada)  
 
-### ⚙️ Backend
+- `frontend/portacloud/`: Código cliente con Next.js  
+  - `app/`: Páginas principales organizadas por rutas 
+  - `components/`: Componentes reutilizables, incluyendo navbar, footer y ventanas modales
+  - `context/`: Contexto React para manejo global del estado de autenticación  
+  - `public/`: Recursos públicos como iconos, imágenes  
+
+---
+
+## 🚀 Despliegue local
+
+### Requisitos previos
+
+- Node.js y npm instalados  
+- MongoDB Atlas configurado (string de conexión en `.env` backend)  
+
+### Backend
+
 ```bash
 cd backend
+npm install
 node server.js
 ```
-### 🖌️ Frontend
+
+El backend corre por defecto en `http://localhost:5000` (revisar configuración).  
+
+### Frontend
+
 ```bash
 cd frontend/portacloud
+npm install
 npm run dev
 ```
-Accedemos al frontend desde http://localhost:3000
+
+Frontend disponible en `http://localhost:3000`  
+
+---
 
 ## 🌍 Despliegue online
-### ⚙️ Backend
 
-El backend del proyecto está alojado en Render:
+- **Backend:** https://portacloud-backend.onrender.com  
+- **Frontend:** https://portacloud.vercel.app  
+- **Base de datos:** MongoDB Atlas (servicio en la nube)  
 
-https://portacloud-backend.onrender.com
+---
 
-### 🖌️ Frontend
-El frontend del proyecto está alojado en el sitio web Vercel:
+## ⚙️ Funcionalidades principales
 
-https://portacloud.vercel.app
+- Registro, inicio y gestión segura de usuarios con JWT y Passport  
+- Gestión de dispositivos vinculados al usuario  
+- Sincronización en la nube del portapapeles entre dispositivos  
+- Guardado, edición y eliminación de contenidos sincronizados  
+- Administración de usuarios y dispositivos (panel de administrador)  
+- Recuperación y restablecimiento de contraseña 
+- Backup y descarga de datos  
+- Interfaz responsive y accesible con Next.js y React  
+- Gestión del estado global de autenticación y sesión  
 
-### 📦 Base de datos
+---
 
-La base de datos del proyecto utilizada está alojada en Mongodb Atlas.
+## 🔧 Configuración y variables de entorno (backend)
 
-https://www.mongodb.com/products/platform/atlas-database
+- `MONGODB_URI`: URL de conexión a MongoDB Atlas  
+- `JWT_SECRET`: Clave secreta para la firma de tokens JWT  
+- `PORT`: Puerto donde se ejecuta el backend (por defecto 5000)  
+- Otros parámetros relacionados con Passport y configuración de subida de archivos  
+
+---
+
+## 📂 Base de datos
+
+La base de datos usa MongoDB con las siguientes colecciones principales:
+
+- **Users:** Datos de usuarios, credenciales, roles y tokens  
+- **Devices:** Dispositivos asociados a usuarios para sincronización  
+- **SavedItems:** Elementos guardados del portapapeles  
+- **Logs:** Registro de eventos y acciones para auditoría  
+- **ContentRegistry:** Registro de contenidos sincronizados  
+
+---
+
