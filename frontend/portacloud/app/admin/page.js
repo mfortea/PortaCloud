@@ -5,9 +5,12 @@ import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { Modal, Button, Form } from "react-bootstrap"; 
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
+import DownloadUsersModal from "../../components/modals/DownloadUsersModal";
+import DownloadLogsModal from "../../components/modals/DownloadLogsModal";
+import EditUserModal from "../../components/modals/EditUserModal";
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -299,7 +302,7 @@ export default function AdminPage() {
         await fetchUsers();
         await fetchLogs();
       } else {
-        toast.error("Error al crear el usuario. Comprueba que el usuario/email no exista");
+        toast.error("Error al crear el usuario. Verifica los datos.");
       }
     } catch (error) {
       toast.error("Error de conexión");
@@ -310,308 +313,237 @@ export default function AdminPage() {
     return <h3 id="comprobar_rol" className="text-center">Comprobando rol del usuario...</h3>;
   }
 
-  <ToastContainer />
   return (
-    <div className="container py-5 zoom-al_cargar">
-      <h1 className="text-center">
-        <i className="fa-solid fa-user-shield"></i> Administración de Usuarios
-      </h1>
-      <br />
-      <br />
-      <h2>
-        <i className="mb-3 fa-solid fa-users"></i> Lista de usuarios
-      </h2>
-      {loading ? (
-        <p>Cargando usuarios...</p>
-      ) : (
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>Nombre de Usuario</th>
-              <th>Rol</th>
-              <th>Fecha de Creación</th>
-              <th>Último Inicio de Sesión</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((userItem) => (
-              <tr key={userItem._id}>
-                <td><span className="bold">{userItem.username}</span><br></br>{userItem.email}</td>
-                <td>{userItem.role}</td>
-                <td>
-                  {format(new Date(userItem.createdAt), 'dd MMM yyyy HH:mm:ss', { locale: es })}
-                </td>
-                <td>
-                  {userItem.lastLogin
-                    ? format(new Date(userItem.lastLogin), 'dd MMM yyyy HH:mm:ss', { locale: es })
-                    : "Nunca"}
-                </td>
-                <td>
-                  <button
-                    className="btn boton_aux btn-primary"
-                    title="Cambiar rol del usuario"
-                    onClick={() =>
-                      openModal("editRole", userItem._id)
-                    }
-                  >
-                    <i className="fa-solid fa-user-tag"></i>
-                  </button>
-                  <button
-                    className="btn boton_aux  m-2 btn-danger" title="Eliminar usuario"
-                    onClick={() => openModal("deleteUser", userItem._id)}
-                  >
-                    <i className="fa-solid fa-circle-minus"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      <br />
-      <br />
-      <br />
-      <h2>
-        <i className="mb-3 fa-solid fa-user-plus"></i> Crear Nuevo Usuario
-      </h2>
-      <form onSubmit={handleCreateUser} className="create-user-form">
-        <div>
-          <label>Nombre de Usuario:</label>
-          <input
-            type="text"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Correo electrónico:</label>
-          <input
-            type="text"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Contraseña:</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Rol:</label>
-          <select
-            value={newRole}
-            onChange={(e) => setNewRole(e.target.value)}
-          >
-            <option value="user">Usuario</option>
-            <option value="admin">Administrador</option>
-          </select>
-        </div>
-        <button className="mt-3 w-100 btn botones_ajustes btn-success" type="submit">
-          Crear Usuario
-        </button>
-      </form>
-
-      <div className="mt-5">
+    <>
+      <ToastContainer />
+      <div className="container py-5 zoom-al_cargar">
+        <h1 className="text-center">
+          <i className="fa-solid fa-user-shield"></i> Administración de Usuarios
+        </h1>
+        <br />
+        <br />
         <h2>
-          <i className="mb-3 fa-solid fa-scroll"></i> Registro de Actividades
-          &nbsp;
-          <button
-            onClick={fetchLogs}
-            className="ml-3 btn boton_aux btn-primary ms-3"
-            disabled={isRefreshingLogs}
-          >
-            {isRefreshingLogs ? (
-              <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
-            ) : (
-              <i className="fa fa-refresh" aria-hidden="true"></i>
-            )}
-          </button>
+          <i className="mb-3 fa-solid fa-users"></i> Lista de usuarios
         </h2>
-        <div className="logs-container">
-          <div className="table-responsive">
-            <table className="users-table">
-              <thead>
-                <tr>
-                  <th>Fecha/Hora</th>
-                  <th>Usuario</th>
-                  <th>Acción</th>
-                  <th>Dirección IP</th>
-                  <th>Detalles</th>
+        {loading ? (
+          <p>Cargando usuarios...</p>
+        ) : (
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>Nombre de Usuario</th>
+                <th>Rol</th>
+                <th>Fecha de Creación</th>
+                <th>Último Inicio de Sesión</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((userItem) => (
+                <tr key={userItem._id}>
+                  <td><span className="bold">{userItem.username}</span><br />{userItem.email}</td>
+                  <td>{userItem.role}</td>
+                  <td>
+                    {format(new Date(userItem.createdAt), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                  </td>
+                  <td>
+                    {userItem.lastLogin
+                      ? format(new Date(userItem.lastLogin), 'dd MMM yyyy HH:mm:ss', { locale: es })
+                      : "Nunca"}
+                  </td>
+                  <td>
+                    <button
+                      className="btn boton_aux btn-primary"
+                      title="Cambiar rol del usuario"
+                      onClick={() => openModal("editRole", userItem._id)}
+                    >
+                      <i className="fa-solid fa-user-tag"></i>
+                    </button>
+                    <button
+                      className="btn boton_aux m-2 btn-danger"
+                      title="Eliminar usuario"
+                      onClick={() => openModal("deleteUser", userItem._id)}
+                    >
+                      <i className="fa-solid fa-circle-minus"></i>
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {currentLogs.map((log) => (
-                  <tr key={log._id}>
-                    <td>
-                      {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
-                    </td>
-                    <td>{log.userId?.username || 'Sistema'}</td>
-                    <td>
-                      {log.action === 'login' && 'Inicio de sesión'}
-                      {log.action === 'logout' && 'Cierre de sesión'}
-                      {log.action === 'register' && 'Registro nuevo'}
-                      {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
-                      {log.action === 'role_changed' && `Rol cambiado: ${log.details?.targetUser} (${log.details?.newRole})`}
-                      {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
-                      {log.action === 'username_changed' && `Nombre de usuario cambiado: ${log.details?.oldUsername} → ${log.details?.newUsername}`}
-                      {log.action === 'password_changed' && 'Contraseña actualizada'}
-                      {log.action === 'account_deleted' && 'Cuenta eliminada'}
-                    </td>
-                    <td>{log.ipAddress}</td>
-                    <td>
-                      {log.details && (
-                        <span className="log-details">
-                          {log.details.os} · {log.details.browser}
-                        </span>
-                      )}
-                    </td>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <br />
+        <br />
+        <br />
+        <h2>
+          <i className="mb-3 fa-solid fa-user-plus"></i> Crear Nuevo Usuario
+        </h2>
+        <form onSubmit={handleCreateUser} className="create-user-form">
+          <div>
+            <label>Nombre de Usuario:</label>
+            <input
+              type="text"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Correo electrónico:</label>
+            <input
+              type="text"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Contraseña:</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Rol:</label>
+            <select
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value)}
+            >
+              <option value="user">Usuario</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <button className="mt-3 w-100 btn botones_ajustes btn-success" type="submit">
+            Crear Usuario
+          </button>
+        </form>
+
+        <div className="mt-5">
+          <h2>
+            <i className="mb-3 fa-solid fa-scroll"></i> Registro de Actividades
+            &nbsp;
+            <button
+              onClick={fetchLogs}
+              className="ml-3 btn boton_aux btn-primary ms-3"
+              disabled={isRefreshingLogs}
+            >
+              {isRefreshingLogs ? (
+                <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+              ) : (
+                <i className="fa fa-refresh" aria-hidden="true"></i>
+              )}
+            </button>
+          </h2>
+          <div className="logs-container">
+            <div className="table-responsive">
+              <table className="users-table">
+                <thead>
+                  <tr>
+                    <th>Fecha/Hora</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Dirección IP</th>
+                    <th>Detalles</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {currentLogs.map((log) => (
+                    <tr key={log._id}>
+                      <td>
+                        {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                      </td>
+                      <td>{log.userId?.username || 'Sistema'}</td>
+                      <td>
+                        {log.action === 'login' && 'Inicio de sesión'}
+                        {log.action === 'logout' && 'Cierre de sesión'}
+                        {log.action === 'register' && 'Registro nuevo'}
+                        {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
+                        {log.action === 'role_changed' && `Rol cambiado: ${log.details?.targetUser} (${log.details?.newRole})`}
+                        {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
+                        {log.action === 'username_changed' && `Nombre de usuario cambiado: ${log.details?.oldUsername} → ${log.details?.newUsername}`}
+                        {log.action === 'password_changed' && 'Contraseña actualizada'}
+                        {log.action === 'account_deleted' && 'Cuenta eliminada'}
+                      </td>
+                      <td>{log.ipAddress}</td>
+                      <td>
+                        {log.details && (
+                          <span className="log-details">
+                            {log.details.os} · {log.details.browser}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="pagination mt-3">
+            {Array.from({ length: Math.ceil(logs.length / logsPerPage) }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+              >
+                {i + 1}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="pagination mt-3">
-          {Array.from({ length: Math.ceil(logs.length / logsPerPage) }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => paginate(i + 1)}
-              className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+        <br />
+        <br />
+        <h2>
+          <i className="mb-3 fa-solid fa-rotate"></i> Copias de seguridad
+        </h2>
+        <h4>Realizar copia de seguridad a fichero de los usuarios y logs</h4>
+        <br />
+        <button 
+          className="btn botones_ajustes btn-success"
+          onClick={() => setShowDownloadUsersModal(true)}
+        >
+          <i className="fa-solid fa-users pe-2"></i>
+          Lista de usuarios
+        </button>
+        <br />
+        <button 
+          className="btn botones_ajustes btn-success"
+          onClick={() => setShowDownloadLogsModal(true)}
+        >
+          <i className="fa-solid fa-scroll pe-2"></i>
+          Lista de Logs
+        </button>
+
+        <DownloadUsersModal
+          show={showDownloadUsersModal}
+          onClose={closeDownloadModal}
+          downloadFormat={downloadFormat}
+          setDownloadFormat={setDownloadFormat}
+          onDownload={downloadUsers}
+        />
+
+        <DownloadLogsModal
+          show={showDownloadLogsModal}
+          onClose={closeDownloadModal}
+          downloadFormat={downloadFormat}
+          setDownloadFormat={setDownloadFormat}
+          onDownload={downloadLogs}
+        />
+
+        <EditUserModal
+          show={showModal}
+          onClose={closeModal}
+          modalType={modalType}
+          newRole={newRole}
+          setNewRole={setNewRole}
+          onSubmitEditRole={submitEditRole}
+          onSubmitDeleteUser={submitDeleteUser}
+        />
       </div>
-
-      <br />
-      <br />
-      <h2>
-        <i className="mb-3 fa-solid fa-rotate"></i> Copias de seguridad
-      </h2>
-      <h4>Realizar copia de seguridad a fichero de los usuarios y logs</h4>
-      <br></br>
-      <button 
-        className="btn botones_ajustes btn-success"
-        onClick={() => setShowDownloadUsersModal(true)}
-      >
-        <i className="fa-solid fa-users pe-2"></i>
-        Lista de usuarios
-      </button>
-      <br></br>
-      <button 
-        className="btn botones_ajustes btn-success"
-        onClick={() => setShowDownloadLogsModal(true)}
-      >
-        <i className="fa-solid fa-scroll pe-2"></i>
-        Lista de Logs
-      </button>
-
-{/* Modal para descargar usuarios */}
-{showDownloadUsersModal && (
-  <Modal show={showDownloadUsersModal} onHide={closeDownloadModal} centered>
-    <Modal.Header closeButton>
-      <Modal.Title><i className="fa-solid fa-users pe-2"></i> Descargar lista de usuarios</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <Form.Group controlId="downloadFormat">
-        <Form.Label>Selecciona el formato para descargar la lista de usuarios:</Form.Label>
-        <Form.Control as="select" value={downloadFormat} onChange={(e) => setDownloadFormat(e.target.value)}>
-          <option value="json">JSON</option>
-          <option value="csv">CSV (Excel)</option>
-        </Form.Control>
-      </Form.Group>
-    </Modal.Body>
-    <Modal.Footer>
-      <Button variant="success" className="btn botones_ajustes w-100" onClick={downloadUsers}>
-        <i className="fa fa-download pe-2"></i> Descargar
-      </Button>
-      <Button variant="primary" className="btn botones_ajustes w-100" onClick={closeDownloadModal}>
-        <i className="fa-solid fa-times pe-2"></i> Cancelar
-      </Button>
-    </Modal.Footer>
-  </Modal>
-)}
-
-{/* Modal para descargar logs */}
-{showDownloadLogsModal && (
-  <Modal show={showDownloadLogsModal} onHide={closeDownloadModal} >
-    <Modal.Header closeButton>
-      <Modal.Title><i className="fa-solid fa-scroll pe-2"></i> Descargar listado de logs</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <Form.Group controlId="downloadFormat">
-        <Form.Label>Selecciona el formato para descargar el registro de actividades:</Form.Label>
-        <Form.Control as="select" value={downloadFormat} onChange={(e) => setDownloadFormat(e.target.value)}>
-          <option value="json">JSON</option>
-          <option value="csv">CSV (Excel)</option>
-        </Form.Control>
-      </Form.Group>
-    </Modal.Body>
-    <Modal.Footer>
-      <Button variant="success" className="btn botones_ajustes w-100" onClick={downloadLogs}>
-        <i className="fa fa-download pe-2"></i> Descargar
-      </Button>
-      <Button variant="primary" className="btn botones_ajustes w-100" onClick={closeDownloadModal}>
-        <i className="fa-solid fa-times pe-2"></i> Cancelar
-      </Button>
-    </Modal.Footer>
-  </Modal>
-)}
-
-{/* Modal para editar/eliminar usuarios */}
-{showModal && (
-  <Modal show={showModal} onHide={closeModal} centered>
-    <Modal.Header closeButton>
-      <Modal.Title>
-        {modalType === "editRole" ? (
-          <><i className="fa-solid fa-user-tag pe-2"></i> Cambiar Rol</>
-        ) : (
-          <><i className="fa-solid fa-user-xmark pe-2"></i> Confirmar Eliminación</>
-        )}
-      </Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      {modalType === "editRole" && (
-        <Form.Group controlId="newRole">
-          <Form.Label>Selecciona un rol para aplicar</Form.Label>
-          <Form.Control as="select" value={newRole} onChange={(e) => setNewRole(e.target.value)}>
-            <option value="user">Usuario</option>
-            <option value="admin">Administrador</option>
-          </Form.Control>
-        </Form.Group>
-      )}
-      {modalType === "deleteUser" && (
-        <p>¿Estás seguro de que deseas eliminar este usuario?</p>
-      )}
-    </Modal.Body>
-    <Modal.Footer>
-      {modalType === "editRole" && (
-        <Button variant="success" className="btn botones_ajustes w-100" onClick={submitEditRole}>
-          <i className="fa-solid fa-check pe-2"></i> Confirmar
-        </Button>
-      )}
-      {modalType === "deleteUser" && (
-        <Button variant="danger" className="btn botones_ajustes w-100" onClick={submitDeleteUser}>
-          <i className="fa-solid fa-trash pe-2"></i> Sí, Eliminar
-        </Button>
-      )}
-      <Button variant="primary" className="btn botones_ajustes w-100" onClick={closeModal}>
-        <i className="fa-solid fa-times pe-2"></i> Cancelar
-      </Button>
-    </Modal.Footer>
-  </Modal>
-)}
-
-
-    </div>
+    </>
   );
 }

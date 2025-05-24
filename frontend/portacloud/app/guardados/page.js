@@ -10,6 +10,7 @@ import { BsTabletLandscape } from "react-icons/bs";
 import { MdDevices } from "react-icons/md";
 import { Modal, Button } from 'react-bootstrap';
 import LoadingSpinner from "../../components/LoadingSpinner";
+import ImagePreviewModal from "../../components/modals/ImagePreviewModal";
 
 export default function Guardados() {
   const router = useRouter();
@@ -439,31 +440,7 @@ export default function Guardados() {
 
   return (
     <div className="container py-5 zoom-al_cargar">
-      <Modal
-        show={modalImage !== null}  // Usando show en lugar de isOpen para react-bootstrap
-        onHide={cerrarModal}  // onHide es la función que cierra el modal
-      >
-        {/* Modal Header */}
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <i className="fa fa-eye pe-2"></i> Vista previa
-          </Modal.Title>
-        </Modal.Header>
-
-        {/* Modal Body */}
-        <Modal.Body>
-          <img
-            src={modalImage}
-            alt="Vista previa"
-            className="img-fluid"
-            style={{ maxHeight: '70vh', maxWidth: '100%' }}
-          />
-        </Modal.Body>
-
-        {/* Modal Footer */}
-        <Modal.Footer>
-        </Modal.Footer>
-      </Modal>
+      <ImagePreviewModal show={modalImage !== null} onClose={cerrarModal} imageUrl={modalImage} />
 
       <h1 className="text-center mb-4">
         <i className="fa fa-star"></i> Mis guardados

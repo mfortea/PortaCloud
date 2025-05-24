@@ -1,31 +1,30 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../context/AuthContext";
 import PublicPage from "../../components/PublicPage";
-import { Modal, Button } from 'react-bootstrap';
+import TermsModal from "../../components/modals/TermsModal";
 
 function Register() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // Estado para la aceptación de los términos
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para abrir la modal
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
 
   useEffect(() => {
-    document.title = 'Registro | PortaCloud';
-    const metaDescription = document.createElement('meta');
-    metaDescription.name = 'description';
-    metaDescription.content = 'Crea tu cuenta en PortaCloud';
+    document.title = "Registro | PortaCloud";
+    const metaDescription = document.createElement("meta");
+    metaDescription.name = "description";
+    metaDescription.content = "Crea tu cuenta en PortaCloud";
     document.head.appendChild(metaDescription);
-
     return () => {
       document.head.removeChild(metaDescription);
     };
@@ -35,8 +34,8 @@ function Register() {
     e.preventDefault();
 
     if (!isTermsAccepted) {
-      toast.error('Debes aceptar los términos y condiciones.', {
-        position: 'top-right',
+      toast.error("Debes aceptar los términos y condiciones.", {
+        position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -47,8 +46,8 @@ function Register() {
     }
 
     if (password !== confirmPassword) {
-      toast.error('Las contraseñas no coinciden', {
-        position: 'top-right',
+      toast.error("Las contraseñas no coinciden", {
+        position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -58,10 +57,11 @@ function Register() {
       return;
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
     if (!passwordRegex.test(password)) {
-      toast.error('La contraseña no cumple los requisitos mínimos indicados.', {
-        position: 'top-right',
+      toast.error("La contraseña no cumple los requisitos mínimos indicados.", {
+        position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -76,16 +76,16 @@ function Register() {
 
     try {
       const res = await fetch(`${serverUrl}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
       });
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem('token', data.token);
-        toast.success('Registro exitoso', {
-          position: 'top-right',
+        localStorage.setItem("token", data.token);
+        toast.success("Registro exitoso", {
+          position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -97,13 +97,13 @@ function Register() {
           email: data.email,
           role: data.role,
           token: data.token,
-          userId: data.userId
+          userId: data.userId,
         });
-        router.push('/dashboard');
+        router.push("/dashboard");
       } else {
         const errorData = await res.json();
-        toast.error(errorData.message || 'Registro fallido. Verifica tus credenciales.', {
-          position: 'top-right',
+        toast.error(errorData.message || "Registro fallido. Verifica tus credenciales.", {
+          position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -112,8 +112,8 @@ function Register() {
         });
       }
     } catch (error) {
-      toast.error('Error al conectar con el servidor', {
-        position: 'top-right',
+      toast.error("Error al conectar con el servidor", {
+        position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -136,7 +136,9 @@ function Register() {
 
       <div className="login-section">
         <div className="login-card">
-          <h2><i className="fa-solid fa-user-plus"></i> Registrarse</h2>
+          <h2>
+            <i className="fa-solid fa-user-plus"></i> Registrarse
+          </h2>
           <br />
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -183,8 +185,8 @@ function Register() {
                 required
               />
             </div>
-            <p className='mt-4 text-center'>La contraseña debe contener al menos:</p>
-            <ul className='mt-2'>
+            <p className="mt-4 text-center">La contraseña debe contener al menos:</p>
+            <ul className="mt-2">
               <li>12 caracteres</li>
               <li>Una letra mayúscula</li>
               <li>Un número</li>
@@ -194,48 +196,45 @@ function Register() {
             <div className="form-group">
               <label>
                 <input
-                  id='checkbox_aceptar'
+                  id="checkbox_aceptar"
                   type="checkbox"
                   checked={isTermsAccepted}
                   onChange={() => setIsTermsAccepted(!isTermsAccepted)}
                 />
-                Acepto los<a id="a_terminos" href="#" onClick={() => setIsModalOpen(true)}>términos y condiciones.</a>
+                Acepto los
+                <a
+                  id="a_terminos"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsModalOpen(true);
+                  }}
+                >
+                  términos y condiciones.
+                </a>
               </label>
             </div>
 
-            <button type="submit" className="login-button mt-3 mb-2" disabled={isLoading || !isTermsAccepted}>
-              {isLoading ? (
-                <div className="text-center text-white spinner"></div>
-              ) : (
-                'Registrarse'
-              )}
+            <button
+              type="submit"
+              className="login-button mt-3 mb-2"
+              disabled={isLoading || !isTermsAccepted}
+            >
+              {isLoading ? <div className="text-center text-white spinner"></div> : "Registrarse"}
             </button>
           </form>
 
           <div className="register-link">
-            <p>¿Ya tienes una cuenta? <br /> <a href="/login">Inicia sesión aquí</a></p>
+            <p>
+              ¿Ya tienes una cuenta? <br />
+              <a href="/login">Inicia sesión aquí</a>
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Modal de aceptación de términos */}
-      <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <><i className="fa-solid fa-scale-balanced pe-2"></i> Términos y condiciones</>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        <p><strong>Recopilación de Datos:</strong></p>
-        <p>Al registrarte en nuestro sitio web, aceptas que recopilamos y procesamos los siguientes datos de forma automática:</p>
-        <ul>
-          <li><strong>Dirección IP:</strong> Usamos tu dirección IP para identificar tu ubicación geográfica y mejorar la seguridad de nuestro sitio en caso de un uso indebido.</li>
-          <li><strong>Tipo de dispositivo, navegador web y sistema operativo utilizado</strong> para acceder a Porta Cloud. Esta información nos ayuda a optimizar la experiencia de usuario y garantizar la compatibilidad con diferentes plataformas así como tener un mecanismo de diferenciación de los dispositivos conectados.</li>
-        </ul>
-        <p>Esta información es utilizada exclusivamente para mejorar la funcionalidad del sitio y la experiencia de usuario, así como para fines de seguridad. Nos comprometemos a proteger tu información personal.</p>
-        </Modal.Body>
-      </Modal>
-    </div >
+      <TermsModal show={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </div>
   );
 }
 

@@ -1296,6 +1296,20 @@ margin-left: -5px;
   }
 }
 
+@keyframes cargando-animacion-oscuro {
+  0% {
+    color: #ffffff;
+  }
+
+  50% {
+    color: #7e7e7e;
+  }
+
+  100% {
+    color: #ffffff;
+  }
+}
+
 
 /* ========== ESTILOS DEL APARTADO DE AYUDA ========== */
 .tabla_ayuda {
@@ -1733,5 +1747,11 @@ margin-left: -5px;
 
   .boton_registrar:active {
     filter: brightness(0.5);
+  }
+
+  #comprobar_rol {
+    color: #ffffff;
+    font-style: italic;
+    animation: cargando-animacion-oscuro 0.8s ease-in-out;
   }
 }

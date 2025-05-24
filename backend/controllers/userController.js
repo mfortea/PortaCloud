@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Log = require('../models/Log');
+const Device = require('../models/Device');
+const SavedItem = require('../models/SavedItem');
 
 exports.getProfile = async (req, res) => {
   try {
