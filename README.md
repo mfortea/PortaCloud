@@ -2,7 +2,7 @@
 # PortaCloud: Gestor de Portapapeles Multiplataforma con Sincronización en la Nube  
 Trabajo de Fin de Grado para el Grado en Ingeniería Informática. Universidad de Córdoba (UCO)
 
-![Logo de PortaCloud](frontend/portacloud/public/favicon.ico)
+![Captura del Dashbboard de PortaCloud](frontend/portacloud/public/captura.png)
 
 ---
 
