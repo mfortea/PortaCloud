@@ -1,4 +1,5 @@
 
+![Logo de PortaCloud](frontend/portacloud/public/logo_horizontal.png)
 # PortaCloud: Gestor de Portapapeles Multiplataforma con Sincronización en la Nube  
 Trabajo de Fin de Grado para el Grado en Ingeniería Informática. Universidad de Córdoba (UCO)
 
