@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Modal, Button, Form } from "react-bootstrap"; 
-import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -280,7 +279,7 @@ export default function AdminPage() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/auth/register`,
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/users`,
         {
           method: "POST",
           headers: {
@@ -300,7 +299,7 @@ export default function AdminPage() {
         await fetchUsers();
         await fetchLogs();
       } else {
-        toast.error("Error al crear el usuario");
+        toast.error("Error al crear el usuario. Comprueba que el usuario/email no exista");
       }
     } catch (error) {
       toast.error("Error de conexión");
@@ -311,9 +310,9 @@ export default function AdminPage() {
     return <h3 id="comprobar_rol" className="text-center">Comprobando rol del usuario...</h3>;
   }
 
+  <ToastContainer />
   return (
     <div className="container py-5 zoom-al_cargar">
-      <ToastContainer />
       <h1 className="text-center">
         <i className="fa-solid fa-user-shield"></i> Administración de Usuarios
       </h1>

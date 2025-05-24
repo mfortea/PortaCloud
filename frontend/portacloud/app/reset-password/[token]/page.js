@@ -16,29 +16,32 @@ export default function ResetPasswordPage() {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
   const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
 
     if (!token) {
       toast.error('Token de recuperación inválido');
+      setIsLoading(false);
       return;
     }
 
     if (!newPassword || !confirmPassword) {
       toast.error('Ambos campos son obligatorios');
+      setIsLoading(false);
       return;
     }
 
     if (!passwordRegex.test(newPassword)) {
       toast.error('La contraseña no cumple los mínimos establecidos');
+      setIsLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
       toast.error('Las contraseñas no coinciden');
+      setIsLoading(false);
       return;
     }
-
-    setIsLoading(true);
 
     try {
       const response = await fetch(`${serverUrl}/auth/reset-password/${token}`, {

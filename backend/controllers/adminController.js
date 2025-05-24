@@ -15,7 +15,11 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.createUser = async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, password, role, email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "El correo electrónico es obligatorio" });
+  }
 
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   if (!passwordRegex.test(password)) {
@@ -25,13 +29,13 @@ exports.createUser = async (req, res) => {
   }
 
   try {
-    const userExists = await User.findOne({ username });
+    const userExists = await User.findOne({ $or: [{ username }, { email }] });
     if (userExists) {
-      return res.status(400).json({ message: "El nombre de usuario ya existe" });
+      return res.status(400).json({ message: "El nombre de usuario o correo electrónico ya existe" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword, role });
+    const newUser = new User({ username, password: hashedPassword, role, email });
     await newUser.save();
 
     res.status(201).json({ message: "Usuario creado exitosamente" });

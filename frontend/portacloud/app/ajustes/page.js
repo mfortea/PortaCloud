@@ -28,6 +28,8 @@ export default function Ajustes() {
   const [loading, setLoading] = useState(true);
   const [closing, setClosing] = useState(false);
   const [modalImage, setModalImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
 
   const cerrarModal = (modalType) => {
     setClosing(true);
@@ -107,13 +109,22 @@ export default function Ajustes() {
   };
 
   const handleUpdatePassword = async () => {
+    setIsLoading(true);
     if (newPassword !== confirmPassword) {
       toast.error("Las contraseñas no coinciden");
+      setIsLoading(false);
       return;
     }
 
     if (!currentPassword) {
       toast.error("Ingresa tu contraseña actual");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!passwordRegex.test(newPassword)) {
+      toast.error('La contraseña no cumple los mínimos establecidos');
+      setIsLoading(false);
       return;
     }
 
@@ -144,6 +155,8 @@ export default function Ajustes() {
     } catch (error) {
       console.error("Error en handleUpdatePassword:", error);
       toast.error("Error de conexión");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -420,6 +433,14 @@ export default function Ajustes() {
                 ></button>
               </div>
               <div className="modal-body">
+              <p className='small'>La contraseña debe contener al menos:</p>
+              <ul className='mt-2 small'>
+                <li>12 caracteres</li>
+                <li>Una letra mayúscula</li>
+                <li>Un número</li>
+                <li>Un símbolo especial (!,#,$, etc)</li>
+              </ul>
+              <br></br>
                 <input
                   type="password"
                   className="form-control mb-3"
@@ -437,17 +458,18 @@ export default function Ajustes() {
                 <input
                   type="password"
                   className="form-control"
-                  placeholder="Confirmar nueva contraseña"
+                  placeholder="Repetir nueva contraseña"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
               <div className="modal-footer">
-                <button
-                  className="btn botones_ajustes w-100 btn-success"
-                  onClick={handleUpdatePassword}
-                >
-                  Actualizar contraseña
+                <button className="btn botones_ajustes w-100 btn-success" onClick={handleUpdatePassword} disabled={isLoading}>
+                {isLoading ? (
+                <div className="text-center text-white spinner"></div>
+              ) : (
+                "Cambiar contraseña"
+              )}
                 </button>
                 <button
                   className="btn botones_ajustes w-100 btn-primary"
