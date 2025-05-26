@@ -867,7 +867,7 @@ export default function Dashboard() {
         ) : (
           <div className="text-center">
             <h3>No se han encontrado dispositivos</h3>
-            <h4>Inicia sesión con tu cuenta {user.username} en otro dispositivo</h4>
+            <h4>Inicia sesión con tu cuenta en otro dispositivo</h4>
           </div>
         )}
       </div>
