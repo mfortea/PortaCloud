@@ -5,7 +5,7 @@ import { MdUpdate } from "react-icons/md";
 export const metadata = {
     title: 'Ayuda | PortaCloud',
     description: 'Manual de uso de PortaCloud',
-  };
+};
 
 export default function NotSupported() {
     return (
@@ -105,7 +105,7 @@ export default function NotSupported() {
                                     <i className="fa fa-remove" aria-hidden="true"></i>
                                 </button>
                             </td>
-                            <td>Dashboard, Guardados</td>    
+                            <td>Dashboard, Guardados</td>
                             <td>Limpia el contenido del portapapeles / Borra un elemento guardado.</td>
                         </tr>
                         <tr>
@@ -122,14 +122,14 @@ export default function NotSupported() {
                         </tr>
                         <tr>
                             <td>
-                            <button
-                            className="boton_aux boton_mostrar p-0 text-decoration-none"
-                            title="Mostrar/Ocultar el texto completo"
-                          ><i className="fa fa-eye pe-2"></i>Mostrar más</button>
-                                                      <button
-                            className="boton_aux boton_mostrar p-0 text-decoration-none"
-                            title="Mostrar/Ocultar el texto completo"
-                          ><i className="fa fa-eye pe-2"></i>Mostrar menos</button>
+                                <button
+                                    className="boton_aux boton_mostrar p-0 text-decoration-none"
+                                    title="Mostrar/Ocultar el texto completo"
+                                ><i className="fa fa-eye pe-2"></i>Mostrar más</button>
+                                <button
+                                    className="boton_aux boton_mostrar p-0 text-decoration-none"
+                                    title="Mostrar/Ocultar el texto completo"
+                                ><i className="fa fa-eye pe-2"></i>Mostrar menos</button>
                             </td>
                             <td>Dashboard, Guardados</td>
                             <td>Se muestra cuando el texto guardado supera los 500 caracteres. Pliega/despliega la totalidad del texto.</td>
@@ -146,13 +146,22 @@ export default function NotSupported() {
                     </tbody>
                 </table>
                 <br></br>
+            </div>
+            <hr></hr>
+            <br></br>
+            <h2><i className="fa-solid fa-tower-broadcast pe-2"></i> ¿Cómo ver el portapapeles de mis dispositivos?</h2>
+            <p>Para poder ver el contenido del portapapeles de otro dispositivo ajeno al actual debe iniciar sesión en la misma cuenta en otro dispositivo, acceder al Dashboard y esperar a que aparazca automáticamente en la sección de "Dispositivos conectados".</p>
+            <p>Desde aquí se mostrará el tipo de dispositivo que se ha conectado (smartphone, tablet u ordenador de escritorio) y el sistema operativo y navegador desde el que se está conectando</p>
+            <img src="/dispositivo_conectado.png" alt="Captura de un dispositivo conectado en el Dashboard" className="img-fluid mb-3"
+                style={{ width: 350 }} />
+            <br></br>
             <hr></hr>
             <br></br>
             <h2><i className="fa-solid fa-clipboard pe-2"></i> Copiado directo al portapapeles</h2>
             <p>Si queremos copiar el contenido de otro dispositivo conectado (también aplica a algo que tengamos en Guardados) simplemente debemos hacer clic sobre el contenido y éste se copiará a nuestro portapapeles local</p>
             <img src="/copiar.png" alt="Captura del funcionamiento del copiado al portapapeles local de otro portapapeles" className="img-fluid mb-3"
                 style={{ width: 350 }} />
-            </div>
+
             <br></br>
             <hr></hr>
             <br></br>
