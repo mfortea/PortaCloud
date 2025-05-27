@@ -1562,7 +1562,7 @@ margin-left: -5px;
   .offcanvas-xl,
   .offcanvas-xxl {
     --bs-offcanvas-bg: unset;
-    background: rgba(34, 34, 34, 0.945) !important;
+    background: rgba(29, 29, 29, 0.945) !important;
     z-index: 1000;
     transition: background-color 0.3s ease-in-out;
   }
