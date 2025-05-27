@@ -803,10 +803,8 @@ input:hover {
   background-clip: padding-box;
   outline: 0;
   transition: var(--bs-offcanvas-transition);
-  background-color: #ffffffbd !important;
+  background-color: #e0e0e0ea !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   transition: background-color 0.3s ease-in-out;
 }
@@ -1564,9 +1562,7 @@ margin-left: -5px;
   .offcanvas-xl,
   .offcanvas-xxl {
     --bs-offcanvas-bg: unset;
-    background: rgb(28 28 28 / 79%) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(34, 34, 34, 0.945) !important;
     z-index: 1000;
     transition: background-color 0.3s ease-in-out;
   }
