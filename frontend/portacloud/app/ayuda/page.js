@@ -150,7 +150,7 @@ export default function NotSupported() {
             <hr></hr>
             <br></br>
             <h2><i className="fa-solid fa-tower-broadcast pe-2"></i> ¿Cómo ver el portapapeles de mis dispositivos?</h2>
-            <p>Para poder ver el contenido del portapapeles de otro dispositivo ajeno al actual debe iniciar sesión en la misma cuenta en otro dispositivo, acceder al Dashboard y esperar a que aparazca automáticamente en la sección de "Dispositivos conectados".</p>
+            <p>Para poder ver el contenido del portapapeles de otro dispositivo ajeno al actual debe iniciar sesión en la misma cuenta en otro dispositivo, acceder al Dashboard y esperar a que aparezca automáticamente en la sección de "Dispositivos conectados".</p>
             <p>Desde aquí se mostrará el tipo de dispositivo que se ha conectado (smartphone, tablet u ordenador de escritorio) y el sistema operativo y navegador desde el que se está conectando</p>
             <img src="/dispositivo_conectado.png" alt="Captura de un dispositivo conectado en el Dashboard" className="img-fluid mb-3"
                 style={{ width: 350 }} />
