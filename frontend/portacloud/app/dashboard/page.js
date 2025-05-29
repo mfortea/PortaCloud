@@ -13,6 +13,7 @@ import { MdDevices } from "react-icons/md";
 import { MdUpdate } from "react-icons/md";
 import { MdUpdateDisabled } from "react-icons/md";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { Modal, Button, Form } from "react-bootstrap";
 import io from "socket.io-client";
 
 import { Nav } from "react-bootstrap";
@@ -361,11 +362,11 @@ export default function Dashboard() {
   useEffect(() => {
     if (!isProblematicBrowser && autoRefreshClipboard) {
       let interval;
-  
+
       const update = () => {
         actualizarPortapapeles();
       };
-  
+
       const visibilityChangeHandler = () => {
         if (document.visibilityState === "visible") {
           update();
@@ -374,21 +375,21 @@ export default function Dashboard() {
           clearInterval(interval);
         }
       };
-  
+
       document.addEventListener("visibilitychange", visibilityChangeHandler);
-  
+
       if (document.visibilityState === "visible") {
         update();
         interval = setInterval(update, TIEMPO_ACTUALIZACION);
       }
-  
+
       return () => {
         clearInterval(interval);
         document.removeEventListener("visibilitychange", visibilityChangeHandler);
       };
     }
   }, [isProblematicBrowser, autoRefreshClipboard]);
-  
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -619,37 +620,45 @@ export default function Dashboard() {
       </h1>
 
       {showBrowserModal && (
-        <div className="modal show" style={{ display: "block" }}>
-          <div className="modal-dialog">
-            <div className="modal-content text-center">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className="fa-solid fa-triangle-exclamation"></i> Aviso para navegadores
-                </h5>
-                <button type="button" className="btn-close" onClick={() => setShowBrowserModal(false)}></button>
-              </div>
-              <div className="modal-body justify-content">
-                <div className="d-flex justify-content-center gap-3 mb-4">
-                  <img src="/safari.png" style={{ width: 80 }} alt="Safari" />
-                  <img src="/firefox.png" style={{ width: 80 }} alt="Firefox" />
-                </div>
-                <h2>Limitaciones en Safari y Firefox</h2>
-                <br />
-                <p>Estos navegadores no soportan funciones como la actualización automática del portapapeles y el soporte para copiar imágenes al portapapeles.</p>
-                <p>Para leer el contenido del portapapeles deberá utilizar el botón de lectura de portapapeles. Puede ver más información en el apartado de Ayuda </p>
-                <p>Para una mejor compatibilidad se recomienda usar Google Chrome o Microosft Edge</p>
-              </div>
-              <div className="modal-footer">
-                <a className="btn text-center botones_ajustes w-100 btn-success" href="/ayuda">
-                  <i className="fa-solid fa-circle-question pe-2"></i> Ir a Ayuda
-                </a>
-                <button className="btn botones_ajustes w-100 btn-primary" onClick={() => setShowBrowserModal(false)}>
-                  Entendido
-                </button>
-              </div>
+        <Modal show={showBrowserModal} onHide={() => setShowBrowserModal(false)} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <i className="fa-solid fa-triangle-exclamation"></i> Aviso para navegadores
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-center">
+            <div className="d-flex justify-content-center gap-3 mb-4">
+              <img src="/safari.png" style={{ width: 80 }} alt="Safari" />
+              <img src="/firefox.png" style={{ width: 80 }} alt="Firefox" />
             </div>
-          </div>
-        </div>
+            <h2>Limitaciones en Safari y Firefox</h2>
+            <br />
+            <p>
+              Estos navegadores no soportan funciones como la actualización automática del portapapeles y el soporte para copiar imágenes al portapapeles.
+            </p>
+            <p>
+              Para leer el contenido del portapapeles deberá utilizar el botón de lectura de portapapeles. Puede ver más información en el apartado de Ayuda
+            </p>
+            <p>
+              Para una mejor compatibilidad se recomienda usar Google Chrome o Microsoft Edge
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              className="btn botones_ajustes w-100 btn-success"
+              onClick={() => router.push("/ayuda")}
+            >
+              <i className="fa-solid fa-circle-question pe-2"></i> Ir a Ayuda
+            </Button>
+
+            <Button
+              className="btn botones_ajustes w-100 btn-primary"
+              onClick={() => setShowBrowserModal(false)}
+            >
+              Entendido
+            </Button>
+          </Modal.Footer>
+        </Modal>
       )}
 
       {notification.message && (
