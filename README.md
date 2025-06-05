@@ -49,7 +49,7 @@ Trabajo de Fin de Grado para el Grado en Ingeniería Informática. Universidad d
 
 ```bash
 cd backend
-npm install
+npm i
 node server.js
 ```
 
@@ -59,8 +59,8 @@ El backend corre por defecto en `http://localhost:5000` (revisar configuración)
 
 ```bash
 cd frontend/portacloud
-npm install
-npm run dev
+npm i
+npm run dev -p 3000
 ```
 
 Frontend disponible en `http://localhost:3000`  
