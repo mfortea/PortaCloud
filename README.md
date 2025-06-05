@@ -69,7 +69,7 @@ Frontend disponible en `http://localhost:3000`
 
 ## 🌍 Despliegue online
 
-- **Backend:** https://portacloud-backend.onrender.com  
+- **Backend:** https://portacloud-backend.onrender.com  (y en servidor alternativo)
 - **Frontend:** https://portacloud.vercel.app  
 - **Base de datos:** MongoDB Atlas (servicio en la nube)  
 
@@ -91,10 +91,13 @@ Frontend disponible en `http://localhost:3000`
 
 ## 🔧 Configuración y variables de entorno (backend)
 
-- `MONGODB_URI`: URL de conexión a MongoDB Atlas  
+- `MONGO_URI`: URL de conexión a MongoDB Atlas  
 - `JWT_SECRET`: Clave secreta para la firma de tokens JWT  
 - `PORT`: Puerto donde se ejecuta el backend (por defecto 5000)  
-- Otros parámetros relacionados con Passport y configuración de subida de archivos  
+- `GMAIL_USER`: Cuenta de correo electrónico (de Gmail) usada para la recuperación de la contraseña
+- `GMAIL_USER`: Contraseña (del tipo contraseña de aplicación) de la cuenta anterior
+- `CLIENT_URL`: URL donde se encuentra el frontend
+- `ENCRYPTION_SECRET_KEY`: Clave hexadecimal de 32 caracteres usada para la encriptación
 
 ---
 
