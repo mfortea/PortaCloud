@@ -18,7 +18,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+  
     try {
       const res = await fetch(`${serverUrl}/auth/login`, {
         method: "POST",
@@ -26,16 +26,21 @@ function Login() {
         body: JSON.stringify({ login, password }),
       });
   
-      const data = await res.json(); 
-      
+      // Verificamos que el fetch no haya fallado antes de intentar .json()
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (jsonError) {
+        console.warn("Respuesta no válida JSON:", jsonError);
+      }
+  
       if (!res.ok) {
         throw new Error(data.message || "Error en la autenticación");
       }
   
       localStorage.setItem("token", data.token);
       localStorage.setItem("deviceId", data.deviceId);
-      
-
+  
       await authLogin({
         username: data.username,
         email: data.email,
@@ -47,21 +52,29 @@ function Login() {
   
       router.push("/dashboard");
       router.refresh();
-  
     } catch (error) {
       console.error("Error completo:", error);
-      toast.error(error.message || "Error al contactar con el servidor", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+  
+      const isNetworkError = error.message === "Failed to fetch";
+  
+      toast.error(
+        isNetworkError
+          ? "Error: No se ha podido establecer conexión con el servidor"
+          : error.message || "Error inesperado",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="login-landing-page">

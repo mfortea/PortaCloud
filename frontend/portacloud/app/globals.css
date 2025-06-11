@@ -313,12 +313,13 @@ a_boton {
 /* ========== ESTILOS DE AJUSTES ========== */
 
 .botones_ajustes {
-  height: 60px;
+  height: 70px;
   margin-bottom: 20px;
   width: 100%;
   font-size: 20px !important;
   transition: all 0.5 ease;
   border-radius: 30px !important;
+  padding: 2px !important;
 }
 
 .botones_ajustes.btn-primary {
