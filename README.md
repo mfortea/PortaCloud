@@ -89,7 +89,7 @@ Frontend disponible en `http://localhost:3000`
 
 ---
 
-## 🔧 Configuración y variables de entorno (backend)
+## 🔧 Variables de entorno (.env) - Backend
 
 - `MONGO_URI`: URL de conexión a MongoDB Atlas  
 - `JWT_SECRET`: Clave secreta para la firma de tokens JWT  
@@ -98,6 +98,11 @@ Frontend disponible en `http://localhost:3000`
 - `GMAIL_USER`: Contraseña (del tipo contraseña de aplicación) de la cuenta anterior
 - `CLIENT_URL`: URL donde se encuentra el frontend
 - `ENCRYPTION_SECRET_KEY`: Clave hexadecimal de 32 caracteres usada para la encriptación
+---
+
+## 🔧 Variables de entorno (.env) - Frontend
+
+- `NEXT_PUBLIC_SERVER_IP`: URL del backend 
 
 ---
 
