@@ -302,7 +302,8 @@ export default function AdminPage() {
         await fetchUsers();
         await fetchLogs();
       } else {
-        toast.error("Error al crear el usuario. Verifica los datos.");
+        const errorData = await response.json();
+        toast.error("Error al crear el usuario: " + (errorData.message || "Error desconocido"));
       }
     } catch (error) {
       toast.error("Error de conexión");

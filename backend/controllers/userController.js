@@ -128,6 +128,8 @@ exports.deleteAccount = async (req, res) => {
       userAgent: req.headers['user-agent']
     }).save();
 
+    
+
     res.json({ message: "Cuenta y datos asociados eliminados correctamente" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar la cuenta", error: error.message });

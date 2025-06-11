@@ -18,8 +18,7 @@ import BackupModal from "../../components/modals/BackupModal";
 
 export default function Ajustes() {
   const router = useRouter();
-  const { user, updateUser } = useAuth();
-
+  const { user, updateUser, logout } = useAuth();
   const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -135,6 +134,25 @@ export default function Ajustes() {
     }
   };
 
+
+  const handleLogout = () => {
+    const token = localStorage.getItem("token");
+    const deviceId = localStorage.getItem("deviceId");
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
+
+    fetch(`${serverUrl}/auth/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ deviceId }),
+    }).finally(() => {
+      logout();
+      router.push("/login");
+    });
+  };
+
   const handleDeleteAccount = async () => {
     if (!deletePassword) {
       toast.error("Ingresa tu contraseña para confirmar");
@@ -153,8 +171,6 @@ export default function Ajustes() {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.clear();
-        router.push("/login");
         toast.success("Cuenta eliminada correctamente");
       } else {
         toast.error(data.message || "Error al eliminar la cuenta");
@@ -163,6 +179,9 @@ export default function Ajustes() {
       console.error("Error en handleDeleteAccount:", error);
       toast.error("Error de conexión");
     }
+
+    handleLogout();
+
   };
 
   const handleDeleteSaved = async () => {

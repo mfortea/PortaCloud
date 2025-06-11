@@ -21,7 +21,7 @@ exports.createUser = async (req, res) => {
     return res.status(400).json({ message: "El correo electrónico es obligatorio" });
   }
 
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
   if (!passwordRegex.test(password)) {
     return res.status(400).json({ 
       message: "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números" 
