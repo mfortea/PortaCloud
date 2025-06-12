@@ -514,7 +514,7 @@ export default function Guardados() {
           {viewMode === "grid" ? (
             <div className="row">
               {currentItems.map((item) => (
-                <div key={item._id} className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4">
+                <div key={item._id} className="col-12 col-md-6 col-lg-4 mb-4">
                   <div className="device-card shadow-lg">
                     <div className="card-body text-center">
                       <div className="d-flex justify-content-center align-items-center mt-3 gap-2 mb-3">

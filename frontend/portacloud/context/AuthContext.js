@@ -43,37 +43,41 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const verifyAuth = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setAuthChecked(true);
-        return;
-      }
+const verifyAuth = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    setAuthChecked(true);
+    return;
+  }
 
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}/user/profile`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_IP}/user/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser({
-            userId: data.userId,
-            username: data.username,
-            email: data.email,
-            role: data.role,
-            resetPasswordToken: data.resetPasswordToken,
-            resetPasswordExpires: data.resetPasswordExpires,
-            createdAt: data.createdAt,
-            lastLogin: data.lastLogin
-          });
-        }
-      } catch (error) {
-        console.error("Auth verification error:", error);
-      } finally {
-        setAuthChecked(true);
-      }
-    };
+    if (response.ok) {
+      const data = await response.json();
+      setUser({
+        userId: data.userId,
+        username: data.username,
+        email: data.email,
+        role: data.role,
+        resetPasswordToken: data.resetPasswordToken,
+        resetPasswordExpires: data.resetPasswordExpires,
+        createdAt: data.createdAt,
+        lastLogin: data.lastLogin
+      });
+    } else {
+      logout();
+    }
+  } catch (error) {
+    console.error("Auth verification error:", error);
+    logout(); 
+  } finally {
+    setAuthChecked(true);
+  }
+};
+
 
     verifyAuth();
   }, []);
