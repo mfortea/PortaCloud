@@ -67,6 +67,7 @@ export default function Dashboard() {
 
   const actualizarPortapapeles = async () => {
     try {
+      if (!document.hasFocus()) return;
       if (!navigator.clipboard) return;
 
       let newClipboardContent = null;
