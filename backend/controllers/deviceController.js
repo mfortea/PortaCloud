@@ -70,7 +70,6 @@ exports.getDevices = async (req, res) => {
   try {
     const devices = await Device.find({ userId: req.user.userId }).select("deviceId os browser deviceType clipboardContent");
 
-    // Resolvemos clipboardContent para que sea nombre archivo y no ObjectId
     const devicesResolved = await Promise.all(
       devices.map(async (device) => {
         const resolvedClipboardContent = await resolveClipboardContent(device.clipboardContent);

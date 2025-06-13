@@ -31,6 +31,7 @@ export default function Dashboard() {
   const [saving, setSaving] = useState(false);
   const [notification, setNotification] = useState({ message: "", type: "" });
   const [showAlert, setShowAlert] = useState(false);
+  const { logout } = useAuth();
   const [clipboardAnimation, setClipboardAnimation] = useState(false);
   const platform = require('platform');
   const [loadingDevices, setLoadingDevices] = useState(false);
@@ -45,6 +46,7 @@ export default function Dashboard() {
   const MAX_CONTENT_SIZE_BYTES = 10 * 1024 * 1024;
   const TEXT_PREVIEW_LENGTH = 500;
   const TIEMPO_ACTUALIZACION = 3000;
+
 
   useEffect(() => {
     if (!user) {
@@ -266,72 +268,8 @@ export default function Dashboard() {
     };
   }, [clipboardContent]);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const deviceId = localStorage.getItem("deviceId");
 
-    const handleLogout = async () => {
-      try {
-        await fetch(`${serverUrl}/auth/logout`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ deviceId }),
-        });
-        localStorage.removeItem("token");
-        localStorage.removeItem("deviceId");
-        router.push("/login");
-      } catch (error) {
-        console.error("Error al cerrar sesión:", error);
-      }
-    };
-
-    const inactivityTimer = setTimeout(() => {
-      handleLogout();
-    }, 10 * 60 * 1000); // 10 minutos de inactividad
-
-    window.addEventListener("mousemove", () => clearTimeout(inactivityTimer));
-    window.addEventListener("keydown", () => clearTimeout(inactivityTimer));
-    window.addEventListener("click", () => clearTimeout(inactivityTimer));
-
-    return () => {
-      clearTimeout(inactivityTimer);
-      window.removeEventListener("mousemove", () => clearTimeout(inactivityTimer));
-      window.removeEventListener("keydown", () => clearTimeout(inactivityTimer));
-      window.removeEventListener("click", () => clearTimeout(inactivityTimer));
-    };
-  }, []);
-
-
-  useEffect(() => {
-    let inactivityTimer;
-
-    const resetInactivityTimer = () => {
-      clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("deviceId");
-        router.push("/login"); // Redirige al login tras la inactividad
-      }, 10 * 60 * 1000); // 10 minutos de inactividad
-    };
-
-    // Detectar eventos de usuario
-    window.addEventListener("mousemove", resetInactivityTimer);
-    window.addEventListener("keydown", resetInactivityTimer);
-    window.addEventListener("click", resetInactivityTimer);
-
-    resetInactivityTimer();
-
-    return () => {
-      clearTimeout(inactivityTimer);
-      window.removeEventListener("mousemove", resetInactivityTimer);
-      window.removeEventListener("keydown", resetInactivityTimer);
-      window.removeEventListener("click", resetInactivityTimer);
-    };
-  }, []);
-
+  
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
     const isSafari = userAgent.includes('safari') && !userAgent.includes('chrome');

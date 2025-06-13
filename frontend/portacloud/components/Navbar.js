@@ -10,23 +10,6 @@ export default function AppNavbar() {
   const router = useRouter();
   const [showOffcanvas, setShowOffcanvas] = useState(false);
 
-  const handleLogout = () => {
-    const token = localStorage.getItem("token");
-    const deviceId = localStorage.getItem("deviceId");
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
-
-    fetch(`${serverUrl}/auth/logout`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ deviceId }),
-    }).finally(() => {
-      logout();
-      router.push("/login");
-    });
-  };
 
   if (!user) {
     return null;
@@ -83,7 +66,7 @@ export default function AppNavbar() {
                   <Nav.Link href="/ajustes">
                     <i className="fa-solid fa-gear"></i> Ajustes
                   </Nav.Link>
-                  <Nav.Link onClick={handleLogout} className="text-danger">
+                  <Nav.Link onClick={logout} className="text-danger">
                     <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
                   </Nav.Link>
                 </div>
@@ -125,7 +108,7 @@ export default function AppNavbar() {
               <NavDropdown.Item href="/ajustes">
                 <i className="fa-solid fa-gear"></i> Ajustes
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={handleLogout} className="text-danger">
+              <NavDropdown.Item onClick={logout} className="text-danger">
                 <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
               </NavDropdown.Item>
             </NavDropdown>

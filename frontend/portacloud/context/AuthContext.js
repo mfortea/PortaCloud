@@ -2,12 +2,15 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const router = useRouter();
+
 
   const login = (userData) => {
     setUser({
@@ -24,11 +27,24 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("deviceId");
-  };
+    const token = localStorage.getItem("token");
+    const deviceId = localStorage.getItem("deviceId");
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
+    fetch(`${serverUrl}/auth/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ deviceId }),
+    }).finally(() => {
+      setUser(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("deviceId");
+      router.push("/login");
+    });
+  };
   const updateUser = (updatedUser) => {
     setUser({
       userId: updatedUser.userId,
