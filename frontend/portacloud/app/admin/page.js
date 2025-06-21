@@ -38,6 +38,7 @@ export default function AdminPage() {
   const [showDownloadLogsModal, setShowDownloadLogsModal] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState("json");
 
+
   const closeModal = () => setShowModal(false);
   const closeDownloadModal = () => {
     setTimeout(() => {
@@ -112,7 +113,7 @@ export default function AdminPage() {
       if (response.ok) {
         const data = await response.json();
         setLogs(data.logs);
-        setTotalLogs(data.totalLogs);
+        setTotalLogs(data.total);
       } else {
         toast.error("Error al obtener los logs");
       }
@@ -156,37 +157,84 @@ export default function AdminPage() {
     setShowDownloadUsersModal(false);
   };
 
-  const downloadLogs = () => {
-    let content;
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const filename = `logs-portacloud-${timestamp}.${downloadFormat}`;
-
-    if (downloadFormat === "json") {
-      content = JSON.stringify(logs, null, 2);
-      const blob = new Blob([content], { type: "application/json" });
-      downloadFile(blob, filename);
-    } else if (downloadFormat === "csv") {
-      const headers = ["Timestamp", "User", "Action", "IP Address", "Details"];
-      const rows = logs.map(log => [
-        `"${format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}"`,
-        `"${log.userId?.username || 'Sistema'}"`,
-        `"${getActionDescription(log.action, log.details)}"`,
-        `"${log.ipAddress}"`,
-        log.details ? `"${log.details.os} · ${log.details.browser}"` : '""'
-      ]);
-
-      const csvContent = [
-        headers.join(","),
-        ...rows.map(row => row.join(","))
-      ].join("\n");
-
-      const blob = new Blob([csvContent], { type: "text/csv" });
-      downloadFile(blob, filename);
+  const downloadLogs = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      let allLogs = [];
+      let page = 1;
+      const pageSize = 100; // Máximo que tu backend permite (100)
+  
+      // Primer llamada para obtener totalPages
+      const firstResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/logs?page=${page}&limit=${pageSize}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      if (!firstResponse.ok) {
+        toast.error("Error al obtener logs");
+        return;
+      }
+  
+      const firstData = await firstResponse.json();
+      allLogs = allLogs.concat(firstData.logs);
+      const totalPages = firstData.totalPages;
+  
+      // Si hay más páginas, traerlas
+      while (page < totalPages) {
+        page++;
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/logs?page=${page}&limit=${pageSize}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!response.ok) {
+          toast.error("Error al obtener logs en página " + page);
+          return;
+        }
+        const data = await response.json();
+        allLogs = allLogs.concat(data.logs);
+      }
+  
+  
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const filename = `logs-portacloud-${timestamp}.${downloadFormat}`;
+  
+      if (downloadFormat === "json") {
+        const content = JSON.stringify(allLogs, null, 2);
+        const blob = new Blob([content], { type: "application/json" });
+        downloadFile(blob, filename);
+      } else if (downloadFormat === "csv") {
+        const headers = ["Timestamp", "User", "Action", "IP Address", "Details"];
+        const rows = allLogs.map(log => [
+          `"${format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}"`,
+          `"${log.userId?.username || 'Sistema'}"`,
+          `"${getActionDescription(log.action, log.details)}"`,
+          `"${log.ipAddress}"`,
+          log.details ? `"${log.details.os} · ${log.details.browser}"` : '""'
+        ]);
+  
+        const csvContent = [
+          headers.join(","),
+          ...rows.map(row => row.join(","))
+        ].join("\n");
+  
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        downloadFile(blob, filename);
+      }
+  
+      toast.success("Lista completa de logs descargada");
+      setShowDownloadLogsModal(false);
+    } catch (error) {
+      toast.error("Error al descargar logs");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Lista de logs descargada");
-    setShowDownloadLogsModal(false);
   };
+  
 
   const getActionDescription = (action, details) => {
     switch (action) {
@@ -497,16 +545,52 @@ export default function AdminPage() {
           </div>
 
           <div className="pagination mt-3">
-            {Array.from({ length: Math.ceil(totalLogs / logsPerPage) }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => paginate(i + 1)}
-                className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
-              >
-                {i + 1}
-              </button>
-            ))}
+            {(() => {
+              const totalPages = Math.ceil(totalLogs / logsPerPage);
+              const delta = 2; 
+              let range = [];
+              let left = Math.max(2, currentPage - delta);
+              let right = Math.min(totalPages - 1, currentPage + delta);
+
+              range.push(1); 
+
+              if (left > 2) {
+                range.push("left-ellipsis");
+              }
+
+              for (let i = left; i <= right; i++) {
+                range.push(i);
+              }
+
+              if (right < totalPages - 1) {
+                range.push("right-ellipsis");
+              }
+
+              if (totalPages > 1) {
+                range.push(totalPages); 
+              }
+
+              return range.map((page, index) => {
+                if (page === "left-ellipsis" || page === "right-ellipsis") {
+                  return (
+                    <span key={page + index} className="pagination-ellipsis">
+                      ...
+                    </span>
+                  );
+                }
+                return (
+                  <button
+                    key={page}
+                    onClick={() => paginate(page)}
+                    className={`btn btn-sm ${currentPage === page ? 'btn-primary' : 'btn-outline-primary'}`}
+                  >
+                    {page}
+                  </button>
+                );
+              });
+            })()}
           </div>
+
 
         </div>
 
@@ -547,6 +631,7 @@ export default function AdminPage() {
           downloadFormat={downloadFormat}
           setDownloadFormat={setDownloadFormat}
           onDownload={downloadLogs}
+          loading={loading}
         />
 
         <EditUserModal
