@@ -467,7 +467,7 @@ export default function AdminPage() {
                         {log.action === 'logout' && 'Cierre de sesión'}
                         {log.action === 'register' && 'Registro nuevo'}
                         {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
-                        {log.action === 'role_changed' && `Rol cambiado a ${log.details?.newRole}`}
+                        {log.action === 'role_changed' && `Rol de "${log.details?.targetUser}" cambiado a (${log.details?.newRole})`}
                         {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
                         {log.action === 'username_changed' && `Nombre de usuario cambiado: ${log.details?.oldUsername} → ${log.details?.newUsername}`}
                         {log.action === 'password_changed' && 'Contraseña actualizada'}
