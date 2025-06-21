@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [logs, setLogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [logsPerPage] = useState(20);
+  const [totalLogs, setTotalLogs] = useState(0);
   const [isRefreshingLogs, setIsRefreshingLogs] = useState(false);
 
   const [showDownloadUsersModal, setShowDownloadUsersModal] = useState(false);
@@ -66,7 +67,7 @@ export default function AdminPage() {
         router.push("/dashboard");
       } else {
         await fetchUsers();
-        await fetchLogs();
+        await fetchLogs(currentPage);
       }
       setIsCheckingAuth(false);
     };
@@ -97,18 +98,21 @@ export default function AdminPage() {
     }
   };
 
-  const fetchLogs = async () => {
+  const fetchLogs = async (page = currentPage) => {
     setIsRefreshingLogs(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/logs`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/logs?page=${page}&limit=${logsPerPage}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       if (response.ok) {
         const data = await response.json();
-        setLogs(data);
+        setLogs(data.logs);
+        setTotalLogs(data.totalLogs);
       } else {
         toast.error("Error al obtener los logs");
       }
@@ -118,6 +122,7 @@ export default function AdminPage() {
       setIsRefreshingLogs(false);
     }
   };
+
 
   const downloadUsers = () => {
     let content;
@@ -209,11 +214,13 @@ export default function AdminPage() {
     URL.revokeObjectURL(url);
   };
 
-  const indexOfLastLog = currentPage * logsPerPage;
-  const indexOfFirstLog = indexOfLastLog - logsPerPage;
-  const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
+  const currentLogs = logs;
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    fetchLogs(pageNumber);
+  };
+
 
   const openModal = (type, userId = null) => {
     setSelectedUserId(userId);
@@ -261,11 +268,12 @@ export default function AdminPage() {
         `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/users/${selectedUserId}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({
-          admin_user: admin_user,
-        }),
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            admin_user: admin_user,
+          }),
         },
       );
 
@@ -461,7 +469,7 @@ export default function AdminPage() {
                       <td>
                         {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
                       </td>
-                      <td>{ log.username ||'Sistema'}</td>
+                      <td>{log.username || 'Sistema'}</td>
                       <td>
                         {log.action === 'login' && 'Inicio de sesión'}
                         {log.action === 'logout' && 'Cierre de sesión'}
@@ -489,7 +497,7 @@ export default function AdminPage() {
           </div>
 
           <div className="pagination mt-3">
-            {Array.from({ length: Math.ceil(logs.length / logsPerPage) }, (_, i) => (
+            {Array.from({ length: Math.ceil(totalLogs / logsPerPage) }, (_, i) => (
               <button
                 key={i + 1}
                 onClick={() => paginate(i + 1)}
@@ -499,6 +507,7 @@ export default function AdminPage() {
               </button>
             ))}
           </div>
+
         </div>
 
         <br />
@@ -508,7 +517,7 @@ export default function AdminPage() {
         </h2>
         <h4>Realizar copia de seguridad a fichero de los usuarios y logs</h4>
         <br />
-        <button 
+        <button
           className="btn botones_ajustes btn-success"
           onClick={() => setShowDownloadUsersModal(true)}
         >
@@ -516,7 +525,7 @@ export default function AdminPage() {
           Lista de usuarios
         </button>
         <br />
-        <button 
+        <button
           className="btn botones_ajustes btn-success"
           onClick={() => setShowDownloadLogsModal(true)}
         >

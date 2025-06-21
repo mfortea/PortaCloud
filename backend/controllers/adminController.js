@@ -121,11 +121,27 @@ exports.deleteUser = async (req, res) => {
 
 exports.getLogs = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1; 
+    const limit = Math.min(parseInt(req.query.limit) || 25, 100); 
+
+    const skip = (page - 1) * limit;
+
+    const totalLogs = await Log.countDocuments();
+
     const logs = await Log.find()
       .sort({ timestamp: -1 })
-      .limit(50)
+      .skip(skip)
+      .limit(limit)
       .populate('userId', 'username');
-    res.json(logs);
+
+    res.json({
+      logs,
+      total: totalLogs,
+      page,
+      limit,
+      totalPages: Math.ceil(totalLogs / limit),
+    });
+
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los logs", error });
   }
