@@ -1,4 +1,3 @@
-// controllers/userController.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -8,7 +7,7 @@ const SavedItem = require('../models/SavedItem');
 
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("-password");
+    const user = await User.findById(req.user?.userId).select("-password");
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -40,7 +39,7 @@ exports.updateUsername = async (req, res) => {
       return res.status(400).json({ message: "El nombre de usuario ya está en uso" });
     }
 
-    const currentUser = await User.findById(req.user.userId);
+    const currentUser = await User.findById(req.user?.userId);
     if (!currentUser) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -53,13 +52,13 @@ exports.updateUsername = async (req, res) => {
 
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
-      userId: req.user.userId,
+      userId: req.user?.userId || null,
       action: 'username_changed',
-      ipAddress: ipAddress,
+      ipAddress,
       userAgent: req.headers['user-agent'],
       details: {
         oldUsername: currentUser.username,
-        newUsername: newUsername
+        newUsername
       }
     }).save();
 
@@ -76,7 +75,7 @@ exports.updatePassword = async (req, res) => {
       return res.status(400).json({ message: "La contraseña actual y la nueva contraseña son requeridas" });
     }
 
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user?.userId);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -91,9 +90,9 @@ exports.updatePassword = async (req, res) => {
 
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
-      userId: req.user.userId,
+      userId: req.user?.userId || null,
       action: 'password_changed',
-      ipAddress: ipAddress,
+      ipAddress,
       userAgent: req.headers['user-agent']
     }).save();
 
@@ -108,7 +107,7 @@ exports.deleteAccount = async (req, res) => {
     const { password } = req.body;
     if (!password) return res.status(400).json({ message: "La contraseña es requerida" });
 
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user?.userId);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -122,16 +121,18 @@ exports.deleteAccount = async (req, res) => {
 
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
-      userId: req.user.userId,
+      userId: req.user?.userId || null,
       action: 'account_deleted',
-      ipAddress: ipAddress,
-      userAgent: req.headers['user-agent']
+      ipAddress,
+      userAgent: req.headers['user-agent'],
+      details: {
+        deletedUsername: user.username
+      }
     }).save();
-
-    
 
     res.json({ message: "Cuenta y datos asociados eliminados correctamente" });
   } catch (error) {
+    console.warn("deleteAccount error:", error);
     res.status(500).json({ message: "Error al eliminar la cuenta", error: error.message });
   }
 };

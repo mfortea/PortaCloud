@@ -98,6 +98,7 @@ exports.login = async (req, res) => {
 
     await new Log({
       userId: user._id,
+      username: user.user,
       action: 'login',
       ipAddress: ipAddress,
       userAgent: req.headers['user-agent'],

@@ -35,7 +35,9 @@ function Login() {
       }
   
       if (!res.ok) {
-        throw new Error(data.message || "Error en la autenticación");
+        // Extraemos el mensaje del backend (si existe)
+        const backendMessage = data.message || "Error en la autenticación";
+        throw new Error(backendMessage); // Lanzamos el error con el mensaje del backend
       }
   
       localStorage.setItem("token", data.token);
@@ -57,10 +59,11 @@ function Login() {
   
       const isNetworkError = error.message === "Failed to fetch";
   
+      // Mostrar el toast con el mensaje del error o el error por defecto
       toast.error(
         isNetworkError
           ? "Error: No se ha podido establecer conexión con el servidor"
-          : error.message || "Error inesperado",
+          : error.message || "Error inesperado", // Usamos error.message aquí
         {
           position: "top-right",
           autoClose: 3000,
@@ -74,6 +77,8 @@ function Login() {
       setIsLoading(false);
     }
   };
+  
+  
   
 
   return (
