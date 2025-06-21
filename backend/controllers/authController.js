@@ -147,7 +147,7 @@ exports.logout = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: decoded.userId,
-      username: decoded.username,
+      username: req.body.username,
       action: 'logout',
       ipAddress: ipAddress,
       userAgent: req.headers['user-agent']
