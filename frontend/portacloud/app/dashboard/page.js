@@ -269,7 +269,7 @@ export default function Dashboard() {
   }, [clipboardContent]);
 
 
-  
+
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
     const isSafari = userAgent.includes('safari') && !userAgent.includes('chrome');
@@ -365,6 +365,7 @@ export default function Dashboard() {
       safari: "/safari.png",
       edge: "/edge.png",
       firefox: "/firefox.png",
+      opera: "/opera.png",
       equipo: "/equipo.png",
       tablet: "/tablet.png",
       smartphone: "/smartphone.png",
@@ -402,6 +403,8 @@ export default function Dashboard() {
           return logos.firefox;
         case "mobile edge":
           return logos.edge;
+        case "opera":
+          return logos.opera;
         default:
           return logos.default;
       }
