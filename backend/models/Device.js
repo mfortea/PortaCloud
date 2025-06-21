@@ -33,7 +33,6 @@ const deviceSchema = new mongoose.Schema({
   },
   clipboardContent: {
     type: String,
-    default: "Sin contenido",
   },
   contentHash: {
     type: String,

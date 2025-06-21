@@ -499,7 +499,7 @@ export default function Dashboard() {
   const borrarContenido = async () => {
     try {
       await navigator.clipboard.writeText("");
-      setClipboardContent(" ");
+      setClipboardContent("");
     } catch (error) {
       console.error("Error al borrar el portapapeles:", error);
     }
@@ -516,8 +516,8 @@ export default function Dashboard() {
         alt="Imagen temporal"
         className="img-fluid"
         onError={(e) => {
-          e.target.onerror = null; // evita bucle infinito
-          e.target.src = imageUrl; // imagen fallback
+          e.target.onerror = null; 
+          e.target.src = imageUrl; 
         }}
       />
     );
