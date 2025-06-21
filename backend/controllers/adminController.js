@@ -38,6 +38,17 @@ exports.createUser = async (req, res) => {
     const newUser = new User({ username, password: hashedPassword, role, email });
     await newUser.save();
 
+    // Obtener IP y registrar log
+    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await new Log({
+      userId: req.user?.userId || null,  
+      action: 'user_created',
+      ipAddress: ipAddress,
+      details: {
+        createdUser: username
+      }
+    }).save();
+
     res.status(201).json({ message: "Usuario creado exitosamente" });
   } catch (error) {
     res.status(500).json({ message: "Error al crear el usuario", error: error.message });
@@ -76,19 +87,27 @@ exports.updateUserRole = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
+    // Obtener el usuario antes de eliminarlo
+    const userToDelete = await User.findById(id);
+    if (!userToDelete) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Eliminar el usuario y sus datos relacionados
     await Promise.all([
       User.findByIdAndDelete(id),
       Device.deleteMany({ userId: id }),
       SavedItem.deleteMany({ userId: id })
     ]);
 
+    // Registrar en el log usando el username
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: req.user.userId,
       action: 'user_deleted',
       ipAddress: ipAddress,
-      details: { deletedUser: id }
+      details: { deletedUser: userToDelete.username }
     }).save();
 
     res.json({ message: "Usuario y datos asociados eliminados correctamente" });
