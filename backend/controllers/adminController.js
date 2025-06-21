@@ -107,7 +107,7 @@ exports.deleteUser = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: req.user.userId,
-      username: req.admin_user,
+      username: req.body.admin_user,
       action: 'user_deleted',
       ipAddress: ipAddress,
       details: { deletedUser: userToDelete.username }
