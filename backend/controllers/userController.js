@@ -53,6 +53,7 @@ exports.updateUsername = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: req.user?.userId || null,
+      username: user.user,
       action: 'username_changed',
       ipAddress,
       userAgent: req.headers['user-agent'],
@@ -91,6 +92,7 @@ exports.updatePassword = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: req.user?.userId || null,
+      username: user.user,
       action: 'password_changed',
       ipAddress,
       userAgent: req.headers['user-agent']
@@ -122,6 +124,7 @@ exports.deleteAccount = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: req.user?.userId || null,
+      username: user.user,
       action: 'account_deleted',
       ipAddress,
       userAgent: req.headers['user-agent'],
