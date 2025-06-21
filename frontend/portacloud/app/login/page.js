@@ -42,6 +42,7 @@ function Login() {
   
       localStorage.setItem("token", data.token);
       localStorage.setItem("deviceId", data.deviceId);
+      localStorage.setItem("username", data.username);
   
       await authLogin({
         username: data.username,

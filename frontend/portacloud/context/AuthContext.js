@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     const token = localStorage.getItem("token");
     const deviceId = localStorage.getItem("deviceId");
+    const username = localStorage.getItem("username");
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
 
     fetch(`${serverUrl}/auth/logout`, {
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ deviceId }),
+      body: JSON.stringify({ deviceId, username }),
     }).finally(() => {
       setUser(null);
       localStorage.removeItem("token");

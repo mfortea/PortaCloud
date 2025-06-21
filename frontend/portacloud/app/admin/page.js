@@ -256,12 +256,17 @@ export default function AdminPage() {
   const submitDeleteUser = async () => {
     try {
       const token = localStorage.getItem("token");
+      const admin_user = localStorage.getItem("username");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/users/${selectedUserId}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        }
+          headers: { Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          admin_user: admin_user,
+        }),
+        },
       );
 
       if (response.ok) {
@@ -456,13 +461,13 @@ export default function AdminPage() {
                       <td>
                         {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
                       </td>
-                      <td>{ log.username || log.userId?.username ||'Sistema'}</td>
+                      <td>{ log.username ||'Sistema'}</td>
                       <td>
                         {log.action === 'login' && 'Inicio de sesión'}
                         {log.action === 'logout' && 'Cierre de sesión'}
                         {log.action === 'register' && 'Registro nuevo'}
                         {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
-                        {log.action === 'role_changed' && `Rol cambiado: ${log.details?.targetUser} (${log.details?.newRole})`}
+                        {log.action === 'role_changed' && `Rol cambiado a ${log.details?.newRole}`}
                         {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
                         {log.action === 'username_changed' && `Nombre de usuario cambiado: ${log.details?.oldUsername} → ${log.details?.newUsername}`}
                         {log.action === 'password_changed' && 'Contraseña actualizada'}
@@ -472,7 +477,7 @@ export default function AdminPage() {
                       <td>
                         {log.details && (
                           <span className="log-details">
-                            {log.details.os} · {log.details.browser}
+                            {log.details.os} - {log.details.browser}
                           </span>
                         )}
                       </td>
