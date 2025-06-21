@@ -42,6 +42,7 @@ exports.createUser = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: req.user?.userId || null,  
+      username: username,
       action: 'user_created',
       ipAddress: ipAddress,
       details: {
@@ -69,7 +70,8 @@ exports.updateUserRole = async (req, res) => {
 
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
-      userId: req.user.userId, 
+      userId: req.user.userId,
+      username: updatedUser.username,  
       action: 'role_changed',
       ipAddress: ipAddress,
       details: {
