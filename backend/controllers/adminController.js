@@ -89,7 +89,6 @@ exports.updateUserRole = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { admin_user } = req.body;
 
     // Obtener el usuario antes de eliminarlo
     const userToDelete = await User.findById(id);
@@ -108,7 +107,7 @@ exports.deleteUser = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: req.user.userId,
-      username: admin_user,
+      username: req.user.username,
       action: 'user_deleted',
       ipAddress: ipAddress,
       details: { deletedUser: userToDelete.username }
