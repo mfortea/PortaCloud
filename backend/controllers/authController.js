@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await new Log({
       userId: newUser._id,
-      username: user.user,
+      username: newUser.username,
       action: 'register',
       ipAddress: ipAddress,
       userAgent: req.headers['user-agent']
@@ -99,7 +99,7 @@ exports.login = async (req, res) => {
 
     await new Log({
       userId: user._id,
-      username: user.user,
+      username: user.username,
       action: 'login',
       ipAddress: ipAddress,
       userAgent: req.headers['user-agent'],

@@ -456,7 +456,7 @@ export default function AdminPage() {
                       <td>
                         {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
                       </td>
-                      <td>{log.userId?.username || log.username ||'Sistema'}</td>
+                      <td>{log.username ||'Sistema'}</td>
                       <td>
                         {log.action === 'login' && 'Inicio de sesión'}
                         {log.action === 'logout' && 'Cierre de sesión'}
