@@ -261,9 +261,22 @@ export default function Guardados() {
     );
   };
 
-  const copiarContenido = async (content) => {
+  const copiarContenido = async (item) => {
     try {
-      await navigator.clipboard.writeText(content);
+      if (item.type === 'text') {
+        await navigator.clipboard.writeText(item.content);
+      } else if (item.type === 'image') {
+        const imageUrl = imageCache[item.filePath?.split('/').pop()] || `${serverUrl}/images/${item.filePath?.split('/').pop()}`;
+        const response = await fetch(imageUrl, { mode: 'cors' });
+        const blob = await response.blob();
+
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            [blob.type]: blob,
+          }),
+        ]);
+      }
+
       toast.success("Contenido copiado al portapapeles.", {
         position: "top-right",
         autoClose: 3000,
@@ -283,6 +296,7 @@ export default function Guardados() {
       });
     }
   };
+
 
   const borrarContenido = async (id) => {
     const token = localStorage.getItem("token");
@@ -422,7 +436,7 @@ export default function Guardados() {
         case "mobile edge":
           return logos.edge;
         case "opera":
-            return logos.opera;
+          return logos.opera;
         default:
           return logos.default;
       }
@@ -579,7 +593,7 @@ export default function Guardados() {
                       </div>
                       <div
                         className="clipboard-box-saved p-3 m-3 text-break text-wrap"
-                        onClick={() => copiarContenido(item.content)}
+                        onClick={() => copiarContenido(item)}
                         title="Copiar contenido"
                         style={{ cursor: "pointer" }}
                       >
@@ -594,6 +608,7 @@ export default function Guardados() {
                           </p>
                         )}
                       </div>
+
                     </div>
                   </div>
                 </div>
@@ -615,7 +630,7 @@ export default function Guardados() {
                     <tr key={item._id}>
                       <td
                         className="saved-clipboard"
-                        onClick={() => copiarContenido(item.content)}
+                        onClick={() => copiarContenido(item)}
                         style={{ cursor: "pointer", wordBreak: "break-word" }}
                         title="Copiar contenido"
                       >
@@ -632,7 +647,6 @@ export default function Guardados() {
                           )}
                         </div>
                       </td>
-
                       <td className="text-center">
                         <img className="me-2" src={getDeviceLogo("os", item.os)} alt={item.os} style={{ width: 30 }} />
                         <img src={getDeviceLogo("browser", item.browser)} alt={item.browser} style={{ width: 30 }} />

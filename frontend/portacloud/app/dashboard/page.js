@@ -524,9 +524,20 @@ export default function Dashboard() {
   }
 
 
-  const copiarContenido = async (content) => {
+  const copiarContenido = async ({ content, type }) => {
     try {
-      await navigator.clipboard.writeText(content);
+      if (type === 'text') {
+        await navigator.clipboard.writeText(content);
+      } else if (type === 'image') {
+        const imageUrl = content.startsWith("http") ? content : `${serverUrl}${content}`;
+        const response = await fetch(imageUrl, { mode: 'cors' });
+        const blob = await response.blob();
+  
+        await navigator.clipboard.write([
+          new ClipboardItem({ [blob.type]: blob }),
+        ]);
+      }
+  
       toast.success("Contenido copiado al portapapeles.", {
         position: "top-right",
         autoClose: 3000,
@@ -546,6 +557,7 @@ export default function Dashboard() {
       });
     }
   };
+  
 
 
   if (loading) {
@@ -774,7 +786,11 @@ export default function Dashboard() {
 
                 <div
                   className={`clipboard-box p-3 mt-3 text-break text-wrap ${device.flash ? "flash" : ""}`}
-                  onClick={() => copiarContenido(device.clipboardContent)}
+                  onClick={() => copiarContenido({
+                    content: device.clipboardContent,
+                    type: device.clipboardContent?.startsWith("/device/temp_image/") ? "image" : "text",
+                  })}
+                  
                   title="Copiar contenido"
                   style={{ cursor: "pointer" }}
                 >
