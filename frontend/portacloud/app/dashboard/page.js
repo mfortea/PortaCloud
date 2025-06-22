@@ -45,7 +45,7 @@ export default function Dashboard() {
   // Límites de tamaño
   const MAX_CONTENT_SIZE_BYTES = 10 * 1024 * 1024;
   const TEXT_PREVIEW_LENGTH = 500;
-  const TIEMPO_ACTUALIZACION = 3000;
+  const TIEMPO_ACTUALIZACION = 1000;
 
 
   useEffect(() => {
