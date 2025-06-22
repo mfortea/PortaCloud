@@ -29,6 +29,7 @@ export default function Guardados() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [refreshing, setRefreshing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const [closing, setClosing] = useState(false);
   const TEXT_PREVIEW_LENGTH = 500;
@@ -36,6 +37,7 @@ export default function Guardados() {
   const [imageCache, setImageCache] = useState({});
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_IP;
   const [deleting, setDeleting] = useState(false);
+  const TIEMPO_NOTIFICACION = 2000;
 
   useEffect(() => {
     document.title = 'Guardados | PortaCloud';
@@ -279,16 +281,16 @@ export default function Guardados() {
 
       toast.success("Contenido copiado al portapapeles.", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: TIEMPO_NOTIFICACION,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
       });
     } catch (error) {
-      toast.error("Error al copiar el contenido.", {
+      toast.error("Función no soportada por el navegador", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: TIEMPO_NOTIFICACION,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -309,7 +311,7 @@ export default function Guardados() {
       setSavedItems(savedItems.filter((item) => item._id !== id));
       toast.success("Contenido borrado con éxito.", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: TIEMPO_NOTIFICACION,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -318,7 +320,7 @@ export default function Guardados() {
     } catch (error) {
       toast.error("Error al borrar el contenido.", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: TIEMPO_NOTIFICACION,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -334,6 +336,7 @@ export default function Guardados() {
     const token = localStorage.getItem("token");
 
     try {
+      setDownloading(true);
       if (item.type === "image") {
         const filename = item.filePath?.split('/').pop();
         const cachedUrl = imageCache[filename];
@@ -370,6 +373,8 @@ export default function Guardados() {
     } catch (error) {
       console.error("Error downloading content:", error);
       toast.error("Error al descargar el contenido");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -580,8 +585,12 @@ export default function Guardados() {
                             </button>
                           </div>
                         )}
-                        <button className="btn boton_aux btn-success m-2" title="Descargar a un archivo" onClick={() => descargarContenido(item)}>
-                          <i className="fa fa-download"></i>
+                        <button className="btn boton_aux btn-success m-2" title="Descargar a un archivo" disabled={downloading} onClick={() => descargarContenido(item)}>
+                        {downloading ? (
+                            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+                          ) : (
+                            <i className="fa fa-download" aria-hidden="true"></i>
+                          )}
                         </button>
                         <button className="btn boton_aux btn-danger" title="Eliminar" onClick={() => borrarContenido(item._id)} disabled={deleting}>
                           {deleting ? (

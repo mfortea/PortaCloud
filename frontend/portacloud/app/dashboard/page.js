@@ -31,6 +31,7 @@ export default function Dashboard() {
   const [saving, setSaving] = useState(false);
   const [notification, setNotification] = useState({ message: "", type: "" });
   const [showAlert, setShowAlert] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const { logout } = useAuth();
   const [clipboardAnimation, setClipboardAnimation] = useState(false);
   const platform = require('platform');
@@ -425,6 +426,7 @@ export default function Dashboard() {
     if (!clipboardContent) return;
 
     try {
+      setDownloading(true);
       const now = new Date();
       const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
 
@@ -462,6 +464,8 @@ export default function Dashboard() {
       }
     } catch (error) {
       toast.error("Error al descargar");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -469,6 +473,7 @@ export default function Dashboard() {
     if (!content) return;
 
     try {
+      setDownloading(true);
       const now = new Date();
       const fileName = `portacloud_${now.toISOString().slice(0, 19).replace(/[:T-]/g, "_")}`;
       const link = document.createElement("a");
@@ -492,6 +497,8 @@ export default function Dashboard() {
       document.body.removeChild(link);
     } catch (error) {
       toast.error("Error al descargar");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -516,8 +523,8 @@ export default function Dashboard() {
         alt="Imagen temporal"
         className="img-fluid"
         onError={(e) => {
-          e.target.onerror = null; 
-          e.target.src = imageUrl; 
+          e.target.onerror = null;
+          e.target.src = imageUrl;
         }}
       />
     );
@@ -532,12 +539,12 @@ export default function Dashboard() {
         const imageUrl = content.startsWith("http") ? content : `${serverUrl}${content}`;
         const response = await fetch(imageUrl, { mode: 'cors' });
         const blob = await response.blob();
-  
+
         await navigator.clipboard.write([
           new ClipboardItem({ [blob.type]: blob }),
         ]);
       }
-  
+
       toast.success("Contenido copiado al portapapeles.", {
         position: "top-right",
         autoClose: 3000,
@@ -547,7 +554,7 @@ export default function Dashboard() {
         draggable: true,
       });
     } catch (error) {
-      toast.error("Error al copiar el contenido.", {
+      toast.error("Función no soportada por el navegador.", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -557,7 +564,7 @@ export default function Dashboard() {
       });
     }
   };
-  
+
 
 
   if (loading) {
@@ -687,9 +694,14 @@ export default function Dashboard() {
         <button
           className="btn boton_aux btn-success"
           title="Descargar el contenido a un fichero"
+          disabled={saving || downloading || !clipboardContent}
           onClick={descargarContenido}
         >
-          <i className="fa fa-download" aria-hidden="true"></i>
+          {downloading ? (
+            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+          ) : (
+            <i className="fa fa-download" aria-hidden="true"></i>
+          )}
         </button>
 
         <button
@@ -717,6 +729,7 @@ export default function Dashboard() {
         <button
           className="btn boton_aux btn-danger"
           title="Limpiar portapapeles"
+          disabled={saving || !clipboardContent}
           onClick={borrarContenido}
         >
           <i className="fa fa-remove" aria-hidden="true"></i>
@@ -790,8 +803,9 @@ export default function Dashboard() {
                     content: device.clipboardContent,
                     type: device.clipboardContent?.startsWith("/device/temp_image/") ? "image" : "text",
                   })}
-                  
+
                   title="Copiar contenido"
+
                   style={{ cursor: "pointer" }}
                 >
                   {device.clipboardContent?.startsWith("/device/temp_image") ? (
@@ -822,11 +836,16 @@ export default function Dashboard() {
                 <button
                   className="btn boton_aux btn-success mt-3"
                   title="Descargar el contenido a un fichero"
+                  disabled={saving || downloading ||!device.clipboardContent}
                   onClick={() =>
                     descargarContenidoDispositivo(device.clipboardContent, "text")
                   }
                 >
-                  <i className="fa fa-download" aria-hidden="true"></i>
+          {downloading ? (
+            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+          ) : (
+            <i className="fa fa-download" aria-hidden="true"></i>
+          )}
                 </button>
               </div>
             </div>
