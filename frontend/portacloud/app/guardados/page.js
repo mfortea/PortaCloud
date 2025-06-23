@@ -55,6 +55,7 @@ export default function Guardados() {
     const fetchGuardados = async () => {
       const token = localStorage.getItem("token");
       try {
+        setLoading(true);
         const res = await fetch(`${serverUrl}/saved`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -80,6 +81,11 @@ export default function Guardados() {
       const filename = item.filePath?.split('/').pop();
       if (!filename || newCache[filename]) continue;
 
+      if (newCache[filename]) {
+        URL.revokeObjectURL(newCache[filename]);
+        delete newCache[filename];
+      }
+
       try {
         const response = await fetch(`${serverUrl}/images/${filename}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -100,13 +106,19 @@ export default function Guardados() {
 
   const renderImage = (filename) => {
     const cachedUrl = imageCache[filename];
-
+  
+    console.log("Comprobando caché para la imagen: ", filename);
+    console.log("URL caché: ", cachedUrl);
+  
     if (!cachedUrl) {
+      console.log("Imagen no encontrada en caché, mostrando el spinner...");
       return <i className="fa fa-circle-notch fa-spin cargando" aria-hidden="true"></i>;
     }
-
+  
+    console.log("Imagen encontrada en caché, mostrando imagen...");
     return <img src={cachedUrl} alt="Imagen guardada" className="img-fluid" />;
   };
+  
 
   const verImagen = (imageUrl) => {
     setModalImage(imageUrl);
@@ -586,7 +598,7 @@ export default function Guardados() {
                           </div>
                         )}
                         <button className="btn boton_aux btn-success m-2" title="Descargar a un archivo" disabled={downloading} onClick={() => descargarContenido(item)}>
-                        {downloading ? (
+                          {downloading ? (
                             <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
                           ) : (
                             <i className="fa fa-download" aria-hidden="true"></i>

@@ -184,20 +184,46 @@ exports.getSavedItems = async (req, res) => {
 
 exports.deleteSavedItem = async (req, res) => {
   try {
+    // Buscar el SavedItem en la base de datos
     const item = await SavedItem.findOne({ _id: req.params.id, userId: req.user.userId });
     if (!item) return res.status(404).json({ message: "Elemento no encontrado" });
+
+    // Verificar si es una imagen y tiene una ruta asociada
     if (item.type === 'image' && item.filePath) {
+      // Verificar si la imagen existe en el sistema de archivos
       if (fs.existsSync(item.filePath)) {
+        // Eliminar la imagen del sistema de archivos
         fs.unlinkSync(item.filePath);
-        await ContentRegistry.findOneAndUpdate({ filePath: item.filePath }, { $inc: { referenceCount: -1 } });
+
+        // Buscar el registro en ContentRegistry
+        const contentItem = await ContentRegistry.findOne({ filePath: item.filePath });
+
+        if (contentItem) {
+          // Disminuir el contador de referencias
+          const updatedItem = await ContentRegistry.findOneAndUpdate(
+            { filePath: item.filePath },
+            { $inc: { referenceCount: -1 } },
+            { new: true }  // Devolver el registro actualizado
+          );
+
+          // Si el contador de referencias llega a 0, eliminar el registro de ContentRegistry
+          if (updatedItem.referenceCount <= 0) {
+            await ContentRegistry.deleteOne({ filePath: item.filePath });
+            console.log("Registro de ContentRegistry eliminado porque referenceCount es 0");
+          }
+        }
       }
     }
+
+    // Eliminar el SavedItem de la base de datos
     await SavedItem.deleteOne({ _id: req.params.id });
     res.json({ message: "Elemento eliminado" });
   } catch (error) {
+    console.error("Error al eliminar el elemento:", error);
     res.status(500).json({ message: "Error al eliminar" });
   }
 };
+
 
 exports.deleteAllSavedItems = async (req, res) => {
   try {
