@@ -182,11 +182,20 @@ exports.getSavedItems = async (req, res) => {
 };
 
 
+const mongoose = require('mongoose');
+
 exports.deleteSavedItem = async (req, res) => {
+  const session = await mongoose.startSession(); // Iniciar una sesión para manejar la transacción
+
   try {
+    session.startTransaction(); // Iniciar transacción
+
     // Buscar el SavedItem en la base de datos
-    const item = await SavedItem.findOne({ _id: req.params.id, userId: req.user.userId });
-    if (!item) return res.status(404).json({ message: "Elemento no encontrado" });
+    const item = await SavedItem.findOne({ _id: req.params.id, userId: req.user.userId }).session(session);
+    if (!item) {
+      await session.abortTransaction(); // Si no se encuentra el item, abortamos la transacción
+      return res.status(404).json({ message: "Elemento no encontrado" });
+    }
 
     // Verificar si es una imagen y tiene una ruta asociada
     if (item.type === 'image' && item.filePath) {
@@ -196,7 +205,7 @@ exports.deleteSavedItem = async (req, res) => {
         fs.unlinkSync(item.filePath);
 
         // Buscar el registro en ContentRegistry
-        const contentItem = await ContentRegistry.findOne({ filePath: item.filePath });
+        const contentItem = await ContentRegistry.findOne({ filePath: item.filePath }).session(session);
 
         if (contentItem) {
           console.log("ContentRegistry encontrado:", contentItem);
@@ -206,7 +215,7 @@ exports.deleteSavedItem = async (req, res) => {
             console.log("Eliminando registro de ContentRegistry porque referenceCount es 1");
 
             // Eliminar el registro de ContentRegistry
-            await ContentRegistry.deleteOne({ filePath: item.filePath });
+            await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
 
             // También eliminamos el archivo
             console.log("Imagen eliminada del sistema de archivos y ContentRegistry.");
@@ -216,21 +225,36 @@ exports.deleteSavedItem = async (req, res) => {
             const updatedItem = await ContentRegistry.findOneAndUpdate(
               { filePath: item.filePath },
               { $inc: { referenceCount: -1 } },
-              { new: true }  // Devuelve el registro actualizado
+              { new: true, session }  // Devolver el registro actualizado en la misma transacción
             );
 
             console.log("Nuevo referenceCount después de decremento:", updatedItem.referenceCount);
+
+            // Verificamos si referenceCount sigue siendo mayor que 0 y no es 1
+            if (updatedItem.referenceCount <= 1) {
+              // Eliminamos el registro si el contador es 1 o menos
+              console.log("Eliminando registro de ContentRegistry porque referenceCount ha llegado a 1 o menos");
+              await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
+              console.log("Registro de ContentRegistry eliminado.");
+            }
           }
         }
       }
     }
 
     // Eliminar el SavedItem de la base de datos
-    await SavedItem.deleteOne({ _id: req.params.id });
+    await SavedItem.deleteOne({ _id: req.params.id }).session(session);
+
+    // Confirmar la transacción
+    await session.commitTransaction();
+
     res.json({ message: "Elemento eliminado" });
   } catch (error) {
     console.error("Error al eliminar el elemento:", error);
+    await session.abortTransaction(); // Si ocurre un error, abortamos la transacción
     res.status(500).json({ message: "Error al eliminar" });
+  } finally {
+    session.endSession(); // Finalizamos la sesión al finalizar el proceso
   }
 };
 
