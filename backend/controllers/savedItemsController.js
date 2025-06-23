@@ -55,47 +55,28 @@ exports.createSavedItem = async (req, res) => {
       const fileBuffer = fs.readFileSync(newPath);
       const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
-      // Verificamos si la imagen ya existe en ContentRegistry
+      // Comprobamos si la imagen ya existe en ContentRegistry usando el hash
       const existing = await ContentRegistry.findOne({ hash });
 
       if (existing) {
-        console.log("Imagen ya existe en ContentRegistry. Incrementando referenceCount.");
-
-        // Incrementar el referenceCount solo si la imagen ya existe
-        await ContentRegistry.findOneAndUpdate(
-          { hash },
-          { $inc: { referenceCount: 1 } }
-        );
-
-        const savedItem = new SavedItem({
-          userId,
-          os,
-          browser,
-          deviceType,
-          content: existing._id.toString(),
-          type,
-          filePath: existing.filePath,
-        });
-        await savedItem.save();
-        return res.status(201).json(savedItem);
-      } else {
-        console.log("Imagen nueva. Guardando en ContentRegistry.");
-
-        // Si la imagen no existe, se guarda en ContentRegistry con referenceCount = 1
-        await ContentRegistry.create({ hash, filePath: newPath, referenceCount: 1 });
-
-        const savedItem = new SavedItem({
-          userId,
-          os,
-          browser,
-          deviceType,
-          content: newFileName,
-          type,
-          filePath: newPath,
-        });
-        await savedItem.save();
-        return res.status(201).json(savedItem);
+        // Si la imagen ya existe, no la guardamos nuevamente
+        return res.status(400).json({ error: "La imagen ya está guardada" });
       }
+
+      // Si la imagen no existe, la guardamos en ContentRegistry
+      await ContentRegistry.create({ hash, filePath: newPath, referenceCount: 1 });
+
+      const savedItem = new SavedItem({
+        userId,
+        os,
+        browser,
+        deviceType,
+        content: newFileName,
+        type,
+        filePath: newPath,
+      });
+      await savedItem.save();
+      return res.status(201).json(savedItem);
     } else {
       // Manejo de otros tipos de contenido (texto)
       // ...
@@ -105,6 +86,7 @@ exports.createSavedItem = async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
 
 
 exports.handleSaveContent = async (req, res) => {
@@ -188,41 +170,50 @@ exports.deleteSavedItem = async (req, res) => {
     // Buscar el SavedItem en la base de datos
     const item = await SavedItem.findOne({ _id: req.params.id, userId: req.user.userId }).session(session);
     if (!item) {
-      await session.abortTransaction();
+      await session.abortTransaction(); // Si no se encuentra el item, abortamos la transacción
       return res.status(404).json({ message: "Elemento no encontrado" });
     }
 
     // Verificar si es una imagen y tiene una ruta asociada
     if (item.type === 'image' && item.filePath) {
-      const filePath = item.filePath;
-
       // Verificar si la imagen existe en el sistema de archivos
-      const imageExists = fs.existsSync(filePath);
+      if (fs.existsSync(item.filePath)) {
+        // Eliminar la imagen del sistema de archivos
+        fs.unlinkSync(item.filePath);
 
-      if (!imageExists) {
-        // Si la imagen ya no existe, eliminar la entrada en ContentRegistry
-        console.log(`Imagen no encontrada en el sistema de archivos. Eliminando la entrada en ContentRegistry.`);
-        await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
-      } else {
-        // Si la imagen existe, eliminar el archivo y actualizar referenceCount
-        console.log(`Imagen encontrada, eliminando del sistema de archivos y actualizando ContentRegistry.`);
-        fs.unlinkSync(filePath);
-
+        // Buscar el registro en ContentRegistry
         const contentItem = await ContentRegistry.findOne({ filePath: item.filePath }).session(session);
 
         if (contentItem) {
-          // Disminuir el contador de referencia
+          console.log("ContentRegistry encontrado:", contentItem);
+          
+          // Si referenceCount es 1, eliminamos directamente el registro
           if (contentItem.referenceCount === 1) {
-            console.log("Eliminando el registro en ContentRegistry ya que referenceCount es 1");
+            console.log("Eliminando registro de ContentRegistry porque referenceCount es 1");
+
+            // Eliminar el registro de ContentRegistry
             await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
+
+            // También eliminamos el archivo
+            console.log("Imagen eliminada del sistema de archivos y ContentRegistry.");
           } else {
-            // Decrementar el referenceCount si hay más de una referencia
-            await ContentRegistry.findOneAndUpdate(
+            // Si referenceCount no es 1, decrementamos
+            console.log("Decrementando referenceCount...");
+            const updatedItem = await ContentRegistry.findOneAndUpdate(
               { filePath: item.filePath },
               { $inc: { referenceCount: -1 } },
-              { new: true, session }
+              { new: true, session }  // Devolver el registro actualizado en la misma transacción
             );
-            console.log("Decrementando referenceCount.");
+
+            console.log("Nuevo referenceCount después de decremento:", updatedItem.referenceCount);
+
+            // Verificamos si referenceCount sigue siendo mayor que 0 y no es 1
+            if (updatedItem.referenceCount <= 1) {
+              // Eliminamos el registro si el contador es 1 o menos
+              console.log("Eliminando registro de ContentRegistry porque referenceCount ha llegado a 1 o menos");
+              await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
+              console.log("Registro de ContentRegistry eliminado.");
+            }
           }
         }
       }
@@ -240,7 +231,7 @@ exports.deleteSavedItem = async (req, res) => {
     await session.abortTransaction(); // Si ocurre un error, abortamos la transacción
     res.status(500).json({ message: "Error al eliminar" });
   } finally {
-    session.endSession(); // Finalizamos la sesión
+    session.endSession(); // Finalizamos la sesión al finalizar el proceso
   }
 };
 
