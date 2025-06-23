@@ -55,11 +55,11 @@ exports.createSavedItem = async (req, res) => {
       const fileBuffer = fs.readFileSync(newPath);
       const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
-      // Comprobamos si la imagen ya existe en ContentRegistry usando el hash
+      // Verificamos si la imagen ya existe en ContentRegistry usando el hash
       const existing = await ContentRegistry.findOne({ hash });
 
       if (existing) {
-        // Si la imagen ya existe, no la guardamos nuevamente
+        // Si la imagen ya existe, no la guardamos nuevamente y enviamos un error al frontend
         return res.status(400).json({ error: "La imagen ya está guardada" });
       }
 
@@ -77,9 +77,27 @@ exports.createSavedItem = async (req, res) => {
       });
       await savedItem.save();
       return res.status(201).json(savedItem);
+    } else if (type === 'text') {
+      if (!content) {
+        return res.status(400).json({ error: "No se proporcionó contenido de texto" });
+      }
+
+      // Encriptamos el contenido de texto antes de guardarlo
+      const { iv, encryptedData } = encrypt(content);
+      const savedItem = new SavedItem({
+        userId,
+        os,
+        browser,
+        deviceType,
+        content: encryptedData,
+        iv,
+        type,
+        filePath: null,
+      });
+      await savedItem.save();
+      return res.status(201).json(savedItem);
     } else {
-      // Manejo de otros tipos de contenido (texto)
-      // ...
+      return res.status(400).json({ error: "Tipo no soportado" });
     }
   } catch (error) {
     console.error("Error al guardar:", error);

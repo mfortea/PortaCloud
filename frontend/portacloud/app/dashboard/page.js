@@ -196,13 +196,28 @@ export default function Dashboard() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error del servidor");
+        // Aquí extraemos el mensaje de error del backend y lo mostramos en el frontend
+        if (errorData.error) {
+          toast.error(errorData.error, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+          });
+        } else {
+          toast.error("Error al guardar el contenido", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+          });
+        }
+      } else {
+        // Si la imagen o el texto se guardó correctamente
+        toast.success("Contenido guardado correctamente", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+        });
       }
-
-      toast.success("Contenido guardado con éxito");
-    } catch (error) {
-      toast.error(`Error al guardar: ${error.message}`);
-      console.error("Error en guardarContenido:", error.message);
     } finally {
       setSaving(false);
     }
