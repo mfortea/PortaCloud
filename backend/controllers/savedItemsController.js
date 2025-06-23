@@ -199,17 +199,24 @@ exports.deleteSavedItem = async (req, res) => {
         const contentItem = await ContentRegistry.findOne({ filePath: item.filePath });
 
         if (contentItem) {
-          // Disminuir el contador de referencias
-          const updatedItem = await ContentRegistry.findOneAndUpdate(
-            { filePath: item.filePath },
-            { $inc: { referenceCount: -1 } },
-            { new: true }  // Devolver el registro actualizado
-          );
-
-          // Si el contador de referencias llega a 0, eliminar el registro de ContentRegistry
-          if (updatedItem.referenceCount <= 0) {
+          // Verificar si el referenceCount es 1 antes de hacer cualquier cosa
+          if (contentItem.referenceCount === 1) {
+            // Si el referenceCount es 1, eliminamos directamente el registro de ContentRegistry
             await ContentRegistry.deleteOne({ filePath: item.filePath });
-            console.log("Registro de ContentRegistry eliminado porque referenceCount es 0");
+            console.log("Registro de ContentRegistry eliminado directamente porque referenceCount es 1");
+
+            // También eliminamos el archivo del sistema de archivos
+            fs.unlinkSync(item.filePath);
+          } else {
+            // Si referenceCount no es 1, decrementamos el valor
+            console.log("Disminuyendo referenceCount de la imagen...");
+            const updatedItem = await ContentRegistry.findOneAndUpdate(
+              { filePath: item.filePath },
+              { $inc: { referenceCount: -1 } },
+              { new: true }  // Devolver el registro actualizado
+            );
+
+            console.log("Nuevo referenceCount después de decremento:", updatedItem.referenceCount);
           }
         }
       }
