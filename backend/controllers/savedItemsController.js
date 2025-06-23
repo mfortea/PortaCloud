@@ -55,10 +55,17 @@ exports.createSavedItem = async (req, res) => {
       const fileBuffer = fs.readFileSync(newPath);
       const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
+      // Verificamos si la imagen ya existe en ContentRegistry
       const existing = await ContentRegistry.findOne({ hash });
+
       if (existing) {
-        fs.unlinkSync(newPath);
-        await ContentRegistry.findOneAndUpdate({ hash }, { $inc: { referenceCount: 1 } });
+        console.log("Imagen ya existe en ContentRegistry. Incrementando referenceCount.");
+
+        // Incrementar el referenceCount solo si la imagen ya existe
+        await ContentRegistry.findOneAndUpdate(
+          { hash },
+          { $inc: { referenceCount: 1 } }
+        );
 
         const savedItem = new SavedItem({
           userId,
@@ -72,6 +79,9 @@ exports.createSavedItem = async (req, res) => {
         await savedItem.save();
         return res.status(201).json(savedItem);
       } else {
+        console.log("Imagen nueva. Guardando en ContentRegistry.");
+
+        // Si la imagen no existe, se guarda en ContentRegistry con referenceCount = 1
         await ContentRegistry.create({ hash, filePath: newPath, referenceCount: 1 });
 
         const savedItem = new SavedItem({
@@ -86,31 +96,16 @@ exports.createSavedItem = async (req, res) => {
         await savedItem.save();
         return res.status(201).json(savedItem);
       }
-    } else if (type === 'text') {
-      if (!content) {
-        return res.status(400).json({ error: "No se proporcionó contenido de texto" });
-      }
-      const { iv, encryptedData } = encrypt(content);
-      const savedItem = new SavedItem({
-        userId,
-        os,
-        browser,
-        deviceType,
-        content: encryptedData,
-        iv,
-        type,
-        filePath: null,
-      });
-      await savedItem.save();
-      return res.status(201).json(savedItem);
     } else {
-      return res.status(400).json({ error: "Tipo no soportado" });
+      // Manejo de otros tipos de contenido (texto)
+      // ...
     }
   } catch (error) {
     console.error("Error al guardar:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
 
 exports.handleSaveContent = async (req, res) => {
   try {
@@ -185,7 +180,7 @@ exports.getSavedItems = async (req, res) => {
 const mongoose = require('mongoose');
 
 exports.deleteSavedItem = async (req, res) => {
-  const session = await mongoose.startSession(); // Iniciar una sesión para manejar la transacción
+  const session = await mongoose.startSession(); // Iniciar sesión para manejo de transacciones
 
   try {
     session.startTransaction(); // Iniciar transacción
@@ -193,13 +188,12 @@ exports.deleteSavedItem = async (req, res) => {
     // Buscar el SavedItem en la base de datos
     const item = await SavedItem.findOne({ _id: req.params.id, userId: req.user.userId }).session(session);
     if (!item) {
-      await session.abortTransaction(); // Si no se encuentra el item, abortamos la transacción
+      await session.abortTransaction();
       return res.status(404).json({ message: "Elemento no encontrado" });
     }
 
     // Verificar si es una imagen y tiene una ruta asociada
     if (item.type === 'image' && item.filePath) {
-      // Verificar si la imagen existe en el sistema de archivos
       if (fs.existsSync(item.filePath)) {
         // Eliminar la imagen del sistema de archivos
         fs.unlinkSync(item.filePath);
@@ -209,15 +203,11 @@ exports.deleteSavedItem = async (req, res) => {
 
         if (contentItem) {
           console.log("ContentRegistry encontrado:", contentItem);
-          
+
           // Si referenceCount es 1, eliminamos directamente el registro
           if (contentItem.referenceCount === 1) {
             console.log("Eliminando registro de ContentRegistry porque referenceCount es 1");
-
-            // Eliminar el registro de ContentRegistry
             await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
-
-            // También eliminamos el archivo
             console.log("Imagen eliminada del sistema de archivos y ContentRegistry.");
           } else {
             // Si referenceCount no es 1, decrementamos
@@ -225,12 +215,12 @@ exports.deleteSavedItem = async (req, res) => {
             const updatedItem = await ContentRegistry.findOneAndUpdate(
               { filePath: item.filePath },
               { $inc: { referenceCount: -1 } },
-              { new: true, session }  // Devolver el registro actualizado en la misma transacción
+              { new: true, session }  // Devolver el registro actualizado
             );
 
             console.log("Nuevo referenceCount después de decremento:", updatedItem.referenceCount);
 
-            // Verificamos si referenceCount sigue siendo mayor que 0 y no es 1
+            // Verificamos si referenceCount sigue siendo 1 o menos
             if (updatedItem.referenceCount <= 1) {
               // Eliminamos el registro si el contador es 1 o menos
               console.log("Eliminando registro de ContentRegistry porque referenceCount ha llegado a 1 o menos");
@@ -244,9 +234,7 @@ exports.deleteSavedItem = async (req, res) => {
 
     // Eliminar el SavedItem de la base de datos
     await SavedItem.deleteOne({ _id: req.params.id }).session(session);
-
-    // Confirmar la transacción
-    await session.commitTransaction();
+    await session.commitTransaction(); // Confirmar la transacción
 
     res.json({ message: "Elemento eliminado" });
   } catch (error) {
@@ -254,9 +242,10 @@ exports.deleteSavedItem = async (req, res) => {
     await session.abortTransaction(); // Si ocurre un error, abortamos la transacción
     res.status(500).json({ message: "Error al eliminar" });
   } finally {
-    session.endSession(); // Finalizamos la sesión al finalizar el proceso
+    session.endSession(); // Finalizamos la sesión
   }
 };
+
 
 
 
