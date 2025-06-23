@@ -180,7 +180,7 @@ exports.getSavedItems = async (req, res) => {
 const mongoose = require('mongoose');
 
 exports.deleteSavedItem = async (req, res) => {
-  const session = await mongoose.startSession(); // Iniciar sesión para manejo de transacciones
+  const session = await mongoose.startSession(); // Iniciar una sesión para manejar la transacción
 
   try {
     session.startTransaction(); // Iniciar transacción
@@ -194,39 +194,35 @@ exports.deleteSavedItem = async (req, res) => {
 
     // Verificar si es una imagen y tiene una ruta asociada
     if (item.type === 'image' && item.filePath) {
-      if (fs.existsSync(item.filePath)) {
-        // Eliminar la imagen del sistema de archivos
-        fs.unlinkSync(item.filePath);
+      const filePath = item.filePath;
 
-        // Buscar el registro en ContentRegistry
+      // Verificar si la imagen existe en el sistema de archivos
+      const imageExists = fs.existsSync(filePath);
+
+      if (!imageExists) {
+        // Si la imagen ya no existe, eliminar la entrada en ContentRegistry
+        console.log(`Imagen no encontrada en el sistema de archivos. Eliminando la entrada en ContentRegistry.`);
+        await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
+      } else {
+        // Si la imagen existe, eliminar el archivo y actualizar referenceCount
+        console.log(`Imagen encontrada, eliminando del sistema de archivos y actualizando ContentRegistry.`);
+        fs.unlinkSync(filePath);
+
         const contentItem = await ContentRegistry.findOne({ filePath: item.filePath }).session(session);
 
         if (contentItem) {
-          console.log("ContentRegistry encontrado:", contentItem);
-
-          // Si referenceCount es 1, eliminamos directamente el registro
+          // Disminuir el contador de referencia
           if (contentItem.referenceCount === 1) {
-            console.log("Eliminando registro de ContentRegistry porque referenceCount es 1");
+            console.log("Eliminando el registro en ContentRegistry ya que referenceCount es 1");
             await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
-            console.log("Imagen eliminada del sistema de archivos y ContentRegistry.");
           } else {
-            // Si referenceCount no es 1, decrementamos
-            console.log("Decrementando referenceCount...");
-            const updatedItem = await ContentRegistry.findOneAndUpdate(
+            // Decrementar el referenceCount si hay más de una referencia
+            await ContentRegistry.findOneAndUpdate(
               { filePath: item.filePath },
               { $inc: { referenceCount: -1 } },
-              { new: true, session }  // Devolver el registro actualizado
+              { new: true, session }
             );
-
-            console.log("Nuevo referenceCount después de decremento:", updatedItem.referenceCount);
-
-            // Verificamos si referenceCount sigue siendo 1 o menos
-            if (updatedItem.referenceCount <= 1) {
-              // Eliminamos el registro si el contador es 1 o menos
-              console.log("Eliminando registro de ContentRegistry porque referenceCount ha llegado a 1 o menos");
-              await ContentRegistry.deleteOne({ filePath: item.filePath }).session(session);
-              console.log("Registro de ContentRegistry eliminado.");
-            }
+            console.log("Decrementando referenceCount.");
           }
         }
       }
@@ -234,7 +230,9 @@ exports.deleteSavedItem = async (req, res) => {
 
     // Eliminar el SavedItem de la base de datos
     await SavedItem.deleteOne({ _id: req.params.id }).session(session);
-    await session.commitTransaction(); // Confirmar la transacción
+
+    // Confirmar la transacción
+    await session.commitTransaction();
 
     res.json({ message: "Elemento eliminado" });
   } catch (error) {
@@ -245,7 +243,6 @@ exports.deleteSavedItem = async (req, res) => {
     session.endSession(); // Finalizamos la sesión
   }
 };
-
 
 
 
