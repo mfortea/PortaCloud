@@ -199,21 +199,24 @@ exports.deleteSavedItem = async (req, res) => {
         const contentItem = await ContentRegistry.findOne({ filePath: item.filePath });
 
         if (contentItem) {
-          // Verificar si el referenceCount es 1 antes de hacer cualquier cosa
+          console.log("ContentRegistry encontrado:", contentItem);
+          
+          // Si referenceCount es 1, eliminamos directamente el registro
           if (contentItem.referenceCount === 1) {
-            // Si el referenceCount es 1, eliminamos directamente el registro de ContentRegistry
-            await ContentRegistry.deleteOne({ filePath: item.filePath });
-            console.log("Registro de ContentRegistry eliminado directamente porque referenceCount es 1");
+            console.log("Eliminando registro de ContentRegistry porque referenceCount es 1");
 
-            // También eliminamos el archivo del sistema de archivos
-            fs.unlinkSync(item.filePath);
+            // Eliminar el registro de ContentRegistry
+            await ContentRegistry.deleteOne({ filePath: item.filePath });
+
+            // También eliminamos el archivo
+            console.log("Imagen eliminada del sistema de archivos y ContentRegistry.");
           } else {
-            // Si referenceCount no es 1, decrementamos el valor
-            console.log("Disminuyendo referenceCount de la imagen...");
+            // Si referenceCount no es 1, decrementamos
+            console.log("Decrementando referenceCount...");
             const updatedItem = await ContentRegistry.findOneAndUpdate(
               { filePath: item.filePath },
               { $inc: { referenceCount: -1 } },
-              { new: true }  // Devolver el registro actualizado
+              { new: true }  // Devuelve el registro actualizado
             );
 
             console.log("Nuevo referenceCount después de decremento:", updatedItem.referenceCount);
@@ -230,6 +233,7 @@ exports.deleteSavedItem = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar" });
   }
 };
+
 
 
 exports.deleteAllSavedItems = async (req, res) => {
