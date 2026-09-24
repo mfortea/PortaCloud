@@ -434,7 +434,6 @@ export default function Guardados() {
 
   return (
     <div className="container py-4 zoom-al_cargar">
-      {/* Estilo sutil para las barras de desplazamiento internas */}
       <style dangerouslySetInnerHTML={{__html: `
         .scrollable-content::-webkit-scrollbar { width: 6px; }
         .scrollable-content::-webkit-scrollbar-track { background: transparent; }
@@ -448,11 +447,8 @@ export default function Guardados() {
         <i className="fa fa-star me-2 text-warning"></i> Mis guardados
       </h1>
 
-      {/* ========== PANEL DE CONTROL (FILTROS Y BUSCADOR) ========== */}
       <div className="p-3 mb-5 rounded-4 shadow-sm" style={{ background: "var(--surface-bg)", border: "1px solid var(--border-color)" }}>
         <div className="row g-3 align-items-center">
-          
-          {/* Buscador de texto (Izquierda) */}
           <div className="col-12 col-xl-4">
             <div className="position-relative">
               <i className="fa-solid fa-search position-absolute" style={{ left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}></i>
@@ -467,7 +463,6 @@ export default function Guardados() {
             </div>
           </div>
 
-          {/* Selectores de filtros (Derecha) */}
           <div className="col-12 col-xl-8 d-flex flex-wrap justify-content-xl-end gap-2">
             <select className="form-control select_guardados w-auto m-0 py-2" value={contentTypeFilter} onChange={(e) => setContentTypeFilter(e.target.value)}>
               <option value="">Tipos</option>
@@ -524,11 +519,8 @@ export default function Guardados() {
             <div className="row g-4 align-items-stretch">
               {currentItems.map((item) => (
                 <div key={item._id} className="col-12 col-md-6 col-lg-4">
-                  
-                  {/* Tarjeta con altura fija controlada (h-100) */}
                   <div className="device-card d-flex flex-column h-100 p-4">
                     
-                    {/* Encabezado: Iconos y Fecha */}
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <div className="d-flex align-items-center gap-2">
                         <span className="tipo_dispositivo m-0" style={{ fontSize: "28px" }}>
@@ -543,23 +535,26 @@ export default function Guardados() {
                       </small>
                     </div>
 
-                    {/* Contenido (Altura Fija + Scroll) */}
                     <div
                       className="clipboard-box-saved scrollable-content p-3 text-break text-wrap position-relative w-100"
                       onClick={() => copiarContenido(item)}
                       title="Copiar contenido"
                       style={{ 
                         cursor: "pointer", 
-                        height: "200px",         /* ¡ALTURA FIJA! Todas las cajas son idénticas */
-                        overflowY: "auto",       /* Scroll interno si el texto es muy largo */
-                        flex: "none",            /* Evita que se estire */
-                        margin: "0 0 16px 0"     /* Margen inferior en lugar de superior */
+                        height: "200px",         
+                        overflowY: "auto",       
+                        flex: "none",            
+                        margin: "0 0 16px 0",
+                        display: "flex",
+                        flexDirection: "column",
+                        /* AQUÍ ESTÁ LA SOLUCIÓN AL CORTE DEL TEXTO */
+                        justifyContent: item.type === "image" ? "center" : "flex-start" 
                       }}
                     >
                       {item.type === "image" ? (
                         renderImage(item.filePath?.split('/').pop())
                       ) : (
-                        <p className="mb-0" style={{ wordBreak: "break-word", fontSize: "0.95rem", textAlign: "left" }}>
+                        <p className="mb-0 w-100" style={{ wordBreak: "break-word", fontSize: "0.95rem", textAlign: "left" }}>
                           {expandedItems[item._id]
                             ? item.content
                             : item.content?.slice(0, TEXT_PREVIEW_LENGTH)}
@@ -568,12 +563,9 @@ export default function Guardados() {
                       )}
                     </div>
 
-                    {/* Espaciador flexible para empujar botones al fondo */}
                     <div className="mt-auto"></div>
 
-                    {/* Botones de acción alineados al fondo */}
                     <div className="d-flex justify-content-center align-items-center gap-2 pt-3 border-top" style={{ borderColor: "var(--border-color) !important" }}>
-                      
                       {item.type === "image" && (
                         <button className="btn boton_aux btn-primary m-0" style={{ width: "45px", height: "45px" }} onClick={() => verImagen(imageCache[item.filePath?.split('/').pop()] || `${serverUrl}/images/${item.filePath?.split('/').pop()}`)} title="Vista previa">
                           <i className="fa fa-eye"></i>
@@ -624,7 +616,7 @@ export default function Guardados() {
                         style={{ cursor: "pointer", wordBreak: "break-word", background: "transparent" }}
                         title="Copiar contenido"
                       >
-                        <div className="scrollable-content" style={{ maxHeight: "150px", overflowY: "auto", textAlign: "left" }}>
+                        <div className="scrollable-content" style={{ maxHeight: "150px", overflowY: "auto", textAlign: "left", display: "block" }}>
                           {item.type === "image" ? (
                             <ImagenPrivada filename={item.filePath?.split('/').pop()} />
                           ) : (
@@ -671,7 +663,6 @@ export default function Guardados() {
         </>
       )}
 
-      {/* Paginación */}
       <h5 className="mt-4 text-center text-muted fw-semibold">{filteredItems.length} elementos guardados</h5>
       <div className="pagination-controls d-flex justify-content-center align-items-center gap-3 mt-3">
         <button

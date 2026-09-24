@@ -628,6 +628,8 @@ html body select:focus {
   flex-direction: column; 
   background-color: var(--background) !important;
   z-index: 1050;
+  overflow-y: auto; 
+  -webkit-overflow-scrolling: touch; 
 }
 
 .hero-section {
