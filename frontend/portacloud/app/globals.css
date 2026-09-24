@@ -988,3 +988,67 @@ html body select:focus {
     background-color: var(--surface-bg) !important;
   }
 }
+
+/* ========== NOTIFICACIONES (REACT TOASTIFY) ========== */
+
+.Toastify__toast {
+  background-color: var(--surface-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.25) !important;
+  color: var(--foreground) !important;
+  font-family: inherit !important;
+  padding: 12px 16px !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Reducimos el tamaño del texto para que sea más elegante */
+.Toastify__toast-body {
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0 8px !important;
+  color: var(--foreground) !important;
+  margin: 0 !important;
+}
+
+/* Botón de cerrar de la notificación */
+.Toastify__close-button {
+  color: var(--text-muted) !important;
+  opacity: 0.6;
+  transition: var(--transition-smooth);
+  align-self: center;
+  padding-right: 4px;
+}
+
+.Toastify__close-button:hover {
+  color: var(--foreground) !important;
+  opacity: 1;
+}
+
+/* Barra de progreso inferior */
+.Toastify__progress-bar {
+  border-radius: 0 0 16px 16px !important;
+  height: 4px !important;
+  opacity: 0.8 !important;
+}
+
+/* ====== COLORES DINÁMICOS POR TIPO DE ALERTA ====== */
+
+/* Toast de Éxito */
+.Toastify__toast--success .Toastify__progress-bar { background-color: var(--btn-success-bg) !important; }
+.Toastify__toast--success .Toastify__toast-icon svg { fill: var(--btn-success-bg) !important; }
+
+/* Toast de Error */
+.Toastify__toast--error .Toastify__progress-bar { background-color: var(--btn-danger-bg) !important; }
+.Toastify__toast--error .Toastify__toast-icon svg { fill: var(--btn-danger-bg) !important; }
+
+/* Toast de Advertencia (Warning) */
+.Toastify__toast--warning .Toastify__progress-bar { background-color: var(--btn-warning-bg) !important; }
+.Toastify__toast--warning .Toastify__toast-icon svg { fill: var(--btn-warning-bg) !important; }
+
+/* Toast de Información / Defecto */
+.Toastify__toast--info .Toastify__progress-bar,
+.Toastify__toast--default .Toastify__progress-bar { background-color: var(--portal-blue) !important; }
+.Toastify__toast--info .Toastify__toast-icon svg,
+.Toastify__toast--default .Toastify__toast-icon svg { fill: var(--portal-blue) !important; }
