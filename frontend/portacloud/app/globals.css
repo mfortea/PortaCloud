@@ -1052,3 +1052,21 @@ html body select:focus {
 .Toastify__toast--default .Toastify__progress-bar { background-color: var(--portal-blue) !important; }
 .Toastify__toast--info .Toastify__toast-icon svg,
 .Toastify__toast--default .Toastify__toast-icon svg { fill: var(--portal-blue) !important; }
+
+/* ========== AJUSTES MÓVILES (NOTIFICACIONES) ========== */
+@media (max-width: 768px) {
+  .Toastify__toast-container {
+    /* Desplaza el contenedor por debajo del Navbar (el navbar mide aprox 80px) */
+    top: 85px !important; 
+    
+    /* Evita que ocupe todo el ancho pegado a los bordes */
+    width: 100% !important;
+    padding: 0 16px !important; 
+  }
+  
+  .Toastify__toast {
+    /* React-toastify quita el borde redondo en móviles por defecto, aquí lo forzamos de nuevo */
+    border-radius: 16px !important; 
+    margin-bottom: 12px !important; 
+  }
+}
