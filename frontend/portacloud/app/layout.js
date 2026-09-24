@@ -1,10 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import Script from "next/script";
+import "bootstrap/dist/css/bootstrap.min.css"; 
+import "./globals.css";                       
 import { AuthProvider } from "../context/AuthContext";
 import ClientLayout from "../components/ClientLayout";
 import ThemeColor from "../components/ThemeColor";
-import Head from "next/head";
 import FontAwesomeLoader from "../components/FontAwesomeLoader"; 
 
 const geistSans = Geist({
@@ -22,6 +22,17 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "PortaCloud",
   description: "Gestor de Portapapeles Multiplataforma con Sincronización en la Nube",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({ children }) {
@@ -30,38 +41,22 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-        <link rel="manifest" href="/manifest.json" />
-
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400&display=swap"
-          as="style"
-        />
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap"
-          as="style"
-        />
-        <meta name="description" content={metadata.description} />
-        <meta property="og:title" content={metadata.title} />
-        <meta property="og:description" content={metadata.description} />
-        <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"
-        />
-        <script
-          src="https://cdn.jsdelivr.net/npm/ios-pwa-splash@1.0.0/cdn.min.js"
-          async
-        ></script>
-        <script>iosPWASplash('logo.png', '#000000');</script>
       </head>
+      
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AuthProvider>
           <FontAwesomeLoader />
           <ClientLayout>{children}</ClientLayout>
           <ThemeColor />
         </AuthProvider>
+
+        <Script 
+          src="https://cdn.jsdelivr.net/npm/ios-pwa-splash@1.0.0/cdn.min.js" 
+          strategy="beforeInteractive" 
+        />
+        <Script id="ios-pwa-splash-init" strategy="afterInteractive">
+          {`iosPWASplash('logo.png', '#090f19');`}
+        </Script>
       </body>
     </html>
   );

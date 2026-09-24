@@ -10,7 +10,6 @@ export default function AppNavbar() {
   const router = useRouter();
   const [showOffcanvas, setShowOffcanvas] = useState(false);
 
-
   if (!user) {
     return null;
   }
@@ -20,10 +19,10 @@ export default function AppNavbar() {
       {/* Navbar para móviles*/}
       <Navbar expand="lg" className="p-3 d-lg-none">
         <Container fluid>
-        <div className="boton_logo">
-            <Navbar.Brand href="/dashboard">
-              <img src="/logo.png" alt="Logo" className="logo_ppal" />
-              <span className="logo_letras">
+          <div className="boton_logo">
+            <Navbar.Brand href="/dashboard" className="d-flex align-items-center gap-2">
+              <img src="/logo.png" alt="Logo" className="logo_ppal m-0" />
+              <span className="logo_letras m-0">
                 <span className="negrita">PORTA</span>CLOUD
               </span>
             </Navbar.Brand>
@@ -33,40 +32,41 @@ export default function AppNavbar() {
           </Button>
           <Offcanvas show={showOffcanvas} onHide={() => setShowOffcanvas(false)} placement="start">
             <Offcanvas.Header closeButton>
-            <div className="boton_logo">
-            <Navbar.Brand href="/dashboard">
-              <img src="/logo.png" alt="Logo" className="logo_ppal" />
-              <span className="logo_letras">
-                <span className="negrita">PORTA</span>CLOUD
-              </span>
-            </Navbar.Brand>
-          </div>
+              <div className="boton_logo">
+                <Navbar.Brand href="/dashboard" className="d-flex align-items-center gap-2">
+                  <img src="/logo.png" alt="Logo" className="logo_ppal m-0" />
+                  <span className="logo_letras m-0">
+                    <span className="negrita">PORTA</span>CLOUD
+                  </span>
+                </Navbar.Brand>
+              </div>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              <Nav className="flex-column">
-              <Nav.Link href="/dashboard">
-              <i className="fa-solid fa-gauge pe-1"></i> Dashboard
-            </Nav.Link>
+              <Nav className="flex-column gap-1">
+                <Nav.Link href="/dashboard" className="d-flex align-items-center gap-2">
+                  <i className="fa-solid fa-gauge"></i> Dashboard
+                </Nav.Link>
                 {user.role === "admin" && (
-                  <Nav.Link className="nav-link" href="/admin">
+                  <Nav.Link className="nav-link d-flex align-items-center gap-2" href="/admin">
                     <i className="fa-solid fa-user-shield"></i> Administración
                   </Nav.Link>
                 )}
-                <Nav.Link href="/guardados">
+                <Nav.Link href="/guardados" className="d-flex align-items-center gap-2">
                   <i className="fa-solid fa-star"></i> Guardados
                 </Nav.Link>
-                <Nav.Link href="/ayuda">
+                <Nav.Link href="/ayuda" className="d-flex align-items-center gap-2">
                   <i className="fa-solid fa-circle-question"></i> Ayuda
                 </Nav.Link>
-                <div className="div_usuario mt-3">
-                  <p className="fw-bold usuario_movil">
-                    <i className="fa-solid fa-user"></i>&nbsp;&nbsp;
+                
+                <div className="div_usuario mt-4">
+                  <p className="fw-bold usuario_movil d-flex align-items-center gap-2">
+                    <i className="fa-solid fa-user"></i>
                     {user.username || "Cargando..."}
                   </p>
-                  <Nav.Link href="/ajustes">
+                  <Nav.Link href="/ajustes" className="d-flex align-items-center gap-2">
                     <i className="fa-solid fa-gear"></i> Ajustes
                   </Nav.Link>
-                  <Nav.Link onClick={logout} className="text-danger">
+                  <Nav.Link onClick={logout} className="text-danger d-flex align-items-center gap-2 mt-1">
                     <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
                   </Nav.Link>
                 </div>
@@ -80,35 +80,40 @@ export default function AppNavbar() {
       <Navbar expand="lg" className="p-3 d-none d-lg-block">
         <Container fluid>
           <div className="boton_logo">
-            <Navbar.Brand href="/dashboard">
-              <img src="/logo.png" alt="Logo" className="logo_ppal" />
-              <span className="logo_letras">
+            <Navbar.Brand href="/dashboard" className="d-flex align-items-center gap-2">
+              <img src="/logo.png" alt="Logo" className="logo_ppal m-0" />
+              <span className="logo_letras m-0">
                 <span className="negrita">PORTA</span>CLOUD
               </span>
             </Navbar.Brand>
           </div>
-          <Nav className="me-auto">
-          <Nav.Link href="/dashboard">
+          <Nav className="me-auto gap-2 ms-3">
+            <Nav.Link href="/dashboard" className="d-flex align-items-center gap-2">
               <i className="fa-solid fa-gauge"></i> Dashboard
             </Nav.Link>
             {user.role === "admin" && (
-              <Nav.Link href="/admin">
+              <Nav.Link href="/admin" className="d-flex align-items-center gap-2">
                 <i className="fa-solid fa-user-shield"></i> Administración
               </Nav.Link>
             )}
-            <Nav.Link href="/guardados">
+            <Nav.Link href="/guardados" className="d-flex align-items-center gap-2">
               <i className="fa-solid fa-star"></i> Guardados
             </Nav.Link>
-            <Nav.Link href="/ayuda">
+            <Nav.Link href="/ayuda" className="d-flex align-items-center gap-2">
               <i className="fa-solid fa-circle-question"></i> Ayuda
             </Nav.Link>
           </Nav>
           <Nav>
-            <NavDropdown className="usuario" title={<><i className="fa-solid fa-user"></i> {user.username}</>} id="user-dropdown" align="end">
-              <NavDropdown.Item href="/ajustes">
+            <NavDropdown 
+              className="usuario" 
+              title={<span className="d-inline-flex align-items-center gap-2"><i className="fa-solid fa-user"></i> {user.username}</span>} 
+              id="user-dropdown" 
+              align="end"
+            >
+              <NavDropdown.Item href="/ajustes" className="d-flex align-items-center gap-2">
                 <i className="fa-solid fa-gear"></i> Ajustes
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={logout} className="text-danger">
+              <NavDropdown.Item onClick={logout} className="text-danger d-flex align-items-center gap-2 mt-1">
                 <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
               </NavDropdown.Item>
             </NavDropdown>

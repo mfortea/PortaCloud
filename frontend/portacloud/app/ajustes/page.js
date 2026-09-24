@@ -34,7 +34,7 @@ export default function Ajustes() {
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$\%^&*(),.?":{}\vert{}<>]{12,}$/;
 
   useEffect(() => {
     document.title = 'Ajustes | PortaCloud';
@@ -134,7 +134,6 @@ export default function Ajustes() {
     }
   };
 
-
   const handleLogout = () => {
     const token = localStorage.getItem("token");
     const deviceId = localStorage.getItem("deviceId");
@@ -181,7 +180,6 @@ export default function Ajustes() {
     }
 
     handleLogout();
-
   };
 
   const handleDeleteSaved = async () => {
@@ -276,51 +274,98 @@ export default function Ajustes() {
   }
 
   return (
-    <div className="container py-5 zoom-al_cargar">
-      <h1 className="text-center mb-4">
-        <i className="fa fa-gear pe-2"></i> Ajustes de {user?.username || 'No disponible'}
-      </h1>
-      <div className="info_ajustes d-flex flex-column align-items-center mb-4">
-        <div>
-          <div className="mb-2">
-            <strong><i className="fa fa-envelope me-2"></i>Email:</strong>
-            <span className="ms-2">{user?.email || 'No registrado'}</span>
+    <div className="container py-5 zoom-al_cargar" style={{ maxWidth: "1000px" }}>
+      {/* Título de la página */}
+      <div className="text-center mb-5">
+        <h1 className="fw-bold mb-3">
+          <i className="fa-solid fa-gear" style={{ color: "var(--portal-blue)" }}></i> Ajustes
+        </h1>
+        <p className="text-muted" style={{ fontSize: "1.1rem" }}>
+          Gestiona las preferencias y la seguridad de la cuenta de <strong>{user?.username || 'No disponible'}</strong>.
+        </p>
+      </div>
+
+      {/* Tarjeta de Información del Usuario */}
+      <div className="p-4 p-md-5 mb-4 shadow-sm" style={{ background: "var(--surface-bg)", borderRadius: "24px", border: "1px solid var(--border-color)" }}>
+        <h3 className="h5 fw-bold mb-4" style={{ color: "var(--foreground)" }}>
+          <i className="fa-regular fa-address-card pe-2" style={{ color: "var(--portal-blue)" }}></i> Información de la cuenta
+        </h3>
+        
+        <div className="row g-4 mt-2">
+          <div className="col-12 col-md-6 d-flex align-items-center gap-3">
+            <div className="d-flex justify-content-center align-items-center rounded-circle" style={{ width: "54px", height: "54px", background: "var(--surface-alt)", color: "var(--portal-blue)", fontSize: "1.5rem" }}>
+              <i className="fa fa-envelope"></i>
+            </div>
+            <div>
+              <p className="text-muted mb-0 small text-uppercase fw-semibold" style={{ letterSpacing: "0.5px" }}>Email Registrado</p>
+              <p className="fw-bold mb-0" style={{ fontSize: "1.1rem", wordBreak: "break-all" }}>{user?.email || 'No registrado'}</p>
+            </div>
           </div>
-          <div>
-            <strong><i className="fa fa-calendar me-2"></i>Cuenta creada:</strong>
-            <span className="ms-2">
-              {user?.createdAt
-                ? new Date(user.createdAt).toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })
-                : 'Fecha no disponible'}
-            </span>
+          
+          <div className="col-12 col-md-6 d-flex align-items-center gap-3">
+            <div className="d-flex justify-content-center align-items-center rounded-circle" style={{ width: "54px", height: "54px", background: "var(--surface-alt)", color: "var(--portal-blue)", fontSize: "1.5rem" }}>
+              <i className="fa fa-calendar-alt"></i>
+            </div>
+            <div>
+              <p className="text-muted mb-0 small text-uppercase fw-semibold" style={{ letterSpacing: "0.5px" }}>Miembro desde</p>
+              <p className="fw-bold mb-0" style={{ fontSize: "1.1rem" }}>
+                {user?.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString('es-ES', {
+                      day: '2-digit', month: 'long', year: 'numeric'
+                    })
+                  : 'Fecha no disponible'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="d-flex flex-column align-items-center mt-4">
-        <button className="btn botones_ajustes btn-primary" onClick={() => setShowUsernameModal(true)}>
-          <i className="fa fa-user-edit me-2"></i> Cambiar nombre de usuario
-        </button>
-        <button className="btn botones_ajustes btn-primary" onClick={() => setShowPasswordModal(true)}>
-          <i className="fa fa-lock me-2"></i> Cambiar contraseña
-        </button>
-        <button className="btn botones_ajustes btn-success" onClick={() => setShowBackupModal(true)}>
-          <i className="fa fa-download me-2"></i> Descargar todos los guardados
-        </button>
-        <button className="btn botones_ajustes btn-danger" onClick={() => setShowDeleteSavedModal(true)}>
-          <i className="fa-solid fa-star-half-stroke pe-2"></i> Eliminar todos los guardados
-        </button>
-        <button className="btn botones_ajustes btn-danger" onClick={() => setShowDeleteModal(true)}>
-          <i className="fa fa-trash me-2"></i> Eliminar cuenta
-        </button>
+      <div className="row g-4 mb-5">
+        {/* Sección: Perfil y Seguridad */}
+        <div className="col-lg-6">
+          <div className="p-4 p-md-5 h-100 shadow-sm d-flex flex-column" style={{ background: "var(--surface-bg)", borderRadius: "24px", border: "1px solid var(--border-color)" }}>
+            <h3 className="h5 fw-bold mb-4" style={{ color: "var(--foreground)" }}>
+              <i className="fa-solid fa-shield-halved pe-2" style={{ color: "var(--portal-blue)" }}></i> Perfil y Seguridad
+            </h3>
+            <p className="text-muted small mb-4">Actualiza tus credenciales de acceso. Te recomendamos usar contraseñas seguras.</p>
+            
+            <div className="d-flex flex-column gap-3 mt-auto">
+              <button className="btn botones_ajustes w-100 btn-primary m-0 d-flex justify-content-center align-items-center gap-2" onClick={() => setShowUsernameModal(true)}>
+                <i className="fa fa-user-edit"></i> Cambiar nombre de usuario
+              </button>
+              <button className="btn botones_ajustes w-100 btn-primary m-0 d-flex justify-content-center align-items-center gap-2" onClick={() => setShowPasswordModal(true)}>
+                <i className="fa fa-lock"></i> Cambiar contraseña
+              </button>
+            </div>
+          </div>
+        </div>
 
-        <Link href="/acercade" className="nav-link text-decoration-none mt-3">
+        {/* Sección: Datos y Privacidad */}
+        <div className="col-lg-6">
+          <div className="p-4 p-md-5 h-100 shadow-sm d-flex flex-column" style={{ background: "var(--surface-bg)", borderRadius: "24px", border: "1px solid var(--border-color)" }}>
+            <h3 className="h5 fw-bold mb-4" style={{ color: "var(--foreground)" }}>
+              <i className="fa-solid fa-database pe-2" style={{ color: "var(--portal-blue)" }}></i> Datos y Privacidad
+            </h3>
+            <p className="text-muted small mb-4">Exporta tu información o elimina contenido de forma permanente. Estas acciones son irreversibles.</p>
+            
+            <div className="d-flex flex-column gap-3 mt-auto">
+              <button className="btn botones_ajustes w-100 btn-success m-0 d-flex justify-content-center align-items-center gap-2" onClick={() => setShowBackupModal(true)}>
+                <i className="fa fa-download"></i> Descargar todos los guardados
+              </button>
+              <button className="btn botones_ajustes w-100 btn-danger m-0 d-flex justify-content-center align-items-center gap-2" onClick={() => setShowDeleteSavedModal(true)}>
+                <i className="fa-solid fa-star-half-stroke"></i> Eliminar todos los guardados
+              </button>
+              <button className="btn botones_ajustes w-100 btn-danger m-0 d-flex justify-content-center align-items-center gap-2"  onClick={() => setShowDeleteModal(true)}>
+                <i className="fa fa-trash"></i> Eliminar cuenta
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Botón de Acerca de PortaCloud */}
+      <div className="text-center mt-5 mb-5">
+        <Link href="/acercade" className="btn boton_aux btn-secondary d-inline-flex justify-content-center align-items-center text-decoration-none px-4 m-0" style={{ width: "auto", height: "50px", fontSize: "1rem", borderRadius: "14px", fontWeight: "600" }}>
           <i className="fa fa-info-circle me-2"></i> Acerca de PortaCloud
         </Link>
       </div>

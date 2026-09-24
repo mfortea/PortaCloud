@@ -38,7 +38,6 @@ export default function AdminPage() {
   const [showDownloadLogsModal, setShowDownloadLogsModal] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState("json");
 
-
   const closeModal = () => setShowModal(false);
   const closeDownloadModal = () => {
     setTimeout(() => {
@@ -124,7 +123,6 @@ export default function AdminPage() {
     }
   };
 
-
   const downloadUsers = () => {
     let content;
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -163,9 +161,8 @@ export default function AdminPage() {
       const token = localStorage.getItem("token");
       let allLogs = [];
       let page = 1;
-      const pageSize = 100; // Máximo que tu backend permite (100)
+      const pageSize = 100;
   
-      // Primer llamada para obtener totalPages
       const firstResponse = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_IP}/admin/logs?page=${page}&limit=${pageSize}`,
         {
@@ -182,7 +179,6 @@ export default function AdminPage() {
       allLogs = allLogs.concat(firstData.logs);
       const totalPages = firstData.totalPages;
   
-      // Si hay más páginas, traerlas
       while (page < totalPages) {
         page++;
         const response = await fetch(
@@ -198,7 +194,6 @@ export default function AdminPage() {
         const data = await response.json();
         allLogs = allLogs.concat(data.logs);
       }
-  
   
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const filename = `logs-portacloud-${timestamp}.${downloadFormat}`;
@@ -234,7 +229,6 @@ export default function AdminPage() {
       setLoading(false);
     }
   };
-  
 
   const getActionDescription = (action, details) => {
     switch (action) {
@@ -268,7 +262,6 @@ export default function AdminPage() {
     setCurrentPage(pageNumber);
     fetchLogs(pageNumber);
   };
-
 
   const openModal = (type, userId = null) => {
     setSelectedUserId(userId);
@@ -362,6 +355,10 @@ export default function AdminPage() {
         toast.success("Usuario creado exitosamente");
         await fetchUsers();
         await fetchLogs();
+        setNewUsername("");
+        setNewEmail("");
+        setNewPassword("");
+        setNewRole("user");
       } else {
         const errorData = await response.json();
         toast.error("Error al crear el usuario: " + (errorData.message || "Error desconocido"));
@@ -372,179 +369,222 @@ export default function AdminPage() {
   };
 
   if (isCheckingAuth || (!user && typeof window !== "undefined")) {
-    return <h3 id="comprobar_rol" className="text-center">Comprobando rol del usuario...</h3>;
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
+        <div className="text-center">
+          <h3 id="comprobar_rol" className="fw-bold">Comprobando credenciales...</h3>
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
       <ToastContainer />
-      <div className="container py-5 zoom-al_cargar">
-        <h1 className="text-center">
-          <i className="fa-solid fa-user-shield"></i> Administración de Usuarios
-        </h1>
-        <br />
-        <br />
-        <h2>
-          <i className="mb-3 fa-solid fa-users"></i> Lista de usuarios
-        </h2>
-        {loading ? (
-          <p>Cargando usuarios...</p>
-        ) : (
-          <table className="users-table">
-            <thead>
-              <tr>
-                <th>Nombre de Usuario</th>
-                <th>Rol</th>
-                <th>Fecha de Creación</th>
-                <th>Último Inicio de Sesión</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((userItem) => (
-                <tr key={userItem._id}>
-                  <td><span className="bold">{userItem.username}</span><br />{userItem.email}</td>
-                  <td>{userItem.role}</td>
-                  <td>
-                    {format(new Date(userItem.createdAt), 'dd MMM yyyy HH:mm:ss', { locale: es })}
-                  </td>
-                  <td>
-                    {userItem.lastLogin
-                      ? format(new Date(userItem.lastLogin), 'dd MMM yyyy HH:mm:ss', { locale: es })
-                      : "Nunca"}
-                  </td>
-                  <td>
-                    <button
-                      className="btn boton_aux btn-primary"
-                      title="Cambiar rol del usuario"
-                      onClick={() => openModal("editRole", userItem._id)}
-                    >
-                      <i className="fa-solid fa-user-tag"></i>
-                    </button>
-                    <button
-                      className="btn boton_aux m-2 btn-danger"
-                      title="Eliminar usuario"
-                      onClick={() => openModal("deleteUser", userItem._id)}
-                    >
-                      <i className="fa-solid fa-circle-minus"></i>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-        <br />
-        <br />
-        <br />
-        <h2>
-          <i className="mb-3 fa-solid fa-user-plus"></i> Crear Nuevo Usuario
-        </h2>
-        <form onSubmit={handleCreateUser} className="create-user-form">
-          <div>
-            <label>Nombre de Usuario:</label>
-            <input
-              type="text"
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Correo electrónico:</label>
-            <input
-              type="text"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Contraseña:</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Rol:</label>
-            <select
-              value={newRole}
-              onChange={(e) => setNewRole(e.target.value)}
-            >
-              <option value="user">Usuario</option>
-              <option value="admin">Administrador</option>
-            </select>
-          </div>
-          <button className="mt-3 w-100 btn botones_ajustes btn-success" type="submit">
-            Crear Usuario
-          </button>
-        </form>
+      <div className="container py-5 zoom-al_cargar" style={{ maxWidth: "1200px" }}>
+        
+        {/* Cabecera Principal */}
+        <div className="text-center mb-5">
+          <h1 className="fw-bold mb-3">
+            <i className="fa-solid fa-user-shield" style={{ color: "var(--portal-blue)" }}></i> Panel de Administración
+          </h1>
+          <p className="text-muted" style={{ fontSize: "1.1rem" }}>
+            Gestión centralizada de usuarios, auditoría del sistema y copias de seguridad.
+          </p>
+        </div>
 
-        <div className="mt-5">
-          <h2>
-            <i className="mb-3 fa-solid fa-scroll"></i> Registro de Actividades
-            &nbsp;
-            <button
-              onClick={fetchLogs}
-              className="ml-3 btn boton_aux btn-primary ms-3"
-              disabled={isRefreshingLogs}
-            >
-              {isRefreshingLogs ? (
-                <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
-              ) : (
-                <i className="fa fa-refresh" aria-hidden="true"></i>
-              )}
-            </button>
-          </h2>
-          <div className="logs-container">
-            <div className="table-responsive">
-              <table className="users-table">
+        {/* --- TARJETA: LISTA DE USUARIOS --- */}
+        <div className="p-4 p-md-5 mb-5 shadow-sm" style={{ background: "var(--surface-bg)", borderRadius: "24px", border: "1px solid var(--border-color)" }}>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h3 className="h5 fw-bold m-0" style={{ color: "var(--foreground)" }}>
+              <i className="fa-solid fa-users pe-2" style={{ color: "var(--portal-blue)" }}></i> Usuarios Registrados
+            </h3>
+          </div>
+          
+          {loading ? (
+            <div className="text-center py-5">
+              <i className="fa fa-circle-notch fa-spin text-muted" style={{ fontSize: "2rem" }}></i>
+            </div>
+          ) : (
+            <div className="table-responsive" style={{ borderRadius: "16px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
+              <table className="users-table w-100 m-0">
                 <thead>
                   <tr>
-                    <th>Fecha/Hora</th>
-                    <th>Usuario</th>
-                    <th>Acción</th>
-                    <th>Dirección IP</th>
-                    <th>Detalles</th>
+                    <th>Nombre de Usuario</th>
+                    <th>Rol</th>
+                    <th>Fecha de Creación</th>
+                    <th>Último Acceso</th>
+                    <th className="text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentLogs.map((log) => (
-                    <tr key={log._id}>
-                      <td>
-                        {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                  {users.map((userItem) => (
+                    <tr key={userItem._id}>
+                      <td className="align-middle">
+                        <span className="fw-bold text-nowrap d-block">{userItem.username}</span>
+                        <span className="text-muted small">{userItem.email}</span>
                       </td>
-                      <td>{log.username || 'Sistema'}</td>
-                      <td>
-                        {log.action === 'login' && 'Inicio de sesión'}
-                        {log.action === 'logout' && 'Cierre de sesión'}
-                        {log.action === 'register' && 'Registro nuevo'}
-                        {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
-                        {log.action === 'role_changed' && `Rol de "${log.details?.targetUser}" cambiado a (${log.details?.newRole})`}
-                        {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
-                        {log.action === 'username_changed' && `Nombre de usuario cambiado: ${log.details?.oldUsername} → ${log.details?.newUsername}`}
-                        {log.action === 'password_changed' && 'Contraseña actualizada'}
-                        {log.action === 'account_deleted' && 'Cuenta eliminada'}
+                      <td className="align-middle">
+                        <span className={`badge ${userItem.role === 'admin' ? 'bg-primary' : 'bg-secondary'} rounded-pill fw-medium`} style={{ opacity: 0.9 }}>
+                          {userItem.role}
+                        </span>
                       </td>
-                      <td>{log.ipAddress}</td>
-                      <td>
-                        {log.details && (
-                          <span className="log-details">
-                            {log.details.os} - {log.details.browser}
-                          </span>
-                        )}
+                      <td className="align-middle text-nowrap">
+                        {format(new Date(userItem.createdAt), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                      </td>
+                      <td className="align-middle text-nowrap text-muted">
+                        {userItem.lastLogin ? format(new Date(userItem.lastLogin), 'dd MMM yyyy HH:mm', { locale: es }) : "Nunca"}
+                      </td>
+                      <td className="align-middle">
+                        <div className="d-flex justify-content-center gap-2">
+                          <button
+                            className="btn boton_aux btn-primary m-0"
+                            style={{ width: "40px", height: "40px", fontSize: "14px" }}
+                            title="Cambiar rol"
+                            onClick={() => openModal("editRole", userItem._id)}
+                          >
+                            <i className="fa-solid fa-user-tag"></i>
+                          </button>
+                          <button
+                            className="btn boton_aux btn-danger m-0"
+                            style={{ width: "40px", height: "40px", fontSize: "14px" }}
+                            title="Eliminar usuario"
+                            onClick={() => openModal("deleteUser", userItem._id)}
+                          >
+                            <i className="fa-solid fa-trash"></i>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+          )}
+        </div>
+
+        <div className="row g-4 mb-5">
+          {/* --- TARJETA: CREAR NUEVO USUARIO --- */}
+          <div className="col-lg-6">
+            <div className="p-4 p-md-5 h-100 shadow-sm d-flex flex-column" style={{ background: "var(--surface-bg)", borderRadius: "24px", border: "1px solid var(--border-color)" }}>
+              <h3 className="h5 fw-bold mb-4" style={{ color: "var(--foreground)" }}>
+                <i className="fa-solid fa-user-plus pe-2" style={{ color: "var(--portal-blue)" }}></i> Crear Nuevo Usuario
+              </h3>
+              <form onSubmit={handleCreateUser} className="d-flex flex-column gap-3 mt-auto">
+                <div>
+                  <label className="text-muted small fw-semibold mb-1 ms-1">Nombre de Usuario</label>
+                  <input type="text" className="form-control m-0" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} required />
+                </div>
+                <div>
+                  <label className="text-muted small fw-semibold mb-1 ms-1">Correo Electrónico</label>
+                  <input type="email" className="form-control m-0" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required />
+                </div>
+                <div>
+                  <label className="text-muted small fw-semibold mb-1 ms-1">Contraseña</label>
+                  <input type="password" className="form-control m-0" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                </div>
+                <div>
+                  <label className="text-muted small fw-semibold mb-1 ms-1">Privilegios (Rol)</label>
+                  <select className="form-select select_guardados w-100 m-0" value={newRole} onChange={(e) => setNewRole(e.target.value)} style={{ padding: "12px 20px" }}>
+                    <option value="user">Usuario Estándar</option>
+                    <option value="admin">Administrador del Sistema</option>
+                  </select>
+                </div>
+                <button className="btn botones_ajustes btn-success w-100 mt-3 m-0" type="submit" style={{ height: "56px" }}>
+                  Añadir Usuario
+                </button>
+              </form>
+            </div>
           </div>
 
-          <div className="pagination mt-3">
+          {/* --- TARJETA: COPIAS DE SEGURIDAD --- */}
+          <div className="col-lg-6">
+            <div className="p-4 p-md-5 h-100 shadow-sm d-flex flex-column" style={{ background: "var(--surface-bg)", borderRadius: "24px", border: "1px solid var(--border-color)" }}>
+              <h3 className="h5 fw-bold mb-3" style={{ color: "var(--foreground)" }}>
+                <i className="fa-solid fa-cloud-arrow-down pe-2" style={{ color: "var(--portal-blue)" }}></i> Exportar Sistema
+              </h3>
+              <p className="text-muted small mb-4">Genera copias de seguridad de las bases de datos en formato JSON estructurado o CSV para análisis externo.</p>
+
+              <div className="d-flex flex-column gap-3 mt-auto">
+                <button 
+                  className="btn botones_ajustes btn-primary w-100 m-0 d-flex justify-content-center align-items-center gap-2" 
+                  onClick={() => setShowDownloadUsersModal(true)}
+                >
+                  <i className="fa-solid fa-users"></i> Base de Datos de Usuarios
+                </button>
+                <button 
+                  className="btn botones_ajustes btn-primary w-100 m-0 d-flex justify-content-center align-items-center gap-2" 
+                  onClick={() => setShowDownloadLogsModal(true)}
+                >
+                  <i className="fa-solid fa-scroll"></i> Histórico de Logs Completos
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* --- TARJETA: REGISTRO DE ACTIVIDADES (LOGS) --- */}
+        <div className="p-4 p-md-5 mb-5 shadow-sm" style={{ background: "var(--surface-bg)", borderRadius: "24px", border: "1px solid var(--border-color)" }}>
+          <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <h3 className="h5 fw-bold m-0" style={{ color: "var(--foreground)" }}>
+              <i className="fa-solid fa-clipboard-list pe-2" style={{ color: "var(--portal-blue)" }}></i> Auditoría de Actividades
+            </h3>
+            <button 
+              onClick={() => fetchLogs(currentPage)} 
+              className="btn boton_aux btn-secondary m-0" 
+              style={{ width: "45px", height: "45px", fontSize: "16px" }} 
+              disabled={isRefreshingLogs} 
+              title="Refrescar logs"
+            >
+              {isRefreshingLogs ? <i className="fa fa-circle-notch fa-spin"></i> : <i className="fa fa-refresh"></i>}
+            </button>
+          </div>
+          
+          <div className="table-responsive" style={{ borderRadius: "16px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
+            <table className="users-table w-100 m-0">
+              <thead>
+                <tr>
+                  <th>Fecha y Hora</th>
+                  <th>Usuario</th>
+                  <th>Acción Registrada</th>
+                  <th>Dirección IP</th>
+                  <th>Detalles Adicionales</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentLogs.map((log) => (
+                  <tr key={log._id}>
+                    <td className="align-middle text-nowrap">
+                      {format(new Date(log.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: es })}
+                    </td>
+                    <td className="align-middle fw-medium">{log.username || 'Sistema'}</td>
+                    <td className="align-middle">
+                      {log.action === 'login' && 'Inicio de sesión'}
+                      {log.action === 'logout' && 'Cierre de sesión'}
+                      {log.action === 'register' && 'Registro nuevo'}
+                      {log.action === 'user_created' && `Usuario creado: ${log.details?.createdUser}`}
+                      {log.action === 'role_changed' && `Rol cambiado: ${log.details?.targetUser} → (${log.details?.newRole})`}
+                      {log.action === 'user_deleted' && `Usuario eliminado: ${log.details?.deletedUser}`}
+                      {log.action === 'username_changed' && `Usuario renombrado: ${log.details?.oldUsername} → ${log.details?.newUsername}`}
+                      {log.action === 'password_changed' && 'Contraseña actualizada'}
+                      {log.action === 'account_deleted' && 'Cuenta eliminada'}
+                    </td>
+                    <td className="align-middle text-muted" style={{ fontFamily: "monospace", fontSize: "0.9rem" }}>{log.ipAddress}</td>
+                    <td className="align-middle">
+                      {log.details && log.details.os && (
+                        <span className="log-details text-muted small fw-medium">
+                          {log.details.os} · {log.details.browser}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Controles de Paginación */}
+          <div className="d-flex justify-content-center align-items-center gap-2 mt-4 flex-wrap">
             {(() => {
               const totalPages = Math.ceil(totalLogs / logsPerPage);
               const delta = 2; 
@@ -553,36 +593,30 @@ export default function AdminPage() {
               let right = Math.min(totalPages - 1, currentPage + delta);
 
               range.push(1); 
-
-              if (left > 2) {
-                range.push("left-ellipsis");
-              }
-
-              for (let i = left; i <= right; i++) {
-                range.push(i);
-              }
-
-              if (right < totalPages - 1) {
-                range.push("right-ellipsis");
-              }
-
-              if (totalPages > 1) {
-                range.push(totalPages); 
-              }
+              if (left > 2) range.push("left-ellipsis");
+              for (let i = left; i <= right; i++) range.push(i);
+              if (right < totalPages - 1) range.push("right-ellipsis");
+              if (totalPages > 1) range.push(totalPages); 
 
               return range.map((page, index) => {
                 if (page === "left-ellipsis" || page === "right-ellipsis") {
-                  return (
-                    <span key={page + index} className="pagination-ellipsis">
-                      ...
-                    </span>
-                  );
+                  return <span key={page + index} className="px-2 text-muted fw-bold">...</span>;
                 }
+                const isActive = currentPage === page;
                 return (
                   <button
                     key={page}
                     onClick={() => paginate(page)}
-                    className={`btn btn-sm ${currentPage === page ? 'btn-primary' : 'btn-outline-primary'}`}
+                    className="btn m-0 fw-semibold"
+                    style={{
+                      width: "40px", 
+                      height: "40px", 
+                      borderRadius: "12px", 
+                      border: `1px solid ${isActive ? 'transparent' : 'var(--border-color)'}`,
+                      background: isActive ? "var(--portal-blue)" : "var(--surface-alt)",
+                      color: isActive ? "#ffffff" : "var(--foreground)",
+                      transition: "0.2s ease"
+                    }}
                   >
                     {page}
                   </button>
@@ -590,33 +624,9 @@ export default function AdminPage() {
               });
             })()}
           </div>
-
-
         </div>
 
-        <br />
-        <br />
-        <h2>
-          <i className="mb-3 fa-solid fa-rotate"></i> Copias de seguridad
-        </h2>
-        <h4>Realizar copia de seguridad a fichero de los usuarios y logs</h4>
-        <br />
-        <button
-          className="btn botones_ajustes btn-success"
-          onClick={() => setShowDownloadUsersModal(true)}
-        >
-          <i className="fa-solid fa-users pe-2"></i>
-          Lista de usuarios
-        </button>
-        <br />
-        <button
-          className="btn botones_ajustes btn-success"
-          onClick={() => setShowDownloadLogsModal(true)}
-        >
-          <i className="fa-solid fa-scroll pe-2"></i>
-          Lista de Logs
-        </button>
-
+        {/* Renderizado de Modales */}
         <DownloadUsersModal
           show={showDownloadUsersModal}
           onClose={closeDownloadModal}

@@ -588,47 +588,45 @@ export default function Dashboard() {
 
 
   return (
-
-
-    <div className="container py-5 zoom-al_cargar">
+    <div className="container py-4 zoom-al_cargar">
+      
+      {/* Título de Portapapeles Principal */}
       <h1 className="text-center mb-4">
-        <i className="fa-solid fa-clipboard"></i>&nbsp; Mi portapapeles
+        <i className="fa-solid fa-clipboard me-2"></i> Mi portapapeles
       </h1>
 
       {showBrowserModal && (
         <Modal show={showBrowserModal} onHide={() => setShowBrowserModal(false)} centered>
           <Modal.Header closeButton>
             <Modal.Title>
-              <i className="fa-solid fa-triangle-exclamation"></i> Aviso para navegadores
+              <i className="fa-solid fa-triangle-exclamation text-warning me-2"></i> Aviso para navegadores
             </Modal.Title>
           </Modal.Header>
           <Modal.Body className="text-center">
-            <div className="d-flex justify-content-center gap-3 mb-4">
+            <div className="d-flex justify-content-center gap-4 mb-4 mt-3">
               <img src="/safari.png" style={{ width: 80 }} alt="Safari" />
               <img src="/firefox.png" style={{ width: 80 }} alt="Firefox" />
             </div>
-            <h2>Limitaciones en Safari y Firefox</h2>
-            <br />
-            <p>
-              Estos navegadores no soportan funciones como la actualización automática del portapapeles y el soporte para copiar imágenes al portapapeles.
+            <h4 className="fw-bold mb-3">Limitaciones en Safari y Firefox</h4>
+            <p className="text-muted">
+              Estos navegadores no soportan funciones como la actualización automática del portapapeles y el soporte para copiar imágenes.
             </p>
-            <p>
-              Para leer el contenido del portapapeles deberá utilizar el botón de lectura de portapapeles. Puede ver más información en el apartado de Ayuda
+            <p className="text-muted">
+              Para leer el contenido deberá utilizar el botón de actualización manual. Puede ver más información en el apartado de Ayuda.
             </p>
-            <p>
-              Para una mejor compatibilidad se recomienda usar Google Chrome o Microsoft Edge
+            <p className="fw-semibold mt-4" style={{ color: "var(--portal-blue)" }}>
+              Para una mejor experiencia se recomienda usar Google Chrome o Microsoft Edge.
             </p>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className="border-0">
             <Button
-              className="btn botones_ajustes w-100 btn-success"
+              className="btn botones_ajustes w-100 btn-success mb-2"
               onClick={() => router.push("/ayuda")}
             >
               <i className="fa-solid fa-circle-question pe-2"></i> Ir a Ayuda
             </Button>
-
             <Button
-              className="btn botones_ajustes w-100 btn-primary"
+              className="btn botones_ajustes w-100 btn-primary m-0"
               onClick={() => setShowBrowserModal(false)}
             >
               Entendido
@@ -647,7 +645,8 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="clipboard-display mb-4 text-center">
+      {/* Contenedor del Portapapeles */}
+      <div className={`clipboard-display text-center ${clipboardAnimation ? 'portal-animation' : ''}`}>
         {clipboardContent ? (
           clipboardContent.type === "image" ? (
             <img
@@ -657,12 +656,9 @@ export default function Dashboard() {
               loading="lazy"
               style={{ maxWidth: "100%", maxHeight: "400px" }}
             />
-
-
-
           ) : (
             <div>
-              <p className="text-break">
+              <p className="text-break mb-0">
                 {expandedText
                   ? clipboardContent.content
                   : clipboardContent.content?.slice(0, TEXT_PREVIEW_LENGTH)}
@@ -674,19 +670,21 @@ export default function Dashboard() {
                   onClick={() => setExpandedText(!expandedText)}
                   title="Mostrar/Ocultar el texto completo"
                 >
-                  <i className="fa-solid fa-eye pe-1"></i> {expandedText ? "Mostrar menos" : "Mostrar más"}
+                  <i className={`fa-solid ${expandedText ? 'fa-eye-slash' : 'fa-eye'} pe-1`}></i> 
+                  {expandedText ? "Mostrar menos" : "Mostrar más"}
                 </button>
               )}
             </div>
           )
         ) : (
-          <p>No hay contenido en el portapapeles</p>
+          <p className="text-muted mb-0">No hay contenido en el portapapeles</p>
         )}
       </div>
 
-      <div className="mt-3 text-center">
+      {/* Botones de acción del portapapeles principal */}
+      <div className="d-flex justify-content-center flex-wrap gap-3 mt-4">
         <button
-          className="btn boton_aux btn-primary"
+          className="btn boton_aux btn-primary m-0"
           onClick={actualizarPortapapeles}
           disabled={refreshing}
           title={
@@ -698,16 +696,14 @@ export default function Dashboard() {
           {refreshing ? (
             <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
           ) : isProblematicBrowser ? (
-            <>
-              <i className="fa-regular fa-clipboard"></i>
-            </>
+            <i className="fa-regular fa-clipboard"></i>
           ) : (
             <i className="fa fa-refresh" aria-hidden="true"></i>
           )}
         </button>
 
         <button
-          className="btn boton_aux btn-success"
+          className="btn boton_aux btn-success m-0"
           title="Descargar el contenido a un fichero"
           disabled={saving || downloading || !clipboardContent}
           onClick={descargarContenido}
@@ -720,7 +716,7 @@ export default function Dashboard() {
         </button>
 
         <button
-          className="btn boton_aux btn-warning"
+          className="btn boton_aux btn-warning m-0"
           onClick={() => {
             const { os, browser, deviceType } = infoDispositivo();
             guardarContenido(
@@ -742,25 +738,26 @@ export default function Dashboard() {
         </button>
 
         <button
-          className="btn boton_aux btn-danger"
+          className="btn boton_aux btn-danger m-0"
           title="Limpiar portapapeles"
           disabled={saving || !clipboardContent}
           onClick={borrarContenido}
         >
           <i className="fa fa-remove" aria-hidden="true"></i>
         </button>
-
-        {isProblematicBrowser && (
-          <p className="texto_aviso mt-3 small">
-            {isSafari ? "Safari" : "Firefox"} requiere actualización manual
-          </p>
-        )}
       </div>
 
-      <br></br><br></br>
-      <h1 className="text-center mt-4 mb-4">
-        <i className="fa-solid fa-tower-broadcast"></i> &nbsp;Dispositivos
-        conectados
+      {isProblematicBrowser && (
+        <div className="text-center mt-3">
+          <span className="texto_aviso small px-3 py-1 rounded-pill" style={{ background: "var(--surface-alt)", border: "1px solid var(--border-color)" }}>
+            <i className="fa-solid fa-circle-info me-1"></i> {isSafari ? "Safari" : "Firefox"} requiere actualización manual
+          </span>
+        </div>
+      )}
+
+      {/* Título de Dispositivos Conectados */}
+      <h1 className="text-center mt-5 pt-4 mb-4">
+        <i className="fa-solid fa-tower-broadcast me-2"></i> Dispositivos conectados
       </h1>
 
       <div className="text-center mb-4">
@@ -778,16 +775,17 @@ export default function Dashboard() {
         </button>
       </div>
 
+      {/* Contenedor de Dispositivos */}
       <div className="device-container">
         {connectedDevices.length > 0 ? (
           connectedDevices.map((device, index) => (
             <div
               key={device.deviceId}
-              className={`device-card-dashboard shadow-lg ${connectedDevices.length === 1 ? "single" : ""} ${device.new ? "enter" : ""}`}
+              className={`device-card-dashboard shadow-sm ${connectedDevices.length === 1 ? "single" : ""} ${device.new ? "enter" : ""}`}
             >
-              <div className="card-body text-center">
-                <div className="d-flex align-items-center justify-content-center mb-2">
-                  <p className="tipo_dispositivo mb-0 me-2 d-flex align-items-center">
+              <div className="card-body d-flex flex-column h-100">
+                <div className="d-flex align-items-center justify-content-center mb-3">
+                  <p className="tipo_dispositivo mb-0 me-3 d-flex align-items-center">
                     {device.deviceType === "equipo"
                       ? <IoMdDesktop />
                       : device.deviceType === "smartphone"
@@ -799,87 +797,90 @@ export default function Dashboard() {
                   <img
                     src={getDeviceLogo("os", device.os)}
                     alt={device.os}
-                    className="img-fluid"
-                    style={{ width: 40, height: 40 }}
+                    className="img-fluid m-0 me-2"
+                    style={{ width: 36, height: 36 }}
                   />
                   <img
                     src={getDeviceLogo("browser", device.browser)}
                     alt={device.browser}
-                    className="img-fluid"
-                    style={{ width: 40, height: 40 }}
+                    className="img-fluid m-0"
+                    style={{ width: 36, height: 36 }}
                   />
                 </div>
 
-                <p><strong>Portapapeles</strong></p>
+                <p className="mb-2"><strong>Portapapeles</strong></p>
 
                 <div
-                  className={`clipboard-box p-3 mt-3 text-break text-wrap ${device.flash ? "flash" : ""}`}
+                  className={`clipboard-box p-3 text-break text-wrap flex-grow-1 ${device.flash ? "flash" : ""}`}
                   onClick={() => copiarContenido({
                     content: device.clipboardContent,
                     type: device.clipboardContent?.startsWith("/device/temp_image/") ? "image" : "text",
                   })}
-
                   title="Copiar contenido"
-
                   style={{ cursor: "pointer" }}
                 >
                   {device.clipboardContent?.startsWith("/device/temp_image") ? (
                     <img
                       src={`${serverUrl + device.clipboardContent}`}
                       alt="Imagen del portapapeles"
-                      className="img-fluid"
+                      className="img-fluid rounded"
                     />
                   ) : (
-                    <p>{device.clipboardContent || "No hay contenido en el portapapeles"}</p>
+                    <p className="mb-0 text-muted">{device.clipboardContent || "No hay contenido en el portapapeles"}</p>
                   )}
                 </div>
 
-                <button
-                  className="btn boton_aux btn-warning mt-3"
-                  onClick={() =>
-                    guardarContenido(device.clipboardContent, device.clipboardContent?.startsWith("/device/temp_image/") ? "image" : "text", device.os, device.browser, device.deviceType)
-                  }
-                  disabled={saving || !device.clipboardContent}
-                >
-                  {saving ? (
-                    <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
-                  ) : (
-                    <i className="fa fa-star" aria-hidden="true"></i>
-                  )}
-                </button>
+                {/* Botones de acción del dispositivo (agrupados) */}
+                <div className="d-flex justify-content-center gap-3 mt-4">
+                  <button
+                    className="btn boton_aux btn-warning m-0"
+                    onClick={() =>
+                      guardarContenido(device.clipboardContent, device.clipboardContent?.startsWith("/device/temp_image/") ? "image" : "text", device.os, device.browser, device.deviceType)
+                    }
+                    disabled={saving || !device.clipboardContent}
+                    title="Guardar contenido de este dispositivo"
+                  >
+                    {saving ? (
+                      <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+                    ) : (
+                      <i className="fa fa-star" aria-hidden="true"></i>
+                    )}
+                  </button>
 
-                <button
-                  className="btn boton_aux btn-success mt-3"
-                  title="Descargar el contenido a un fichero"
-                  disabled={saving || downloading ||!device.clipboardContent}
-                  onClick={() =>
-                    descargarContenidoDispositivo(device.clipboardContent, "text")
-                  }
-                >
-          {downloading ? (
-            <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
-          ) : (
-            <i className="fa fa-download" aria-hidden="true"></i>
-          )}
-                </button>
+                  <button
+                    className="btn boton_aux btn-success m-0"
+                    title="Descargar el contenido a un fichero"
+                    disabled={saving || downloading || !device.clipboardContent}
+                    onClick={() =>
+                      descargarContenidoDispositivo(device.clipboardContent, "text")
+                    }
+                  >
+                    {downloading ? (
+                      <i className="fa fa-circle-notch fa-spin" aria-hidden="true"></i>
+                    ) : (
+                      <i className="fa fa-download" aria-hidden="true"></i>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center">
-            <h3>No se han encontrado dispositivos</h3>
-            <h4>Inicia sesión con tu cuenta en otro dispositivo</h4>
+          <div className="text-center p-5 w-100" style={{ background: "var(--surface-alt)", borderRadius: "28px", border: "1px solid var(--border-color)" }}>
+            <i className="fa-solid fa-laptop-house mb-3" style={{ fontSize: "3rem", color: "var(--text-muted)" }}></i>
+            <h3 className="fw-bold mb-2">No se han encontrado dispositivos</h3>
+            <p className="text-muted mb-0" style={{ fontSize: "1.1rem" }}>Inicia sesión con tu cuenta en otro dispositivo para sincronizar al instante.</p>
           </div>
         )}
       </div>
 
-      <div className="d-flex justify-content-center mt-4">
+      <div className="d-flex justify-content-center mt-5 mb-4">
         <button
           className="btn boton_aux btn-secondary d-flex justify-content-center align-items-center"
           onClick={toggleAutoRefreshClipboard}
           title="Activa o desactiva la actualización automática del portapapeles"
         >
-          {autoRefreshClipboard ? <MdUpdate size={30} /> : <MdUpdateDisabled size={30} />}
+          {autoRefreshClipboard ? <MdUpdate size={28} /> : <MdUpdateDisabled size={28} />}
         </button>
       </div>
 
